@@ -1,0 +1,18 @@
+
+    <div class="container text-center margin-top-xxxl">
+        <p class="text-subtitle">{{local.string.Home}}</p>
+
+        <div [hidden]="!scatter.logged">
+            <h1>
+                Hello, {{scatter.username}} !!
+            </h1>
+            <span class="btn btn-primary" (click)="logout()">
+                Logout
+            </span>
+        </div>
+
+
+        <span [hidden]="scatter.logged" class="btn btn-primary" (click)="login()">
+            Login
+        </span>
+    </div>

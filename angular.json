@@ -23,9 +23,17 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "node_modules/font-awesome/css/font-awesome.css",
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/bootstrap-slate-theme.min.css",
+              "src/bootstrap-extension.scss",
+              "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",              
+              "node_modules/bootstrap/dist/js/bootstrap.js",
+              "src/app/app.identity.js"
+            ]
           },
           "configurations": {
             "production": {
