@@ -1,0 +1,3 @@
+https://get-scatter.com/docs/setting-up-for-web-apps
+https://get-scatter.com/docs/examples-interaction-flow
+https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad

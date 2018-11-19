@@ -16,8 +16,11 @@
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('home')}">
                     <a class="nav-link" routerLink="/home" >{{local.string.Home}}</a>
                 </li>
-                <li class="nav-item" [ngClass]="{active: app.stateStartsWith('faq')}">
+                <!--li class="nav-item" [ngClass]="{active: app.stateStartsWith('faq')}">
                     <a class="nav-link" routerLink="/faq" >{{local.string.FAQ}}</a>
+                </li-->
+                <li class="nav-item" [ngClass]="{active: app.stateStartsWith('account')}">
+                    <a class="nav-link" routerLink="/account" >{{local.string.Account}}</a>
                 </li>
                 <li class="nav-item dropdown" dropdown>
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="language">{{local.string.Language}} <span class="caret"></span></a>
@@ -26,7 +29,6 @@
                         <span class="cursor-pointer dropdown-item" (click)="local.setLocal('es_ES')">Español</span>
                     </div>
                 </li>
-                       
             </ul>
         </div>
     </div>

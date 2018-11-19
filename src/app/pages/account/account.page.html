@@ -1,0 +1,13 @@
+    <div class="container">
+        <identicon-comp [value]="account.account_name"></identicon-comp>
+    </div>
+
+    <div class="container text-left margin-top-xxxl">
+        <pre>{{account|json}}</pre>
+    </div>
+
+    <div [hidden]="scatter.logged" class="container text-center margin-top-xxxl">
+        <span class="btn btn-primary" (click)="login()">
+            {{local.string.LoginWScatter}}
+        </span>
+    </div>    

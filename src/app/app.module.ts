@@ -9,13 +9,17 @@ import { HomePage } from './pages/home/home.page';
 import { NotFoundPage } from './pages/not-found/not-found.page';
 import { RootPage } from './pages/root/root.page';
 import { ScatterService } from './services/scatter.service';
+import { AccountPage } from './pages/account/account.page';
+import { IdenticonComponent } from './components/identicon/identicon.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         HomePage,
         NotFoundPage,
-        RootPage
+        RootPage,
+        AccountPage,
+        IdenticonComponent
     ],
     imports: [
         BrowserModule,
