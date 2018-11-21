@@ -11,6 +11,7 @@ import { RootPage } from './pages/root/root.page';
 import { ScatterService } from './services/scatter.service';
 import { AccountPage } from './pages/account/account.page';
 import { IdenticonComponent } from './components/identicon/identicon.component';
+import { EosioAccountComponent } from './components/eosio-account/eosio-account.component';
 
 @NgModule({
     declarations: [
@@ -19,7 +20,8 @@ import { IdenticonComponent } from './components/identicon/identicon.component';
         NotFoundPage,
         RootPage,
         AccountPage,
-        IdenticonComponent
+        IdenticonComponent,
+        EosioAccountComponent
     ],
     imports: [
         BrowserModule,

@@ -260,11 +260,24 @@ export class ScatterService {
     }
 
     queryAccountData(name:string): Promise<AccountData> {
-        return this.waitEosjs.then(() => 
-            this.eos.getAccount({account_name: name})
-                .catch(error => console.error(error))
-        )
+        return this.waitEosjs.then(() => {
+            /*
+            // get_table_rows
+            code: "eosio"
+            index_position: 1
+            json: true
+            key_type: "i64"
+            limit: -1
+            lower_bound: null
+            scope: "gqydoobuhege"
+            table: "delband"
+            table_key: ""
+            */
+            return this.eos.getAccount({account_name: name});
+        }).catch(error => console.error(error));
+        
     }
+
 
     login() {
         console.log("ScatterService.login()");

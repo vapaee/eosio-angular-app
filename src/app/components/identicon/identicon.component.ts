@@ -6,7 +6,7 @@ declare var $:any;
 @Component({
     selector: 'identicon-comp',
     templateUrl: './identicon.component.html',
-    styleUrls: ['./identicon.component.css']
+    styleUrls: ['./identicon.component.scss']
 })
 export class IdenticonComponent implements OnChanges {
 
@@ -16,10 +16,6 @@ export class IdenticonComponent implements OnChanges {
     constructor() {
         
     }
-    /*
-    ngOnInit() {
-        this.ngOnChanges();
-    }*/
 
     ngOnChanges() {
         console.log("IdenticonComponent.ngOnChanges()", this.value, typeof this.value);

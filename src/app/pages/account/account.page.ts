@@ -4,7 +4,8 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 import { ScatterService, AccountData } from 'src/app/services/scatter.service';
 import { ActivatedRoute } from '@angular/router';
 
-
+import { EosioAccountComponent } from 'src/app/components/eosio-account/eosio-account.component';
+import { IdenticonComponent } from 'src/app/components/identicon/identicon.component';
 
 @Component({
     selector: 'account-page',
@@ -26,8 +27,9 @@ export class AccountPage implements OnInit {
             account_name:"guesst"
         };
         var name = this.route.snapshot.paramMap.get('name');
-        console.log("name", name);
+        // console.log("name", name);
         if (name) {
+            this.account.account_name = name;
             this.scatter.queryAccountData(name).then((account) => {
                 this.account = account;
                 console.log("this.account", this.account);
@@ -41,8 +43,7 @@ export class AccountPage implements OnInit {
         }
     }    
 
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
     login() {
         this.scatter.login().then(() => {
