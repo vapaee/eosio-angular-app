@@ -15,6 +15,9 @@ import { IdenticonComponent } from 'src/app/components/identicon/identicon.compo
 export class AccountPage implements OnInit {
 
     account: AccountData;
+    data: any;
+    response: any;
+    last_trx:string;
 
     constructor(
         public app: AppService,
@@ -22,6 +25,14 @@ export class AccountPage implements OnInit {
         public scatter: ScatterService,
         private route: ActivatedRoute
     ) {
+
+        
+
+        this.data = {
+            to: "dailyselfies",
+            amount: "0.0001 EOS",
+            memo: "testing"
+        };
 
         this.account = {
             account_name:"guesst"
@@ -51,5 +62,30 @@ export class AccountPage implements OnInit {
                 this.app.navigate("account/" + this.scatter.account.name);
             }
         });
+    }
+
+    transfer() {
+        // this.scatter.transfer(this.scatter.account.name, this.data.to, this.data.amount, this.data.memo);        
+        this.scatter.getContract("eosio.token").then(contract => {
+            contract.transfer({
+                from:  this.scatter.account.name,
+                memo: this.data.memo,
+                quantity: this.data.amount,
+                to: this.data.to
+            }).then((response => {
+                console.log("response", response);
+                this.last_trx = response.transaction_id;
+            }));
+        })        
+    }
+
+    gas() {
+        this.scatter.getContract("eosio.token").then(contract => {
+            // console.log("contract.fc.schema.transfer.fields", contract.fc.schema.transfer.fields);
+            // console.log("contract.fc.schema.issue.fields", contract.fc.schema.issue.fields);
+            for (var i in contract) {
+                console.log("contract."+i, typeof contract[i], [contract[i]]);
+            }
+        })
     }
 }

@@ -1,5 +1,54 @@
+
 <div class="container margin-top-xxl">
     <eosio-account [account]="account"></eosio-account>
+</div>    
+
+<div class="container margin-top-xxl">
+
+    <div class="card text-white bg-dark">
+        <div class="card-header">
+            <span class="text-lg color-green">Transfer EOS</span>
+        </div>
+        
+        <div class="card-body">
+
+            <div class="form-group row">
+                <div class="input-group col-sm-12">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text form-control-sm">transfer</span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm" [value]="data.amount" (input)="data.amount = $event.target.value">
+                    <div class="input-group-append">
+                        <span class="input-group-text form-control-sm">to</span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm" [value]="data.to" (input)="data.to = $event.target.value">
+                    <div class="input-group-append">
+                        <span class="input-group-text form-control-sm">saying</span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm" [value]="data.memo" (input)="data.memo = $event.target.value">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary btn-sm" (click)="transfer()">now</button>
+                    </div>
+                </div>
+
+                <div class="input-group col-sm-12  margin-top" [hidden]="!last_trx">
+                    <a target="_blank" href="https://www.bloks.io/transaction/{{last_trx}}">{{last_trx}}</a>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-12">
+                    <button class="btn btn-secondary btn-sm" (click)="gas()">Dale Gas</button>
+                </div>
+        
+                <div class="text-left margin-top">
+                    <pre>{{response|json}}</pre>
+                </div>                
+            </div>            
+
+        
+        </div>
+    </div>    
 </div>
 
 <div [hidden]="scatter.logged" class="container text-center margin-top-xxxl">

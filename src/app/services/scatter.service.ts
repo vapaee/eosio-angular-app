@@ -278,6 +278,35 @@ export class ScatterService {
         
     }
 
+    getContract(account_name): Promise<any> {
+        return new Promise((resolve) => {
+            this.eos.contract(account_name).then(contract => {
+                console.log("contract -> ", contract);
+                for (var i in contract) {
+                    if(typeof contract[i] == "function") console.log("contract."+i+"()", [contract[i]]);
+                }
+                resolve(contract);
+            }).catch(error => {
+                console.error(error);
+            });    
+        }); 
+    }
+
+    transfer(from:string, to:string, amount:string, memo:string) {
+        return new Promise((resolve) => {
+            const transactionOptions = { authorization:[`${this.account.name}@${this.account.authority}`] };
+            console.log("Scatter.transfer() authority:", transactionOptions);
+            this.eos.transfer(from, to, amount, memo, transactionOptions).then(trx => {
+                // That's it!
+                console.log(`Transaction ID: ${trx.transaction_id}`, trx);
+                // en Notas está el json que describe el objeto trx
+                resolve(trx);
+            }).catch(error => {
+                console.error(error);
+            });    
+        }); 
+    }
+
 
     login() {
         console.log("ScatterService.login()");
@@ -311,5 +340,6 @@ export class ScatterService {
         if (!this.lib) return "";
         return this.lib.identity ? this.lib.identity.name : "";
     }
+
 
 }
