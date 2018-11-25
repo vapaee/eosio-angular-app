@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
+import { EosioTokenMathService } from 'src/app/services/eosio.token-math.service';
 
 declare var jdenticon:any;
 declare var $:any;
@@ -13,20 +14,20 @@ export class EosioAccountComponent implements OnChanges {
     @Input() public account: any;
     @Input() public symbol: string = "EOS";
     
-    constructor() {
+    constructor(public tokenMath: EosioTokenMathService) {
         
     }
 
     private extractNumber (balance) {
         if(typeof balance != "string") {
-            console.log("extractNumber() " , balance);
+            // console.log("extractNumber() " , balance);
             return 0;
         }
         return parseFloat(balance.split(" ")[0]);
     }
 
     private add(balance1:string, balance2:string) {
-        console.log("add(",balance1, balance2, ")");
+        // console.log("add(",balance1, balance2, ")");
         var v1 = this.extractNumber(balance1), v2 = this.extractNumber(balance2);
         var tot = (v1 + v2) + "";
         if (tot.indexOf(".") != -1) {
@@ -35,11 +36,12 @@ export class EosioAccountComponent implements OnChanges {
             tot  += ".0000";
         }
         tot += " " + this.symbol;
-        console.log("add(",balance1, balance2, ") --> ", tot);
+        // console.log("add(",balance1, balance2, ") --> ", tot);
         return tot;
     }
 
     calculateTotalBalance(account) {
+        /*
         var liquid = this.extractNumber(account.core_liquid_balance);
         var refund_net = this.extractNumber(account.refund_request.net_amount);
         var refund_cpu = this.extractNumber(account.refund_request.cpu_amount);
@@ -47,6 +49,14 @@ export class EosioAccountComponent implements OnChanges {
         var self_net = this.extractNumber(account.self_delegated_bandwidth.net_weight);
         // console.log("TOTAL:", liquid, refund_net, refund_cpu, self_cpu, self_net);
         return liquid + refund_net + refund_cpu + self_cpu + self_net;
+        */
+        return this.tokenMath.addAll([
+            account.core_liquid_balance,
+            account.refund_request.net_amount,
+            account.refund_request.cpu_amount,
+            account.self_delegated_bandwidth.cpu_weight,
+            account.self_delegated_bandwidth.net_weight
+        ]);
     }
 
 
@@ -89,11 +99,11 @@ export class EosioAccountComponent implements OnChanges {
         // --
         this.account.self_delegated_bandwidth = this.account.self_delegated_bandwidth || {
             total: "0.0000 " + this.symbol,
-            net_amount: "0.0000 " + this.symbol,
-            cpu_amount: "0.0000 " + this.symbol
+            net_weight: "0.0000 " + this.symbol,
+            cpu_weight: "0.0000 " + this.symbol
         }
         this.account.self_delegated_bandwidth.total =
-            this.add(this.account.self_delegated_bandwidth.net_amount, this.account.self_delegated_bandwidth.cpu_amount);
+            this.add(this.account.self_delegated_bandwidth.net_weight, this.account.self_delegated_bandwidth.cpu_weight);
 
         // --
         this.account.total_resources = this.account.total_resources || {

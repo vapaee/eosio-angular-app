@@ -6,6 +6,8 @@ import { ActivatedRoute } from '@angular/router';
 
 import { EosioAccountComponent } from 'src/app/components/eosio-account/eosio-account.component';
 import { IdenticonComponent } from 'src/app/components/identicon/identicon.component';
+import { EosioTokenMathService } from 'src/app/services/eosio.token-math.service';
+import { Observable, Subject } from 'rxjs';
 
 @Component({
     selector: 'account-page',
@@ -18,16 +20,14 @@ export class AccountPage implements OnInit {
     data: any;
     response: any;
     last_trx:string;
-
+    
     constructor(
         public app: AppService,
         public local: LocalStringsService,
         public scatter: ScatterService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        public tokenMath: EosioTokenMathService
     ) {
-
-        
-
         this.data = {
             to: "dailyselfies",
             amount: "0.0001 EOS",
@@ -41,25 +41,35 @@ export class AccountPage implements OnInit {
         // console.log("name", name);
         if (name) {
             this.account.account_name = name;
-            this.scatter.queryAccountData(name).then((account) => {
-                this.account = account;
-                console.log("this.account", this.account);
-            });
+            if (this.scatter.account && this.scatter.account.name == name) {
+                this.account = this.scatter.account.data;
+            }
+            this.scatter.onNetworkChange.subscribe(this.onNetworkChange.bind(this));
         } else {
             this.scatter.waitReady.then(() => {
                 if (this.scatter.logged) {
-                    this.app.navigate("account/" + this.scatter.account.name);
+                    this.app.navigate("/" + this.scatter.network.slug + "/account/" + this.scatter.account.name);
                 }
             });
         }
-    }    
+    }
+    
+    onNetworkChange(network) {
+        console.log("YESSSSSSSSSSSSSS", network, this);
+        console.log("AccountPage() -> ScatterService.queryAccountData() : " , [this.account.account_name]);
+        this.scatter.queryAccountData(this.account.account_name).then((account) => {
+            this.account = account;
+            console.log("this.account ----> **** ", this.account);
+        });    
+    }
 
-    ngOnInit() {}
+    ngOnInit() {
+    }
 
     login() {
         this.scatter.login().then(() => {
             if (this.scatter.logged) {
-                this.app.navigate("account/" + this.scatter.account.name);
+                this.app.navigate("/" + this.scatter.network.slug + "/account/" + this.scatter.account.name);
             }
         });
     }

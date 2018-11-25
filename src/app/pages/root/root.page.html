@@ -13,15 +13,25 @@
 
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav ml-auto">
+                
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('home')}">
-                    <a class="nav-link" routerLink="/home" >{{local.string.Home}}</a>
+                    <a class="nav-link" routerLink="{{'/' + scatter.network.slug + '/home'}}" >{{local.string.Home}}</a>
                 </li>
                 <!--li class="nav-item" [ngClass]="{active: app.stateStartsWith('faq')}">
                     <a class="nav-link" routerLink="/faq" >{{local.string.FAQ}}</a>
                 </li-->
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('account')}">
-                    <a class="nav-link" routerLink="/account" >{{local.string.Account}}</a>
+                    <a class="nav-link" [routerLink]="'/' + scatter.network.slug + '/account'" >{{local.string.Account}}</a>
                 </li>
+                <li class="nav-item dropdown" dropdown>
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="network">{{scatter.network.name}} <span class="caret"></span></a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="network">
+                        <span *ngFor="let slug of scatter.networks"
+                            class="cursor-pointer dropdown-item" (click)="setNetwork(slug)">{{scatter.getNetwork(slug).name}}</span>
+                        
+                    </div>
+                </li>
+
                 <li class="nav-item dropdown" dropdown>
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="language">{{local.string.Language}} <span class="caret"></span></a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="language">

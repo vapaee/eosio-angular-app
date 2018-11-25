@@ -12,6 +12,7 @@ import { ScatterService } from './services/scatter.service';
 import { AccountPage } from './pages/account/account.page';
 import { IdenticonComponent } from './components/identicon/identicon.component';
 import { EosioAccountComponent } from './components/eosio-account/eosio-account.component';
+import { EosioTokenMathService } from './services/eosio.token-math.service';
 
 @NgModule({
     declarations: [
@@ -29,7 +30,8 @@ import { EosioAccountComponent } from './components/eosio-account/eosio-account.
         CommonServicesModule
     ],
     providers: [
-        ScatterService
+        ScatterService,
+        EosioTokenMathService
     ],
     bootstrap: [AppComponent]
 })

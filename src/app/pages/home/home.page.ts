@@ -3,6 +3,7 @@ import { AppService } from 'src/app/services/common/app.service';
 import { LocalStringsService } from 'src/app/services/common/common.services';
 import { ScatterService } from 'src/app/services/scatter.service';
 
+
 @Component({
     selector: 'home-page',
     templateUrl: './home.page.html',
@@ -17,6 +18,7 @@ export class HomePage implements OnInit {
     }
 
     ngOnInit() {
+        console.log("HomePage.this.scatter.network: ---> ", this.scatter.network);
     }
 
     login() {

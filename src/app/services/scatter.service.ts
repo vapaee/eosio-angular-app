@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import ScatterJS from 'scatterjs-core';
 import ScatterEOS from 'scatterjs-plugin-eosjs'
 import Eos from 'eosjs';
+import { resolve } from 'dns';
+import { Subject } from 'rxjs';
 
 declare var ScatterJS:any;
 
@@ -168,7 +170,13 @@ export interface Account {
     data: AccountData
 }
 
-export interface Network {
+export interface Endpoint {
+    protocol:string,
+    host:string,
+    port:number
+}
+
+export interface Eosconf {
     blockchain:string,
     protocol:string,
     host:string,
@@ -176,13 +184,31 @@ export interface Network {
     chainId:string
 }
 
+export interface Network {
+    slug?: string,
+    eosconf?: Eosconf,
+    name: string,
+    chainId:string,
+    endpoints: Endpoint[]
+}
+
+export interface ScatterJS {
+    plugins?:any,
+    scatter?:any
+}
+
 @Injectable()
 export class ScatterService {
     
     public error: string;
     private lib: Scatter;
-    private network: Network;
+    private ScatterJS: ScatterJS;
+    private _network: Network;
+    private _networks: {[key:string]:Network};
+    private _networks_slugs: string[];
+    private _account_queries: {[key:string]:Promise<AccountData>};
     private eos: EOS;
+    public onNetworkChange:Subject<Network> = new Subject();
     public account: Account;
     private setReady: Function;
     public waitReady: Promise<any> = new Promise((resolve) => {
@@ -198,33 +224,129 @@ export class ScatterService {
     });
     
     constructor() {
-        var eosnet:Network = {
-            blockchain:'eos',
-            protocol:'https',
-            host:'nodes.get-scatter.com',
-            port:443,
-            chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+        this._networks_slugs = [];
+        this._networks = {
+            "eos": {
+                name: "EOS MainNet",
+                chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+                endpoints: [{
+                    protocol:'https',
+                    host:'nodes.get-scatter.com',
+                    port:443
+                    
+                }]
+            },
+            "telostestnet": {
+                name: "Telos TestNet",
+                chainId:'335e60379729c982a6f04adeaad166234f7bf5bf1191252b8941783559aec33e',
+                endpoints:[{
+                    protocol:'http',
+                    host:'173.255.220.117',
+                    port:3888
+                }]
+            }
+        };
+        for (var i in this._networks) {
+            this._networks_slugs.push(i);
         }
-        var telostest:Network = {
-            blockchain:'eos',
-            protocol:'http',
-            host:'173.255.220.117',
-            port:3888,
-            chainId:'335e60379729c982a6f04adeaad166234f7bf5bf1191252b8941783559aec33e'
+        this._account_queries = {};
+    }
+
+    setNetwork(name:string, index: number = 0) {
+        console.log("setNetwork("+name+","+index+")");
+        var n = this.getNetwork(name, index);
+        if (n) {
+            this._network = n;
+            this.resetIdentity();
+            this.initScatter();
+            this.onNetworkChange.next(this.getNetwork(name));
+        } else {
+            console.error("ERROR: Scatter.setNetwork() unknown network name-index. Got ("
+                + name + ", " + index + "). Availables are:", this._networks);
         }
-        this.network = eosnet;
-        this.initScatter();
+    }
+
+    getNetwork(slug:string, index: number = 0): Network {
+        if (this._networks[slug]) {
+            if (this._networks[slug].endpoints.length > index && index >= 0) {
+                var network: Network = this._networks[slug];
+                var endpoint:Endpoint = network.endpoints[index];
+                network.slug = slug;
+                network.eosconf = {
+                    blockchain: "eos",
+                    chainId: network.chainId,
+                    host: endpoint.host,
+                    port: endpoint.port,
+                    protocol: endpoint.protocol,
+                }                
+                return network;
+            } else {
+                console.error("ERROR: Scatter.getNetwork() index out of range. Got "
+                    + index + " expected number between [0.."+this._networks[slug].endpoints.length+"]", );
+            }            
+        } else {
+            console.error("ERROR: Scatter.getNetwork() unknown network slug. Got "
+                + slug + " expected one of", this.networks);
+        }
+        return null;
+    }
+
+    get networks(){
+        return this._networks_slugs;
+    }
+
+    get network(): Network {
+        return this._network;
+    }
+
+    resetIdentity() {
+        this.error = "";
+        this.eos = null;
+        if (this.lib) this.lib.identity = null;
+    }
+
+    private resetPromises() {
+        this.waitEosjs.then(r => {
+            this.waitEosjs = null;
+            var p = new Promise((resolve) => {
+                if (this.waitEosjs) return;
+                this.waitEosjs = p;
+                this.setEosjs = resolve;
+                this.resetPromises();
+            });
+        });
+        this.waitConnected.then(r => {
+            this.waitConnected = null;
+            var p = new Promise((resolve) => {
+                if (this.waitConnected) return;
+                this.waitConnected = p;
+                this.setConnected = resolve;
+                this.resetPromises();
+            });
+        });
+        this.waitReady.then(r => {
+            this.waitReady = null;
+            var p = new Promise((resolve) => {
+                if (this.waitReady) return;
+                this.waitReady = p;
+                this.setReady = resolve;
+                this.resetPromises();
+            });
+        });
     }
 
     initScatter() {
         console.log("ScatterService.initScatter()");
-        ScatterJS.plugins( new ScatterEOS() );
-        
-        console.log("ScatterService.setScatter()");
         this.error = "";
         const connectionOptions = {initTimeout:10000}
-        this.lib = ScatterJS.scatter;
-        this.eos = this.lib.eos(this.network, Eos, { expireInSeconds:60 });
+        if ((<any>window).ScatterJS) {
+            this.ScatterJS = (<any>window).ScatterJS;
+            this.lib = this.ScatterJS.scatter;  
+            this.ScatterJS.plugins( new ScatterEOS() );
+            (<any>window).ScatterJS = null;
+        }
+        
+        this.eos = this.lib.eos(this.network.eosconf, Eos, { expireInSeconds:60 });
         this.setEosjs(this.eos);
         this.lib.connect("Cards & Tokens", connectionOptions).then(connected => {
             if(!connected) {
@@ -232,8 +354,6 @@ export class ScatterService {
                 console.error(this.error);
                 return false;
             }
-
-            (<any>window).ScatterJS = null;
             // Get a proxy reference to eosjs which you can use to sign transactions with a user's Scatter.
             console.log("ScatterService.setConnected()");
             this.setConnected();
@@ -253,16 +373,17 @@ export class ScatterService {
         this.error = "";
         this.lib.identity = identity;
         this.account = this.lib.identity.accounts.find(x => x.blockchain === 'eos');
+        console.log("ScatterService.setIdentity() -> ScatterService.queryAccountData() : " , [this.account.name]);
         this.queryAccountData(this.account.name).then(account => {
             this.account.data = account;
             console.log("this.account: " , [this.account]);
         });
     }
 
+    
     queryAccountData(name:string): Promise<AccountData> {
-        return this.waitEosjs.then(() => {
-            /*
-            // get_table_rows
+        /*
+        // get_table_rows
             code: "eosio"
             index_position: 1
             json: true
@@ -272,10 +393,29 @@ export class ScatterService {
             scope: "gqydoobuhege"
             table: "delband"
             table_key: ""
-            */
-            return this.eos.getAccount({account_name: name});
-        }).catch(error => console.error(error));
+        */
+        console.log("ScatterService.queryAccountData("+name+") ");
+        this._account_queries[name] = this._account_queries[name] || new Promise<AccountData>((resolve) => {
+            console.log("PASO 1 ------", [this._account_queries])
+            this.waitEosjs.then(() => {
+                console.log("PASO 2 (eosjs) ------");
+                this.eos.getAccount({account_name: name}).then((response) => {
+                    console.log("PASO 3 (eosjs.getAccount) ------", response);
+                    resolve(response);
+                });
+            }).catch((error) => {
+                console.error(error);
+            });
+        });
+
+        var promise = this._account_queries[name];
+        promise.then((r) => {
+            setTimeout(() => {
+                delete this._account_queries[r.account_name];
+            });
+        });
         
+        return promise;
     }
 
     getContract(account_name): Promise<any> {
@@ -326,6 +466,7 @@ export class ScatterService {
             return this.lib.forgetIdentity()
                 .then( (err)  => {
                     console.log("disconnect", err);
+                    this.resetIdentity();
                 })
                 .catch( err => { console.error(err); });            
         });

@@ -26,6 +26,7 @@ export class AppService {
                 this.prev_state = this.state;
                 this.path = this.router.url;
                 this.state = this.getDeepestChild(this.route.root).snapshot.data.state;
+                console.log("AppService. onRoute()", [this]);
                 this.analytics.sendPageView(window.location.href); 
             }
         });
@@ -86,6 +87,7 @@ export class AppService {
     }
 
     onWindowsResize() {
+        console.error("onWindowsResize()");
         this.device.small = false;
         this.device.tiny = false;
         this.device.height = window.innerHeight;
@@ -118,8 +120,24 @@ export class AppService {
         }        
     }
 
+    navigatePrefix(prefix:string){
+        var words = this.path.split("/");
+        console.log("AppService.navigatePrefix()", this.path, words);
+        for (var i in words){
+            if (words[i])  {
+                words[i] = prefix;
+                break;
+            }
+        }
+        var path = words.join("/");
+        this.navigate(path);
+    }
+
     navigate(path) {
-        this.router.navigate([path]);
+        if (path != this.path) {
+            console.log("AppService.navigate()", path);
+            this.router.navigate([path]);
+        }
         return path;
     }
 
