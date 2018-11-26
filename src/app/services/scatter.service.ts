@@ -3,6 +3,7 @@ import ScatterJS from 'scatterjs-core';
 import ScatterEOS from 'scatterjs-plugin-eosjs'
 import Eos from 'eosjs';
 import { Subject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 declare var ScatterJS:any;
 
@@ -225,112 +226,51 @@ export class ScatterService {
     public waitEosjs: Promise<any> = new Promise((resolve) => {
         this.setEosjs = resolve;
     });
+    private setEndpoints: Function;
+    public waitEndpoints: Promise<any> = new Promise((resolve) => {
+        this.setEndpoints = resolve;
+    });    
     
-    constructor() {
+    constructor(private http: HttpClient) {
         this._networks_slugs = [];
-        this._networks = {
-            "eos": {
-                name: "EOS MainNet",
-                symbol: "EOS",
-                explorer: "https://www.bloks.io",
-                chainId:"aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
-                endpoints: [{
-                    protocol:"https",
-                    host:"nodes.get-scatter.com",
-                    port:443
-                },
-                {
-                    protocol:"https",
-                    host:"mainnet.genereos.io",
-                    port:443
-                    
-                },
-                {
-                    protocol:"https",
-                    host:"api.eosnewyork.io",
-                    port:443
-                    
-                },
-                {
-                    protocol:"https",
-                    host:"api.eosn.io",
-                    port:443
-                    
-                }]
-            },
-            "telos-testnet": {
-                name: "TELOS TestNet",
-                symbol: "TLOS",
-                explorer: "http://testnet.telosfoundation.io",
-                chainId:"335e60379729c982a6f04adeaad166234f7bf5bf1191252b8941783559aec33e",
-                endpoints:[
-                {
-                    protocol:"https",
-                    host:"api.eos.miami",
-                    port:17441
-                },
-                {
-                    protocol:"http",
-                    host:"173.255.220.117",
-                    port:3888
-                }]
-            },
-            "jungle-testnet": {
-                name: "Jungle Testnet",
-                symbol: "EOS",
-                chainId: "e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473",
-                endpoints:[{
-                    protocol:"https",
-                    host:"jungle.eosio.cr",
-                    port:443
-                },
-                {
-                    protocol:"https",
-                    host:"junglenodes.eosmetal.io",
-                    port:443
-                }]
-            },
-            "kylin-testnet": {
-                name: "Kylin Testnet",
-                symbol: "EOS",
-                chainId: "5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191",
-                endpoints:[{
-                    protocol:"https",
-                    host:"api.kylin-testnet.eospace.io",
-                    port:443
-                },
-                {
-                    protocol:"https",
-                    host:"api-kylin.eosasia.one",
-                    port:443
-                },
-                {
-                    protocol:"https",
-                    host: "api-kylin.eoslaomao.com",
-                    port: 443
-                }]
-            },            
+        this._networks = {};
+        this._network = {
+            "name": "EOS MainNet",
+            "symbol": "EOS",
+            "explorer": "https://www.bloks.io",
+            "chainId":"aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
+            "endpoints": [{
+                "protocol":"https",
+                "host":"nodes.get-scatter.com",
+                "port":443
+            }]
         };
-        for (var i in this._networks) {
-            this._networks_slugs.push(i);
-        }
+        this.http.get<any>("assets/endpoints.json").toPromise().then((response) => {
+            this._networks = response;
+            for (var i in this._networks) {
+                this._networks_slugs.push(i);
+            }
+            this.setEndpoints();
+        });
         this._account_queries = {};
     }
 
     setNetwork(name:string, index: number = 0) {
         console.log("setNetwork("+name+","+index+")");
-        var n = this.getNetwork(name, index);
-        if (n) {
-            this._network = n;
-            this.resetIdentity();
-            this.initScatter();
-            this.onNetworkChange.next(this.getNetwork(name));
-        } else {
-            console.error("ERROR: Scatter.setNetwork() unknown network name-index. Got ("
-                + name + ", " + index + "). Availables are:", this._networks);
-            console.error("Falling back to eos mainnet");
-            this.setNetwork("eos");
-        }
+        return this.waitEndpoints.then(() => {
+            var n = this.getNetwork(name, index);
+            if (n) {
+                this._network = n;
+                this.resetIdentity();
+                this.initScatter();
+                this.onNetworkChange.next(this.getNetwork(name));
+            } else {
+                console.error("ERROR: Scatter.setNetwork() unknown network name-index. Got ("
+                    + name + ", " + index + "). Availables are:", this._networks);
+                console.error("Falling back to eos mainnet");
+                return this.setNetwork("eos");
+            }    
+        });
     }
 
     getNetwork(slug:string, index: number = 0): Network {

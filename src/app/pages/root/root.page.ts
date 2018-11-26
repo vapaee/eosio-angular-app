@@ -28,10 +28,11 @@ export class RootPage implements OnInit {
         var network = this.route.snapshot.paramMap.get('network');
         console.log("RootPage.network: ---> ", network);
         if (network) {
-            this.scatter.setNetwork(network);
-            if (this.scatter.network.slug != network) {
-                this.app.navigate("/eos/home");
-            }
+            this.scatter.setNetwork(network).then(() => {
+                if (this.scatter.network.slug != network) {
+                    this.app.navigate("/eos/home");
+                }    
+            });
         } else {
             this.scatter.setNetwork("eos");
         }

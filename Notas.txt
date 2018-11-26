@@ -3,6 +3,7 @@ https://get-scatter.com/docs/examples-interaction-flow
 https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
 
 
+-- Scatter Apps --
 La Metadata se agrega generando un pull request y agregando la imagen en la carpeta como un svg
 https://github.com/GetScatter/ScatterApps
 
