@@ -27,15 +27,14 @@ export class AccountPage implements OnInit {
         public scatter: ScatterService,
         private route: ActivatedRoute,
         public tokenMath: EosioTokenMathService
-    ) {        
+    ) {
+        
     }
     
     onNetworkChange(network) {
         this.app.loading = true;
-        console.log("Account.onNetworkChange() *********************");
         this.scatter.queryAccountData(this.account.account_name).then((account) => {
             this.account = account;
-            console.log("Account.onNetworkChange() !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             this.app.loading = false;
         });
         this.data.amount = "0.0001 " + this.scatter.network.symbol;

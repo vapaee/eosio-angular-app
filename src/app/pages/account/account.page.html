@@ -57,8 +57,8 @@
                     </div>
                 </div>
 
-                <div class="input-group col-sm-12  margin-top" [hidden]="!last_trx">
-                    <a target="_blank" href="https://www.bloks.io/transaction/{{last_trx}}">{{last_trx}}</a>
+                <div class="input-group col-sm-12  margin-top" [hidden]="!last_trx || !scatter.network.explorer">
+                    <a target="_blank" href="{{scatter.network.explorer}}/transaction/{{last_trx}}">{{last_trx}}</a>
                 </div>
             
             </div>

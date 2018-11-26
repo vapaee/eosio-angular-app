@@ -188,6 +188,7 @@ export interface Network {
     slug?: string,
     index?: number,
     eosconf?: Eosconf,
+    explorer?: string,
     symbol: string,
     name: string,
     chainId:string,
@@ -231,6 +232,7 @@ export class ScatterService {
             "eos": {
                 name: "EOS MainNet",
                 symbol: "EOS",
+                explorer: "https://www.bloks.io",
                 chainId:"aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
                 endpoints: [{
                     protocol:"https",
@@ -259,6 +261,7 @@ export class ScatterService {
             "telos-testnet": {
                 name: "TELOS TestNet",
                 symbol: "TLOS",
+                explorer: "http://testnet.telosfoundation.io",
                 chainId:"335e60379729c982a6f04adeaad166234f7bf5bf1191252b8941783559aec33e",
                 endpoints:[
                 {
