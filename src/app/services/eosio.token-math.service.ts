@@ -13,10 +13,11 @@ export class EosioTokenMathService {
             + num1.split(" ")[1] + " !== " + num2.split(" ")[1]);
 
         var symbol = num2.split(" ")[1];
-        var v1 = parseFloat(num1.split(" ")[0]);
-        var v2 = parseFloat(num2.split(" ")[0]);
+        var v1 = Math.floor(parseFloat(num1.split(" ")[0]) * 10000);
+        var v2 = Math.floor(parseFloat(num2.split(" ")[0]) * 10000);
         var t = v1+v2;
-        var str = t + "";
+        var tt = t/10000;
+        var str = tt + "";
         var i = str.indexOf(".");
         if (i==-1) {
             str += ".0000";
@@ -30,6 +31,7 @@ export class EosioTokenMathService {
     }
 
     addAll(array:string[]) {
+        console.log("EOS-math.addAll()",array);
         var total = array[0];
         for (var i=1; i<array.length; i++) {
             total = this.add(total, array[i]);

@@ -58,8 +58,7 @@ export class EosioAccountComponent implements OnChanges {
             account.self_delegated_bandwidth.net_weight
         ]);
     }
-
-
+    
     calculateResourceLimit(limit) {
         limit = Object.assign({
             max: 0, used: 0
@@ -84,8 +83,13 @@ export class EosioAccountComponent implements OnChanges {
             this.account.loading = true;
         }
         */
-
-        this.account.core_liquid_balance = this.account.core_liquid_balance || "0.0000 " + this.symbol;
+        if (!this.account) return;
+        if (this.account.core_liquid_balance) {
+            this.symbol = this.account.core_liquid_balance.split(" ")[1];
+        } else {
+            this.account.core_liquid_balance = "0.0000 " + this.symbol;
+        }
+        
         // --
         this.account.refund_request = this.account.refund_request || {
             total: "0.0000 " + this.symbol,
@@ -93,6 +97,7 @@ export class EosioAccountComponent implements OnChanges {
             cpu_amount: "0.0000 " + this.symbol,
             request_time: "2018-11-18T18:09:53"
         }
+        
         this.account.refund_request.total =
             this.add(this.account.refund_request.net_amount, this.account.refund_request.cpu_amount);
 

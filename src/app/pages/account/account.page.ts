@@ -29,7 +29,7 @@ export class AccountPage implements OnInit {
         public tokenMath: EosioTokenMathService
     ) {
         this.data = {
-            to: "dailyselfies",
+            to: "gyztqojshage",
             amount: "0.0001 EOS",
             memo: "testing"
         };
@@ -55,12 +55,10 @@ export class AccountPage implements OnInit {
     }
     
     onNetworkChange(network) {
-        console.log("YESSSSSSSSSSSSSS", network, this);
-        console.log("AccountPage() -> ScatterService.queryAccountData() : " , [this.account.account_name]);
         this.scatter.queryAccountData(this.account.account_name).then((account) => {
             this.account = account;
-            console.log("this.account ----> **** ", this.account);
-        });    
+        });
+        this.data.amount = "0.0001 " + this.scatter.network.symbol;
     }
 
     ngOnInit() {
@@ -89,13 +87,4 @@ export class AccountPage implements OnInit {
         })        
     }
 
-    gas() {
-        this.scatter.getContract("eosio.token").then(contract => {
-            // console.log("contract.fc.schema.transfer.fields", contract.fc.schema.transfer.fields);
-            // console.log("contract.fc.schema.issue.fields", contract.fc.schema.issue.fields);
-            for (var i in contract) {
-                console.log("contract."+i, typeof contract[i], [contract[i]]);
-            }
-        })
-    }
 }
