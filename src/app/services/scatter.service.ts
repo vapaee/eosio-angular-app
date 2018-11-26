@@ -97,6 +97,7 @@ export interface Scatter {
 }
 
 export interface AccountData {
+    dummie?: boolean,
     account_name?: string,
     head_block_num?: number,
     head_block_time?: string,
@@ -185,6 +186,7 @@ export interface Eosconf {
 
 export interface Network {
     slug?: string,
+    index?: number,
     eosconf?: Eosconf,
     symbol: string,
     name: string,
@@ -281,7 +283,7 @@ export class ScatterService {
                 },
                 {
                     protocol:"https",
-                    host:"junglenodes.eosmetal.io7",
+                    host:"junglenodes.eosmetal.io",
                     port:443
                 }]
             },
@@ -334,6 +336,7 @@ export class ScatterService {
                 var network: Network = this._networks[slug];
                 var endpoint:Endpoint = network.endpoints[index];
                 network.slug = slug;
+                network.index = index;
                 network.eosconf = {
                     blockchain: "eos",
                     chainId: network.chainId,
@@ -363,7 +366,7 @@ export class ScatterService {
 
     resetIdentity() {
         this.error = "";
-        this.eos = null;
+        // this.eos = null;
         if (this.lib) this.lib.identity = null;
     }
 
@@ -407,10 +410,12 @@ export class ScatterService {
             this.ScatterJS.plugins( new ScatterEOS() );
             (<any>window).ScatterJS = null;
         }
-        
+        console.log("EOSJS()",[this.network.eosconf]);
         this.eos = this.lib.eos(this.network.eosconf, Eos, { expireInSeconds:60 });
+        console.log("this.eos <<--------");
         this.setEosjs(this.eos);
         this.lib.connect("Cards & Tokens", connectionOptions).then(connected => {
+            console.log("this.lib.connect()", connected);
             if(!connected) {
                 this.error = "ERROR: can not connect to Scatter. Is it up and running?";
                 console.error(this.error);
@@ -513,7 +518,7 @@ export class ScatterService {
     login() {
         console.log("ScatterService.login()");
         return this.waitConnected.then(() => {
-            return this.lib.getIdentity({"accounts":[this.network]})
+            return this.lib.getIdentity({"accounts":[this.network.eosconf]})
                 .then( (identity)  => {
                     this.setIdentity(identity);
                     return identity;

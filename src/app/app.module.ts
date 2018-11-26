@@ -13,6 +13,7 @@ import { AccountPage } from './pages/account/account.page';
 import { IdenticonComponent } from './components/identicon/identicon.component';
 import { EosioAccountComponent } from './components/eosio-account/eosio-account.component';
 import { EosioTokenMathService } from './services/eosio.token-math.service';
+import { LoadingOverall } from './services/common/app.service';
 
 @NgModule({
     declarations: [
@@ -22,7 +23,11 @@ import { EosioTokenMathService } from './services/eosio.token-math.service';
         RootPage,
         AccountPage,
         IdenticonComponent,
-        EosioAccountComponent
+        EosioAccountComponent,
+        LoadingOverall
+    ],
+    entryComponents: [
+        LoadingOverall
     ],
     imports: [
         BrowserModule,

@@ -1,5 +1,6 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, Output } from '@angular/core';
 import { EosioTokenMathService } from 'src/app/services/eosio.token-math.service';
+import { EventEmitter } from '@angular/core';
 
 declare var jdenticon:any;
 declare var $:any;
@@ -13,10 +14,18 @@ export class EosioAccountComponent implements OnChanges {
 
     @Input() public account: any;
     @Input() public symbol: string = "EOS";
-    
+
+    /*
+    @Output() search: EventEmitter<string> = new EventEmitter<string>();
+    searchBtn() {
+        console.log("searchBtn() this.account.account_name", this.account.account_name);
+        this.search.emit(this.account.account_name);
+    }
+    */
     constructor(public tokenMath: EosioTokenMathService) {
         
     }
+
 
     private extractNumber (balance) {
         if(typeof balance != "string") {

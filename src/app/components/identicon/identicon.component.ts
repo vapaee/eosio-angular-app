@@ -18,7 +18,6 @@ export class IdenticonComponent implements OnChanges {
     }
 
     ngOnChanges() {
-        console.log("IdenticonComponent.ngOnChanges()", this.value, typeof this.value);
         if (typeof this.value == "string") {
             $(this.svg.nativeElement).attr("data-jdenticon-value", this.value);
             jdenticon();

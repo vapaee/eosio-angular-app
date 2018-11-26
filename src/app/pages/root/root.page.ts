@@ -45,7 +45,7 @@ export class RootPage implements OnInit {
         }
     }
 
-    setNetwork(slug:string, index:number = 0){
+    setNetwork(slug:string, index:number = 0) {
         // this.app.getRouteData()
         this.app.navigatePrefix(slug);
         this.scatter.setNetwork(slug, index);

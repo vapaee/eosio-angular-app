@@ -1,6 +1,7 @@
 import { Injectable, Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AnalyticsService } from './analytics.service';
+import { DomService } from './dom.service';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,8 @@ export class AppService {
     constructor(
         private router: Router, 
         private route: ActivatedRoute, 
-        private analytics: AnalyticsService
+        private analytics: AnalyticsService,
+        private dom: DomService
     ) {
 
         this.router.events.subscribe((event) => {
@@ -73,10 +75,10 @@ export class AppService {
         console.log("isBlink", this.isBlink);
     }
 
-    // init (appcomp: AppComponent) {
-    //     this.detectBrowser();
-    //     this.dom.appendComponentToBody(LoadingOverall);
-    // }
+    init() {
+        this.detectBrowser();
+        this.dom.appendComponentToBody(LoadingOverall);
+    }
 
     getDeepestChild(node:any):any {
         if (node.firstChild) {

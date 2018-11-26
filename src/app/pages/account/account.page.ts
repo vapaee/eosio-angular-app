@@ -27,7 +27,21 @@ export class AccountPage implements OnInit {
         public scatter: ScatterService,
         private route: ActivatedRoute,
         public tokenMath: EosioTokenMathService
-    ) {
+    ) {        
+    }
+    
+    onNetworkChange(network) {
+        this.app.loading = true;
+        console.log("Account.onNetworkChange() *********************");
+        this.scatter.queryAccountData(this.account.account_name).then((account) => {
+            this.account = account;
+            console.log("Account.onNetworkChange() !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            this.app.loading = false;
+        });
+        this.data.amount = "0.0001 " + this.scatter.network.symbol;
+    }
+
+    ngOnInit() {
         this.data = {
             to: "gyztqojshage",
             amount: "0.0001 EOS",
@@ -35,7 +49,8 @@ export class AccountPage implements OnInit {
         };
 
         this.account = {
-            account_name:"guesst"
+            account_name:"guesst",
+            dummie: true
         };
         var name = this.route.snapshot.paramMap.get('name');
         // console.log("name", name);
@@ -45,23 +60,26 @@ export class AccountPage implements OnInit {
                 this.account = this.scatter.account.data;
             }
             this.scatter.onNetworkChange.subscribe(this.onNetworkChange.bind(this));
+            setTimeout(() => {
+                this.scatter.setNetwork(this.scatter.network.slug, this.scatter.network.index);
+            }, 300);            
         } else {
             this.scatter.waitReady.then(() => {
                 if (this.scatter.logged) {
                     this.app.navigate("/" + this.scatter.network.slug + "/account/" + this.scatter.account.name);
                 }
             });
-        }
-    }
-    
-    onNetworkChange(network) {
-        this.scatter.queryAccountData(this.account.account_name).then((account) => {
-            this.account = account;
-        });
-        this.data.amount = "0.0001 " + this.scatter.network.symbol;
+        }        
     }
 
-    ngOnInit() {
+    search(account_name) {
+        console.log("AccountPage.search()", this.app.state, this.app.path);
+
+        this.app.navigate("/" + this.scatter.network.slug + "/account/" + account_name);
+        
+        setTimeout(() => {
+            this.scatter.setNetwork(this.scatter.network.slug, this.scatter.network.index);
+        }, 300);        
     }
 
     login() {
@@ -74,17 +92,30 @@ export class AccountPage implements OnInit {
 
     transfer() {
         // this.scatter.transfer(this.scatter.account.name, this.data.to, this.data.amount, this.data.memo);        
-        this.scatter.getContract("eosio.token").then(contract => {
-            contract.transfer({
-                from:  this.scatter.account.name,
-                memo: this.data.memo,
-                quantity: this.data.amount,
-                to: this.data.to
-            }).then((response => {
-                console.log("response", response);
-                this.last_trx = response.transaction_id;
-            }));
-        })        
+        this.app.loading = true;
+        try {
+            this.scatter.getContract("eosio.token").then(contract => {
+                contract.transfer({
+                    from:  this.scatter.account ? this.scatter.account.name : this.account.account_name,
+                    memo: this.data.memo,
+                    quantity: this.data.amount,
+                    to: this.data.to
+                }).then((response => {
+                    console.log("response", response);
+                    this.last_trx = response.transaction_id;
+                    this.app.loading = false;
+                })).catch(err => {
+                    console.error("err", err);
+                    this.app.loading = false;
+                });
+            }).catch(err => {
+                console.error("err", err);
+                this.app.loading = false;
+            });
+        } catch (e) {
+            console.error("err", e);
+            this.app.loading = false;
+        }
     }
 
 }
