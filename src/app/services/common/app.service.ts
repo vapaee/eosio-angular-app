@@ -1,5 +1,5 @@
 import { Injectable, Component } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AnalyticsService } from './analytics.service';
 import { DomService } from './dom.service';
 
@@ -22,9 +22,8 @@ export class AppService {
         private analytics: AnalyticsService,
         private dom: DomService
     ) {
-
         this.router.events.subscribe((event) => {
-            if (event.constructor.name === "NavigationEnd") {
+            if (event instanceof NavigationEnd) {
                 this.prev_state = this.state;
                 this.path = this.router.url;
                 this.state = this.getDeepestChild(this.route.root).snapshot.data.state;
@@ -124,7 +123,6 @@ export class AppService {
 
     navigatePrefix(prefix:string){
         var words = this.path.split("/");
-        console.log("AppService.navigatePrefix()", this.path, words);
         for (var i in words){
             if (words[i])  {
                 words[i] = prefix;
