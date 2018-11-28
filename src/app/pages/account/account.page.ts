@@ -42,7 +42,7 @@ export class AccountPage implements OnInit {
 
     ngOnInit() {
         this.data = {
-            to: "gyztqojshage",
+            to: "gqydoobuhege",
             amount: "0.0001 EOS",
             memo: "testing"
         };

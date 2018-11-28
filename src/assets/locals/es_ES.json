@@ -11,5 +11,8 @@
     "Language": "Lenguaje",
     "Account": "Cuenta",
     "LoginWScatter": "Autentícate con Scatter",
-    "Hello": "Hola, "
+    "Hello": "Hola, ",
+    "Disclaimer": "Información Legal",
+    "DisclaimerText": "Este es un sitio destinado a hacer pruebas con la tecnología EOSIO y algunas aplicaciones satélites como Scatter. Se sugiere discreción para su uso ya que es posible hacer transacciones reales. Cualquier situación que resulte de utilizar este sitio es entera responsabilidad del usuario y no de su creador."
+
 }
