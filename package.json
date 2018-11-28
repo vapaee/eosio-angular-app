@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "postinstall": "node src/patch.js"
+    "postinstall": "node src/patch.js",
+    "prod": "git checkout prod && git merge master -m 'merge master' && ng build --aot --buildOptimizer --prod && git add -A && git commit -m 'update' && git push && amazon_server_console;"
   },
   "private": true,
   "dependencies": {
