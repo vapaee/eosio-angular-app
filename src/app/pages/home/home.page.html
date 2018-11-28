@@ -1,18 +1,19 @@
 
     <div class="container text-center margin-top-xxxl">
-        <p class="text-subtitle">{{local.string.Home}}</p>
+        <p class="text-subtitle">{{local.string.Disclaimer}}</p>
+        <p class="">{{local.string.DisclaimerText}}</p>
+        <div class=" margin-top-xxl">
+            <div [hidden]="!scatter.logged">
+                <h1>
+                    {{local.string.Hello}} {{scatter.username}} !!
+                </h1>
+                <span class="btn btn-primary" (click)="logout()">
+                    Logout
+                </span>
+            </div>
 
-        <div [hidden]="!scatter.logged">
-            <h1>
-                {{local.string.Hello}} {{scatter.username}} !!
-            </h1>
-            <span class="btn btn-primary" (click)="logout()">
-                Logout
+            <span [hidden]="scatter.logged" class="btn btn-primary" (click)="login()">
+                {{local.string.LoginWScatter}}
             </span>
         </div>
-
-
-        <span [hidden]="scatter.logged" class="btn btn-primary" (click)="login()">
-            Login
-        </span>
     </div>
