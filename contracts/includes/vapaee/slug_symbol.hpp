@@ -12,6 +12,8 @@
 #include <limits>
 #include <string_view>
 
+#include <vapaee/slug.hpp>
+
 namespace eosio {
 
   /**
@@ -31,6 +33,9 @@ namespace eosio {
     * \struct Stores the slug_symbol code
     * @brief Stores the slug_symbol code
     */
+
+   
+
    class slug_symbol_code {
    public:
       constexpr slug_symbol_code() : value(0) {}

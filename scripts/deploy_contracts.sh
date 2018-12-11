@@ -8,6 +8,8 @@ CARDSNTOKENS_HOME=$HOME/contracts/cardsntokens
 VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
 BOARDGAMEBOX_HOME=$HOME/contracts/boardbagebox
 
+TESTING_HOME=$HOME/contracts/testing
+
 echo "-------- hello ---------"
 cd $HELLO_HOME
 if [[ hello.cpp -nt hello.wasm ]]; then
@@ -48,7 +50,17 @@ fi
 echo "-------- cardsntokens ---------"
 cd $CARDSNTOKENS_HOME
 if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntokens.wasm ]]; then
-    eosio-cpp -o cardsntokens.wasm cardsntokens.cpp --abigen -I ../includes
-    cleos set contract cardsntokens $PWD
+    # eosio-cpp -o cardsntokens.wasm cardsntokens.cpp --abigen -I ../includes
+    # cleos set contract cardsntokens $PWD
+    echo "skipping..."
 fi
 
+
+echo "-------- test ---------"
+cd $TESTING_HOME
+# -I /usr/opt/eosio.cdt/1.4.1/include
+# if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntokens.wasm ]]; then
+    echo $PWD
+    echo -e "\n\n"
+    g++ -o main -I ../includes main.cpp && ./main    
+# fi

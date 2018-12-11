@@ -1,6 +1,5 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/print.hpp>
-
 #include <vapaee/slug_asset.hpp>
 
 using namespace eosio;
@@ -14,6 +13,8 @@ CONTRACT cardsntokens : public eosio::contract {
         // accessor for external contracts to easily send inline actions to your contract
         using hi_action = action_wrapper<"hi"_n, &cardsntokens::hi>;
 
+        uint64_t a;
+
         /*
         
           -- CNT Cards --
@@ -25,6 +26,8 @@ CONTRACT cardsntokens : public eosio::contract {
           accounts: TABLE cnt_account
           stats: TABLE slug_stats
         */
+
+         /*
 
          struct [[eosio::table]] account {
             slug_asset    balance;
@@ -53,5 +56,6 @@ CONTRACT cardsntokens : public eosio::contract {
             indexed_by<"byslug2"_n, const_mem_fun<currency_stats, uint256_t, &currency_stats::get_slug_key>>
          > stats;         
 
+         */
 
 };

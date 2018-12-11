@@ -3,9 +3,11 @@
 #include <eosiolib/print.hpp>
 #include <eosiolib/system.h>
 //#include <eosiolib/symbol.hpp>
-#include <vapaee/slug_symbol.hpp>
 #include <tuple>
 #include <limits>
+
+#include <vapaee/slug_symbol.hpp>
+#include <vapaee/slug.hpp>
 
 namespace eosio {
 

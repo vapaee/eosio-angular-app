@@ -24,6 +24,5 @@ CONTRACT vapaeetokens : public eosio::contract {
         buy_orders: token_order
         sell_order: token_order
 
-
       */
 };
