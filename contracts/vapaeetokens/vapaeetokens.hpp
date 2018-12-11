@@ -3,14 +3,14 @@
 
 using namespace eosio;
 
-CONTRACT hello : public eosio::contract {
+CONTRACT vapaeetokens : public eosio::contract {
   public:
       using contract::contract;
 
       ACTION hi( name user );
 
       // accessor for external contracts to easily send inline actions to your contract
-      using hi_action = action_wrapper<"hi"_n, &hello::hi>;
+      using hi_action = action_wrapper<"hi"_n, &vapaeetokens::hi>;
 
       /*
         -- VPE Accounts --

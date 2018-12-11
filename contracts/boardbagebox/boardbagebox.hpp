@@ -23,7 +23,7 @@ CONTRACT boardbagebox : public eosio::contract {
       -- ACTIONS for clients --
       - registerItemSpec(publisher, "cardsntokens", settings...) // se repite porque en C&T sería el cliente que quiere hacer una carta nueva
       - issueItems(publisher, quantity);
-      - transfer(from, to, units); // el destinatario debe tener espacio en su inventario de la aplicación asociada al item
+      - transferItems(from, to, units); // el destinatario debe tener espacio en su inventario de la aplicación asociada al item
       - moveItem() // swap del contenido de dos slots en mysql
       
 

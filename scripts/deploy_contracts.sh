@@ -33,22 +33,22 @@ fi
 
 echo "-------- boardbagebox ---------"
 cd $BOARDGAMEBOX_HOME
-if [[ boardbagebox.cpp -nt boardbagebox.wasm ]]; then
+if [[ boardbagebox.cpp -nt boardbagebox.wasm || boardbagebox.hpp -nt boardbagebox.wasm ]]; then
     eosio-cpp -o boardbagebox.wasm boardbagebox.cpp --abigen
     cleos set contract boardbagebox $PWD
 fi
 
 echo "-------- vapaeetokens ---------"
 cd $VAPAEETOKENS_HOME
-if [[ vapaeetokens.cpp -nt vapaeetokens.wasm ]]; then
+if [[ vapaeetokens.cpp -nt vapaeetokens.wasm || vapaeetokens.hpp -nt vapaeetokens.wasm ]]; then
     eosio-cpp -o vapaeetokens.wasm vapaeetokens.cpp --abigen
     cleos set contract vapaeetokens $PWD
 fi
 
 echo "-------- cardsntokens ---------"
 cd $CARDSNTOKENS_HOME
-if [[ cardsntokens.cpp -nt cardsntokens.wasm ]]; then
-    eosio-cpp -o cardsntokens.wasm cardsntokens.cpp --abigen
+if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntokens.wasm ]]; then
+    eosio-cpp -o cardsntokens.wasm cardsntokens.cpp --abigen -I ../includes
     cleos set contract cardsntokens $PWD
 fi
 
