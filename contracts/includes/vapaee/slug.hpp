@@ -37,14 +37,87 @@ namespace vapaee {
             *d = i;
         }
 
+        
+
+        char* write_string( char* begin, char* end ) const {
+            // constexpr uint64_t mask = 0x1Full;
+
+            if( (begin + 64) < begin || (begin + 64) > end ) return begin;
+
+            
+
+            return begin;
+        }
+
         void init(std::string str) {
             char* ptr = value;
             longint* d = (longint*) ptr;
             char v, c;
             int n = std::min( (int) str.length(), maxlong );
-            int i = 0; 
+            int i = 0;
+            int shift;
 
-            cout << "to_hexa():  " << to_hexa() << "\n"; 
+            // cout << "to_hexa():  " << to_hexa() << "\n"; 
+            
+            // iteración 0
+            i = 0;
+            c = str[i];
+            v = char_to_value( c );
+            // cout << " c: " << c << " v: " << (int)v << " - 0x" << high_part(v) << low_part(v) << "\n";
+
+            int ibit, jbit, offset;
+
+            for(; i < n; ++i ) {
+                ibit = i*5;
+                int j = (int)(ibit/8);
+                jbit = j*8;
+                offset = ibit - jbit;
+                shift = 3 - offset;
+                cout
+                    << " i: " << i << " j: " << j
+                    << " ibit: " << ibit
+                    << " jbit: " << jbit
+                    << " offset: " << offset
+                    << " shift: " << shift
+                    << "\n";
+                    /*
+                    i: 0 j: 0 ibit: 0 jbit: 0 offset: 0 shift: 3
+                    i: 1 j: 0 ibit: 5 jbit: 0 offset: 5 shift: -2
+                    i: 2 j: 1 ibit: 10 jbit: 8 offset: 2 shift: 1
+                    i: 3 j: 1 ibit: 15 jbit: 8 offset: 7 shift: -4
+                    i: 4 j: 2 ibit: 20 jbit: 16 offset: 4 shift: -1
+                    i: 5 j: 3 ibit: 25 jbit: 24 offset: 1 shift: 2
+                    i: 6 j: 3 ibit: 30 jbit: 24 offset: 6 shift: -3
+                    i: 7 j: 4 ibit: 35 jbit: 32 offset: 3 shift: 0
+
+                    // Yxxx x000 - 0000 0000 - 0000 0000 - 0000 0000 - 0000 0000
+                    // 0000 0Yxx - xx00 0000 - 0000 0000 - 0000 0000 - 0000 0000
+                    // 0000 0000 - 00Yx xxx0 - 0000 0000 - 0000 0000 - 0000 0000
+                    // 0000 0000 - 0000 000Y - xxxx 0000 - 0000 0000 - 0000 0000
+                    // 0000 0000 - 0000 0000 - 0000 Yxxx - x000 0000 - 0000 0000
+                    // 0000 0000 - 0000 0000 - 0000 0000 - 0Yxx xx00 - 0000 0000
+                    // 0000 0000 - 0000 0000 - 0000 0000 - 0000 00Yx - xxx0 0000
+                    // 0000 0000 - 0000 0000 - 0000 0000 - 0000 0000 - 000Y xxxx
+
+                    */
+
+                    if (shift >= 0) {
+                        ptr[j] |= (v << shift);
+                        // cout << "to_hexa():  " << to_hexa() << "\n"; 
+                    } else {
+                        ptr[j] |= (v >> (-1 * shift));
+                        // cout << "to_hexa():  " << to_hexa() << "\n";
+                        if (j<bytes) {
+                            ptr[j+1] |= (v << 8+shift);
+                            // cout << "to_hexa():  " << to_hexa() << "\n";
+                        } else {
+                            cout << "AAAAA";
+                        }
+                        // cout << "0x" << high_part(v >> (-1 * shift)) << low_part(v >> (-1 * shift)) << "\n";
+                    }
+
+            }
+            /*
             for(; i < n && i < sizeof(longint); ++i ) {
                 c = str[i];
                 v = char_to_value( c );
@@ -53,7 +126,7 @@ namespace vapaee {
                 *d |= v;
                 cout << "  *d |= v;  " << to_hexa() << " -- v: " << (int) v << "\n"; 
             }
-
+            */
 
             /*
             int n = std::min( (int) str.length(), maxlong );
@@ -130,15 +203,7 @@ namespace vapaee {
             *end = '\0';
             return std::string(buffer);
         }
-        
-
-        char* write_string( char* begin, char* end ) const {
-            // constexpr uint64_t mask = 0x1Full;
-
-            if( (begin + 64) < begin || (begin + 64) > end ) return begin;
-
-            return begin;
-        }        
+     
 
         std::string to_string() const {
             char buffer[64];
