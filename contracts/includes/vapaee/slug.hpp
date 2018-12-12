@@ -3,10 +3,15 @@
 #include <string>
 using namespace std;
 
+#define longint unsigned long
+#define maxlong 50
+#define bytes 32
+#define bits 256
+
 namespace vapaee {
 
     struct slug {
-        char value[ 32 ]; // 256 bits
+        char value[ bytes ];
         slug() {
             init(0);
         }
@@ -17,19 +22,65 @@ namespace vapaee {
 
         slug(const char* s) {
             init(0);
+            init(s);
         }
 
-        void init(unsigned long i) {
+        void init(longint i) {
             char* ptr = value;
-            unsigned long* d = (unsigned long*) ptr;
+            longint* d = (longint*) ptr;
             *d = 0;
-            d = (unsigned long*) (ptr + 8);
+            d = (longint*) (ptr + 8);
             *d = 0;
-            d = (unsigned long*) (ptr + 16);
+            d = (longint*) (ptr + 16);
             *d = 0;
-            d = (unsigned long*) (ptr + 24);
+            d = (longint*) (ptr + 24);
             *d = i;
         }
+
+        void init(std::string str) {
+            char* ptr = value;
+            longint* d = (longint*) ptr;
+            char v, c;
+            int n = std::min( (int) str.length(), maxlong );
+            int i = 0; 
+
+            cout << "to_hexa():  " << to_hexa() << "\n"; 
+            for(; i < n && i < sizeof(longint); ++i ) {
+                c = str[i];
+                v = char_to_value( c );
+                *d <<= 5;
+                cout << "  *d <<= 5; " << to_hexa() << " -- c: " << c << "\n"; 
+                *d |= v;
+                cout << "  *d |= v;  " << to_hexa() << " -- v: " << (int) v << "\n"; 
+            }
+
+
+            /*
+            int n = std::min( (int) str.length(), maxlong );
+            int i = 0;
+            for(; i < n && i < sizeof(longint); ++i ) {
+                top <<= 5;
+                top |= char_to_value( str[i] );
+            }
+            for(; i < n ; ++i ) {
+                low <<= 5;
+                low |= char_to_value( str[i] );
+            }*/
+        }
+
+        static char char_to_value( char c ) {
+            if( c == '.')
+                return 0;
+            else if( c >= '1' && c <= '5' )
+                return (c - '1') + 1;
+            else if( c >= 'a' && c <= 'z' )
+                return (c - 'a') + 6;
+            else
+                cout << "character '" << c << "' is not in allowed character set for slug_symbol \n";
+            // eosio_assert( false, (string("") + "character '" + c + "' is not in allowed character set for slug_symbol").c_str() );
+
+            return 0; // control flow will never reach here; just added to suppress warning
+        }       
 
         char int_to_hexa(int n) const {
             if (n >= 0 && n <= 9) return '0' + n;
@@ -73,12 +124,29 @@ namespace vapaee {
             return begin;
         }        
 
-        std::string to_string() const {
+        std::string to_hexa() const {
             char buffer[64];
             char* end = write_hexa_string( buffer, buffer + sizeof(buffer) );
             *end = '\0';
             return std::string(buffer);
         }
+        
+
+        char* write_string( char* begin, char* end ) const {
+            // constexpr uint64_t mask = 0x1Full;
+
+            if( (begin + 64) < begin || (begin + 64) > end ) return begin;
+
+            return begin;
+        }        
+
+        std::string to_string() const {
+            char buffer[64];
+            char* end = write_string( buffer, buffer + sizeof(buffer) );
+            *end = '\0';
+            return std::string(buffer);
+        }        
+
     };
 
-}; /// namespace eosio
+};
