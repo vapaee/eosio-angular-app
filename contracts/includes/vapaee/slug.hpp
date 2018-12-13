@@ -115,7 +115,9 @@ namespace vapaee {
         static char char_to_value( char c ) {
             if( c == '.')
                 return 0;
-            else if( c >= '1' && c <= '5' )
+            else if( c == '-')
+                return 1;
+            else if( c >= '1' && c <= '4' )
                 return (c - '1') + 1;
             else if( c >= 'a' && c <= 'z' )
                 return (c - 'a') + 6;
@@ -128,6 +130,7 @@ namespace vapaee {
 
         static char value_to_char( char v ) {
             if (v == 0) return '.';
+            if (v == 1) return '-';
             if (v < 6) return v + '0';
             if (v < 32) return v + 'a' - 6;
             cout << "value '" << v << "' is out of range for slug_symbol \n";
@@ -195,7 +198,6 @@ namespace vapaee {
             return std::string(buffer);
         }
      
-
         char* write_string( char* begin, char* end ) const {
             const char* ptr = value;
             char v, c;

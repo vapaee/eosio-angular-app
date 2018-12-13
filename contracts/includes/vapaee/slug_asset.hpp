@@ -9,7 +9,7 @@
 #include <vapaee/slug_symbol.hpp>
 #include <vapaee/slug.hpp>
 
-namespace eosio {
+namespace vapaee {
 
   /**
    *  @defgroup slug_assetapi slug_asset API

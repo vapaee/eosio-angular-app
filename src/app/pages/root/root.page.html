@@ -20,6 +20,9 @@
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('home')}">
                     <a class="nav-link" routerLink="{{'/' + scatter.network.slug + '/home'}}" >{{local.string.Home}}</a>
                 </li>
+                <li class="nav-item" [ngClass]="{active: app.stateStartsWith('video')}">
+                    <a class="nav-link" [routerLink]="'/' + scatter.network.slug + '/video'" >{{local.string.Video}}</a>
+                </li>
                 <!--li class="nav-item" [ngClass]="{active: app.stateStartsWith('faq')}">
                     <a class="nav-link" routerLink="/faq" >{{local.string.FAQ}}</a>
                 </li-->

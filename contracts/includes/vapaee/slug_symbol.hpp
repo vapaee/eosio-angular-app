@@ -14,7 +14,7 @@
 
 #include <vapaee/slug.hpp>
 
-namespace eosio {
+namespace vapaee {
 
   /**
    *  @defgroup slug_symbolapi slug_symbol API
@@ -40,46 +40,20 @@ namespace eosio {
    public:
       constexpr slug_symbol_code() : value(0) {}
 
-      constexpr explicit slug_symbol_code( uint256_t raw ) : value(raw) {}
+      constexpr explicit slug_symbol_code( slug raw ) : value(raw) {}
 
       constexpr explicit slug_symbol_code( std::string_view str )
-      :value(0)
+      :value(str)
       {
          eosio_assert( str.size() <= 50, "string is too long to be a valid slug_symbol" );
-
-         auto n = std::min( str.size(), 50u );
-         for( decltype(n) i = 0; i < n; ++i ) {
-            value <<= 5;
-            value |= char_to_value( str[i] );
-         }
-         // value <<= ( 4 + 5*(12 - n) );
-      }
-
-      /**
-       *  Converts a (eosio::name style) Base32 symbol into its corresponding value
-       *
-       *  @brief Converts a (eosio::name style) Base32 symbol into its corresponding value
-       *  @param c - Character to be converted
-       *  @return constexpr char - Converted value
-       */
-      static constexpr uint8_t char_to_value( char c ) {
-         if( c == '.')
-            return 0;
-         else if( c >= '1' && c <= '5' )
-            return (c - '1') + 1;
-         else if( c >= 'a' && c <= 'z' )
-            return (c - 'a') + 6;
-         else
-            eosio_assert( false, (string("") + "character '" + c + "' is not in allowed character set for slug_symbol").c_str() );
-
-         return 0; // control flow will never reach here; just added to suppress warning
-      }      
+      } 
 
       /**
        * Checks if the slug_symbol code is valid
        * @return true - if slug_symbol is valid
        */
       constexpr bool is_valid() const {
+         // TODO: cuando es inválido un slug?
          return true;
       }
 
@@ -88,7 +62,7 @@ namespace eosio {
        *
        * @return length - character length of the provided slug_symbol
        */
-      constexpr uint32_t length()const {
+      constexpr uint32_t length() const {
          auto sym = value;
          uint32_t len = 0;
          while (sym & 0x1F && len <= 50) {
@@ -257,7 +231,7 @@ namespace eosio {
       }
 
    private:
-      uint64_t value = 0;
+      slug value = 0;
    };
 
    // }@ slug_symbolapi

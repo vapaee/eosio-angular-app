@@ -6,10 +6,10 @@ using namespace vapaee;
 
 int main ()
 {
-    slug a = "abcdefghijklmnopqrstuvwxyz.12345";
+    slug a = "abcdefghijklmnopqrstuvwxyz.-1234";
     slug b = "zzzzzzzzz21zzzzzzzz21zzzzzzzz21zzzzzzzz21zzzzzzzzz1";
-    slug c = "viter.cosocosoc.12345.123";
-    slug d = "viter.cosocosoc.12345.123";
+    slug c = "viter-coso.coso-1234-123";
+    slug d = "viter-coso.coso-1234-123";
 
     cout << "a.to_hexa(): " << a.to_hexa() << "\n";
     cout << "b.to_hexa(): " << b.to_hexa() << "\n";
