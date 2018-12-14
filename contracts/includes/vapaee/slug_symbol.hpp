@@ -71,7 +71,7 @@ namespace vapaee {
       constexpr explicit operator bool()const { return value != 0; }
 
       char* write_as_string( char* begin, char* end ) const {
-         return value.write_as_string(begin, end);
+         return value.write_string(begin, end);
       }
 
       std::string to_string()const {
@@ -108,7 +108,7 @@ namespace vapaee {
       }
 
    private:
-      slug value = 0;
+      slug value;
    };
 
    /**
@@ -192,7 +192,70 @@ namespace vapaee {
       }
 
    private:
-      slug value = 0;
+      slug value;
+   };
+
+
+   /**
+    * \struct Extended asset which stores the information of the owner of the slug_symbol
+    *
+    */
+   class extended_slug_symbol
+   {
+   public:
+      constexpr extended_slug_symbol() {}
+
+      constexpr extended_slug_symbol( slug_symbol sym, name con ) : slug_symbol(sym), contract(con) {}
+
+      constexpr slug_symbol get_symbol() const { return slug_symbol; }
+
+      constexpr name   get_contract() const { return contract; }
+
+      /**
+       * %Print the extended slug_symbol
+       *
+       * @brief %Print the extended slug_symbol
+       */
+      void print( bool show_precision = true )const {
+         slug_symbol.print( show_precision );
+         prints("@");
+         printn( contract.value );
+      }
+
+      /**
+       * Equivalency operator. Returns true if a == b (are the same)
+       *
+       * @brief Equivalency operator
+       * @return boolean - true if both provided extended_slug_symbols are the same
+       */
+      friend constexpr bool operator == ( const extended_slug_symbol& a, const extended_slug_symbol& b ) {
+        return std::tie( a.slug_symbol, a.contract ) == std::tie( b.slug_symbol, b.contract );
+      }
+
+      /**
+       * Inverted equivalency operator. Returns true if a != b (are different)
+       *
+       * @brief Inverted equivalency operator
+       * @return boolean - true if both provided extended_slug_symbols are not the same
+       */
+      friend constexpr bool operator != ( const extended_slug_symbol& a, const extended_slug_symbol& b ) {
+        return std::tie( a.slug_symbol, a.contract ) != std::tie( b.slug_symbol, b.contract );
+      }
+
+      /**
+       * Less than operator. Returns true if a < b.
+       * @brief Less than operator
+       * @return boolean - true if extended_slug_symbol `a` is less than `b`
+       */
+      friend constexpr bool operator < ( const extended_slug_symbol& a, const extended_slug_symbol& b ) {
+        return std::tie( a.slug_symbol, a.contract ) < std::tie( b.slug_symbol, b.contract );
+      }
+
+   private:
+      slug_symbol slug_symbol; ///< the slug_symbol
+      name   contract; ///< the token contract hosting the slug_symbol
+
+      EOSLIB_SERIALIZE( extended_slug_symbol, (slug_symbol)(contract) )
    };
 
    // }@ slug_symbolapi

@@ -3,6 +3,7 @@
 #include <vapaee/slug_asset.hpp>
 
 using namespace eosio;
+using namespace vapaee;
 
 CONTRACT cardsntokens : public eosio::contract {
     public:
@@ -27,12 +28,12 @@ CONTRACT cardsntokens : public eosio::contract {
           stats: TABLE slug_stats
         */
 
-         /*
+         
 
          struct [[eosio::table]] account {
             slug_asset    balance;
             uint64_t primary_key() const { print("primary_key() showld NOT be used on 'accounts' table.");  return 0;  }
-            uint256_t get_slug_key() const { return supply.symbol.code().raw(); }
+            slug get_slug_key() const { return balance.symbol.code().raw(); }
          };
 
          struct [[eosio::table]] currency_stats {
@@ -41,7 +42,7 @@ CONTRACT cardsntokens : public eosio::contract {
             name     issuer;
 
             uint64_t primary_key() const { print("primary_key() showld NOT be used on 'stat' table.");  return 0;  }
-            uint256_t get_slug_key() const { return supply.symbol.code().raw(); }
+            slug get_slug_key() const { return supply.symbol.code().raw(); }
          };
 
          // typedef eosio::multi_index< "accounts"_n, account > accounts;
@@ -49,13 +50,10 @@ CONTRACT cardsntokens : public eosio::contract {
 
 
          typedef eosio::multi_index<"accounts"_n, account, 
-            indexed_by<"byslug"_n, const_mem_fun<account, uint256_t, &person::get_slug_key>>
-         > accounts;         
+            indexed_by<"byslug"_n, const_mem_fun<account, slug, &account::get_slug_key>>
+         > accounts;
 
          typedef eosio::multi_index<"stat"_n, currency_stats, 
-            indexed_by<"byslug2"_n, const_mem_fun<currency_stats, uint256_t, &currency_stats::get_slug_key>>
-         > stats;         
-
-         */
-
+            indexed_by<"byslug2"_n, const_mem_fun<currency_stats, slug, &currency_stats::get_slug_key>>
+         > stats;
 };

@@ -50,17 +50,14 @@ fi
 echo "-------- cardsntokens ---------"
 cd $CARDSNTOKENS_HOME
 if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntokens.wasm ]]; then
-    # eosio-cpp -o cardsntokens.wasm cardsntokens.cpp --abigen -I ../includes
-    # cleos set contract cardsntokens $PWD
-    echo "skipping..."
+    # echo "skipping..."
+    eosio-cpp -o cardsntokens.wasm cardsntokens.cpp --abigen -I ../includes
+    cleos set contract cardsntokens $PWD
 fi
 
 
-echo "-------- test ---------"
-cd $TESTING_HOME
-# -I /usr/opt/eosio.cdt/1.4.1/include
-# if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntokens.wasm ]]; then
-    echo $PWD
-    echo -e "\n\n"
-    g++ -o main -I ../includes main.cpp && ./main    
-# fi
+#echo "-------- test ---------"
+#cd $TESTING_HOME
+#echo $PWD
+#echo -e "\n\n"
+#g++ -o main -I ../includes main.cpp && ./main    
