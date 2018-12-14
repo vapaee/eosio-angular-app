@@ -38,13 +38,18 @@ namespace vapaee {
             *d = i;
         }
 
+        int length() {
+            return value[bytes-1] & 0x3F;
+        }
+
         void init(std::string str) {
             char* ptr = value;
             char v, c;
-            int n = std::min( (int) str.length(), maxlong );
+            char n = std::min( (int) str.length(), maxlong );
             int i = 0;
             int shift;
             int ibit, jbit, offset;
+
 
             for(; i < n; ++i ) {
                 ibit = i*5;
@@ -110,6 +115,8 @@ namespace vapaee {
                     // cout << "0x" << high_part(v >> (-1 * shift)) << low_part(v >> (-1 * shift)) << "\n";
                 }
             }
+
+            ptr[bytes-1] |= n;
         }
 
         static char char_to_value( char c ) {
@@ -118,7 +125,7 @@ namespace vapaee {
             else if( c == '-')
                 return 1;
             else if( c >= '1' && c <= '4' )
-                return (c - '1') + 1;
+                return (c - '1') + 2;
             else if( c >= 'a' && c <= 'z' )
                 return (c - 'a') + 6;
             else
@@ -131,7 +138,7 @@ namespace vapaee {
         static char value_to_char( char v ) {
             if (v == 0) return '.';
             if (v == 1) return '-';
-            if (v < 6) return v + '0';
+            if (v < 6) return v + '0' - 1;
             if (v < 32) return v + 'a' - 6;
             cout << "value '" << v << "' is out of range for slug_symbol \n";
             return '?';
@@ -341,6 +348,13 @@ namespace vapaee {
                 *((longint*) (a.value + 24)) != *((longint*) (b.value + 24));
         }
 
+        friend bool operator != ( const slug& a, const int& b ) {
+            return
+                *((longint*) (a.value + 0))  != 0  ||
+                *((longint*) (a.value + 8))  != 0  ||
+                *((longint*) (a.value + 16)) != 0 ||
+                *((longint*) (a.value + 24)) != (longint) b;
+        }
         /**
          * Less than operator. Returns true if a < b.
          * @brief Less than operator

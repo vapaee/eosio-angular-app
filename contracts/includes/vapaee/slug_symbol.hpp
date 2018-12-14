@@ -63,52 +63,19 @@ namespace vapaee {
        * @return length - character length of the provided slug_symbol
        */
       constexpr uint32_t length() const {
-         auto sym = value;
-         uint32_t len = 0;
-         while (sym & 0x1F && len <= 50) {
-            len++;
-            sym >>= 5;
-         }
-         return len;
+         return value.length();
       }
 
-      constexpr uint256_t raw() const { return value; }
+      constexpr slug raw() const { return value; }
 
       constexpr explicit operator bool()const { return value != 0; }
 
-      /**
-       *  Writes the slug_symbol_code as a string to the provided char buffer
-       *
-       *
-       *  @brief Writes the slug_symbol_code as a string to the provided char buffer
-       *  @pre Appropriate Size Precondition: (begin + 7) <= end and (begin + 7) does not overflow
-       *  @pre Valid Memory Region Precondition: The range [begin, end) must be a valid range of memory to write to.
-       *  @param begin - The start of the char buffer
-       *  @param end - Just past the end of the char buffer
-       *  @return char* - Just past the end of the last character written (returns begin if the Appropriate Size Precondition is not satisfied)
-       *  @post If the Appropriate Size Precondition is satisfied, the range [begin, returned pointer) contains the string representation of the slug_symbol_code.
-       */
-      char* write_as_string( char* begin, char* end )const {
-         constexpr uint64_t mask = 0x1Full;
-
-         if( (begin + 50) < begin || (begin + 50) > end ) return begin;
-
-         auto v = value;
-         char c;
-         for( auto i = 0; i < 50; ++i, v >>= 5 ) {
-            if( v == 0 ) return begin;
-            c = static_cast<char>(v & mask);
-            *begin = c;
-            ++begin;
-         }
-
-         return begin;
+      char* write_as_string( char* begin, char* end ) const {
+         return value.write_as_string(begin, end);
       }
 
       std::string to_string()const {
-         char buffer[50];
-         auto end = write_as_string( buffer, buffer + sizeof(buffer) );
-         return {buffer, end};
+         return value.to_string();
       }
 
       /**
@@ -141,7 +108,7 @@ namespace vapaee {
       }
 
    private:
-      uint256_t value = 0;
+      slug value = 0;
    };
 
    /**
@@ -153,7 +120,7 @@ namespace vapaee {
    public:
       constexpr slug_symbol() : value(0) {}
 
-      constexpr explicit slug_symbol( uint256_t raw ) : value(raw) {}
+      constexpr explicit slug_symbol( slug raw ) : value(raw) {}
 
       constexpr slug_symbol( slug_symbol_code sc, uint8_t precision )
       : value( sc.raw() )
@@ -181,7 +148,7 @@ namespace vapaee {
       /**
        * Returns uint64_t repreresentation of the slug_symbol
        */
-      constexpr uint256_t raw()const                  { return value; }
+      constexpr slug raw()const                  { return value; }
 
       constexpr explicit operator bool()const { return value != 0; }
 
@@ -191,14 +158,8 @@ namespace vapaee {
        * @brief %Print the slug_symbol
        */
       void print( bool show_precision = true )const {
-         if( show_precision ){
-            printui( static_cast<uint64_t>(precision()) );
-            prints(",");
-         }
-         char buffer[7];
-         auto end = code().write_as_string( buffer, buffer + sizeof(buffer) );
-         if( buffer < end )
-            prints_l( buffer, (end-buffer) );
+         string str = code().to_string();
+         prints_l( str.c_str(), str.length() );
       }
 
       /**
