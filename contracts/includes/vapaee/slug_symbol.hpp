@@ -109,6 +109,8 @@ namespace vapaee {
 
    private:
       slug value;
+
+      EOSLIB_SERIALIZE( slug_symbol_code, (value) )
    };
 
    /**
@@ -193,6 +195,8 @@ namespace vapaee {
 
    private:
       slug value;
+
+      EOSLIB_SERIALIZE( slug_symbol, (value) )
    };
 
 

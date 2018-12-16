@@ -5,14 +5,33 @@ https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
 
 
 
-abcdefghijklmnopqrstuvwxyz 26
-.12345                      6
-                           32
+------------------------------------------
+BG-Box es capaz de recibir registros de publisher como apps.
+Cada app tiene un inventario por defecto donde recibir las transferencias de items asociados a esa app (sólo si tiene espacio).
+BG-Box es capaz de recibir registros de item_spec asociados a una app (cartas a cnt, torretas a turretdefence, unit a war_game ).
+BG-Box es capaz de recibir registros de item_asset asociados a una item_spec
+    ("100 viter.telos-card-telosvenezuela", "1000000 turretdefence.turrets", "10000 war_game.soldier","10000 war_game.tank").
+Hay que poner en BG-Box un accounts que tenga un balance de tipo item_asset
+Hay que crear en VapaeeTokens una tabla de perfiles
+Se queda la implementación de accounts en C&T porque será una implementación concreta de item
 
-                           
+Cada vez que alguien transfiera unidaades en C&T se ejecutará a BG-Box el mismo transfer para que mueva los items de inventarios
 
 
+En BG-Box tenés:
+- lista de todas las app registradas con prefix como id y self como scope.
+- lista de todos los item_spec registrados con id autogenerado con segundo index un name. El scope es self.
+- lista de todos los publishers que crearon algun item_asset para ese item_spec. El scope es el id del item_spec
+  - en C&T te da una lista de los publisher que crearon alguna carta: muchas filas
+  - en Turrent deffence te da una por cada torreta diferente y todas hechas por la misma app: pocas filas
+- lista de todos los item_asset creados por algun publisher, donde el scope es el publisher prefix.
+  - en C&T te da cosas como "100 viter.telos-card-telosvenezuela", "200 carlos.tremenda-carta-me-mande"
+  - en Turrent deffence te da: "1000000 turretdefence.basic-turret", "1000000 turretdefence.medium-turret" , "1000000 turretdefence.bkt-turret" 
 
+------------------------------------------                           
+
+cards&tokens
+masterystones
 
 
 

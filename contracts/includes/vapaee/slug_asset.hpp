@@ -428,7 +428,8 @@ namespace vapaee {
        *
        * @brief Construct a new extended slug_asset object
        */
-      extended_slug_asset() = default;
+      // extended_slug_asset() = default;
+      extended_slug_asset(){};
 
        /**
        * Construct a new extended slug_asset given the amount and extended symbol

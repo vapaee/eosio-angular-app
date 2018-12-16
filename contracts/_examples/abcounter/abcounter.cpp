@@ -8,9 +8,8 @@ class [[eosio::contract]] abcounter : public eosio::contract {
     using contract::contract;
 
     abcounter(name receiver, name code,  datastream<const char*> ds): contract(receiver, code, ds) {}
-
-    [[eosio::action]]
-    void count(name user, std::string type) {
+    
+    ACTION count(name user, std::string type) {
         print("abcounter.count() user: ", user, "type: ", type.c_str(), " | ");
       require_auth( name("addressbook"));
       count_index counts(name(_code), _code.value);
@@ -34,7 +33,7 @@ class [[eosio::contract]] abcounter : public eosio::contract {
     }
 
   private:
-    struct [[eosio::table]] counter {
+    TABLE counter {
       name key;
       uint64_t emplaced;
       uint64_t modified;

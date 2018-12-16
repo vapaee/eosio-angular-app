@@ -3,15 +3,14 @@
 
 using namespace eosio;
 
-class [[eosio::contract]] addressbook : public eosio::contract {
+CONTRACT addressbook : public eosio::contract {
 
 public:
   using contract::contract;
   
   addressbook(name receiver, name code,  datastream<const char*> ds): contract(receiver, code, ds) {}
-
-  [[eosio::action]]
-  void upsert(name user, std::string first_name, std::string last_name, uint64_t age, std::string street, std::string city, std::string state) {
+  
+  ACTION upsert(name user, std::string first_name, std::string last_name, uint64_t age, std::string street, std::string city, std::string state) {
     require_auth(user);
 
     address_index addresses(_code, _code.value);
