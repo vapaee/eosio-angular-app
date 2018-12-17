@@ -8,35 +8,35 @@ CONTRACT boardbagebox : public eosio::contract {
         using contract::contract;
 
         // --------------------- APPS ------------------
-        ACTION createapp(name author_owner,
+        ACTION newapp(name author_owner,
                         uint64_t author_app,
                         int inventory_space,
                         const std::vector<mastery_prop>& mastery_properties
         ) {
-            // inline::action(createctner, author_owner, author_app, "inventory", inventory_space)
-            // inline::action(createmtery, author_owner, author_app, "mastery", mastery_properties)
+            // inline::action(newctner, author_owner, author_app, "inventory", inventory_space)
+            // inline::action(newmtery, author_owner, author_app, "mastery", mastery_properties)
         };
 
         // 
-        ACTION createmtery(name author_owner, uint64_t author_app, slug mastery_name, const std::vector<mastery_prop>& mastery_properties) {
-            // inline::action(createctner, author_owner, author_app, mastery_name, ?)
+        ACTION newmastery(name author_owner, uint64_t author_app, slug mastery_name, const std::vector<mastery_prop>& mastery_properties) {
+            // inline::action(newctner, author_owner, author_app, mastery_name, ?)
             // crear una entrada en mastery_spec con mastery_name
             // iterar sobre los properties y crear una entrada por cada uno en el scope del mastery_spec.id
         };
 
-        // create container_spec
-        ACTION createctner(name author_owner, uint64_t author_app, name nickname, int space) {
+        // new container_spec
+        ACTION newcontainer(name author_owner, uint64_t author_app, name nickname, int space) {
             // se fija que no exista en container_spec un nickname para author_app 
             // crea en container_spec un row con nickname para author_app
         };
 
         // --------------------- ITEM ------------------
-        ACTION createitem(name author_owner, uint64_t author_app, name nickname) {
+        ACTION newitem(name author_owner, uint64_t author_app, name nickname) {
             // verifica que no exista un nickname para el author_app
             // crea un nuevo item_spec 
         };
 
-        ACTION createasset(name author_owner, uint64_t author_issuer, slug_asset maximum_supply, uint64_t spec) {
+        ACTION newasset(name author_owner, uint64_t author_issuer, slug_asset maximum_supply, uint64_t spec) {
             // una entrada en item_asset con supply 0
             // una entrada en account con balance 0 y una entrada en authorship con balance 100 
         };
@@ -54,7 +54,6 @@ CONTRACT boardbagebox : public eosio::contract {
             // toma los primeros quantity items que encuentre en la tabla item_slot
             // itera sobre los resultados y arma un vector con los id de los resultados
             // inline::action (transfunits, from , to, items, memo)
-
         };
 
         ACTION transfunits( name         from,
@@ -83,7 +82,7 @@ CONTRACT boardbagebox : public eosio::contract {
         };
 
         ACTION droptables(name owner) {
-            
+            // para poder desarrollar más fácil
         };
     
 
@@ -134,72 +133,87 @@ CONTRACT boardbagebox : public eosio::contract {
             return (uint128_t{nick.value} << 64) | uint128_t{author};
         } 
     private:
-        // balances -------------
-        TABLE account { // scope es el user
+        // -- Balance de unidades --
+        // scope: user
+        // row: dice cuantas unidades tiene el usuario de determinado item identificado por un slug
+        TABLE account { 
             uint64_t           id;
             uint64_t        asset; // item_asset.id
-            slug_asset    balance;
+            slug_asset    balance; // cuantas unidades del item identificado por slug tiene el usuario
             uint64_t primary_key() const { return id;  }
             uint128_t secondary_key() const { return balance.symbol.code().raw().to128bits(); }
         };
         typedef eosio::multi_index<"accounts"_n, account, 
             indexed_by<"second"_n, const_mem_fun<account, uint128_t, &account::secondary_key>>
         > accounts;
-        
-        TABLE authorship { // scope es el vapaeeaouthor::authors.id
-            uint64_t           id;
-            uint64_t        asset; // table 
-            slug_asset    balance;
-            uint64_t primary_key() const { return id;  }
-            uint128_t secondary_key() const { return balance.symbol.code().raw().to128bits(); }
-        };
-        typedef eosio::multi_index<"authorship"_n, authorship,
-            indexed_by<"second"_n, const_mem_fun<authorship, uint128_t, &authorship::secondary_key>>
-        > authors;
 
-        // ------------------- where are the items -------------------------------
-        TABLE item_slot { // scope es el user
+        // -- donde están las unidades de items --
+        // scope: user
+        // row: representa un slot conteniendo quantity unidades del item definido por asset en la posición position
+        TABLE item_slot {
             uint64_t           id;
-            uint64_t        asset;  // item_asset.id
-            uint64_t    container;
+            uint64_t        asset;  // item_asset
+            uint64_t    container;  // container_instance 
             uint64_t     position;
             int          quantity;  // quantity <= item_asset.spec.maxgroup
             uint64_t primary_key() const { return id;  }
         };
         typedef eosio::multi_index<"items"_n, item_slot> item_slots;
 
-        TABLE container { // scope es el user
+        // -- Los contenedores que tiene un usuario --
+        // scope: user
+        // row: representa un container para ese usuario que indica cuantos lugares libres tienen y que espacio total tiene
+        TABLE container_instance { // scope es el user
             uint64_t      id;
             uint64_t    spec; // table container_specs.id
             int        empty;
             int        space;
             uint64_t primary_key() const { return id;  }
         };
-        typedef eosio::multi_index<"containers"_n, container,
-            indexed_by<"second"_n, const_mem_fun<container, uint128_t, &container::secondary_key>>
+        typedef eosio::multi_index<"containers"_n, container_instance,
+            indexed_by<"second"_n, const_mem_fun<container_instance, uint128_t, &container_instance::secondary_key>>
         > containers;
 
-
-        // -------------------- type registration ---------------------------------
-        TABLE container_spec { // scope: self
+        // Lista de todos los contenedores definidos. Cada app tiene varios contenedores definidos
+        // scope: contract
+        // row: representa un container definido para la aplicación app con el apodo nick
+        TABLE container_spec {
             uint64_t          id;
-            string      nickname;
-            int            space;
+            string          nick; // el apodo de este container debe ser único para cada app
+            int            space; // espacio base que tendrá el container cuando se lo instancie para un usuario
             uint64_t         app; // table vapaeeaouthor::authors.id
             uint64_t primary_key() const { return id;  }
-            uint64_t secondary_key() const { return app; }
+            uint128_t secondary_key() const { return boardbagebox::combine(nick, app); }
         };
         typedef eosio::multi_index<"containerspec"_n, container_spec,
             indexed_by<"second"_n, const_mem_fun<container_spec, uint64_t, &container_spec::secondary_key>>
         > container_specs; 
 
-        TABLE item_asset { // scope: self
+        // Lista de todos los TIPOS de items que existen. Cada App define varios tipos de items
+        // scope: contract
+        // row: representa un tipo de item definido por una aplicación app con el nombre nick
+        TABLE item_spec { 
+            uint64_t          id;
+            name            nick; 
+            uint64_t         app; // table vapaeeaouthor::authors.id
+            int         maxgroup; // MAX (max quantity in same slot), 1 (no agroup), 0 (no limit)
+            uint64_t primary_key() const { return id;  }
+            uint128_t secondary_key() const { return boardbagebox::combine(nick, app); }
+        };
+        typedef eosio::multi_index<"itemspec"_n, item_spec,
+            indexed_by<"second"_n, const_mem_fun<item_spec, uint128_t, &item_spec::secondary_key>>
+        > item_specs;
+
+        // Lista de todos los ITEMS definidos por alguien (los cuales tienen un TIPO de item)
+        // scope: contract
+        // row: representa un item, del cual existe una cantidad supply de unidades que no supera el max_supply
+        TABLE item_asset {
             uint64_t              id;
-            uint64_t            spec; // table item_spec
             slug_asset        supply;
             slug_asset    max_supply;
+            uint64_t            spec; // table item_spec
             uint64_t       publisher; // table vapaeeaouthor::authors.id
-            uint128_t          block; // tapos_block_num() in eosiolib/transaction.hpp https://eosio.stackexchange.com/a/759
+            uint32_t           block; // tapos_block_num() in eosiolib/transaction.hpp https://eosio.stackexchange.com/a/759
             uint64_t primary_key() const { return id;  }
             uint128_t secondary_key() const { return supply.symbol.code().raw().to128bits(); }
         };
@@ -207,20 +221,7 @@ CONTRACT boardbagebox : public eosio::contract {
             indexed_by<"second"_n, const_mem_fun<item_asset, uint128_t, &item_asset::secondary_key>>
         > stats;
 
-
-        // for apps -------------
-        TABLE item_spec { // scope: self
-            uint64_t          id;
-            int         maxgroup; // MAX (max quantity in same slot), 1 (no agroup), 0 (no limit)
-            name            nick; 
-            uint64_t      author; // table vapaeeaouthor::authors.id
-            uint64_t primary_key() const { return id;  }
-            uint128_t secondary_key() const { return boardbagebox::combine(nick, author); }
-        };
-        typedef eosio::multi_index<"itemspec"_n, item_spec,
-            indexed_by<"second"_n, const_mem_fun<item_spec, uint128_t, &item_spec::secondary_key>>
-        > item_specs;
-
+        
         // Mastery ------------------------------------------------
         TABLE mastery_spec { // scope: self
             uint64_t          id;
