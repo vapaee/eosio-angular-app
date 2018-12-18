@@ -156,7 +156,7 @@ namespace vapaee {
             return begin+i;
         }
 
-        uint128_t to128bits() {
+        uint128_t to128bits() const {
             uint128_t _top = *((uint128_t*) value);
             uint128_t _low = *((uint128_t*) (value + 16));
             return (_top ^ _low);

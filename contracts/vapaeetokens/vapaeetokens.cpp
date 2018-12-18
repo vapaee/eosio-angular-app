@@ -171,4 +171,4 @@ void vapaeetokens::close( name owner, const symbol& symbol )
 
 } /// namespace vapaee
 
-EOSIO_DISPATCH( vapaeetokens, TOKEN_ACTIONS )
+EOSIO_DISPATCH( vapaee::vapaeetokens, TOKEN_ACTIONS )

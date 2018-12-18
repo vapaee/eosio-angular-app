@@ -1,8 +1,7 @@
 #include "cardsntokens.hpp"
 using namespace eosio;
+namespace vapaee {
 
-ACTION cardsntokens::hi( name user ) {
-   print_f( "cardsntokens % from cardsntokens contract", user );
-}
+};
 
-EOSIO_DISPATCH( cardsntokens, (hi) )
+EOSIO_DISPATCH( vapaee::cardsntokens, )

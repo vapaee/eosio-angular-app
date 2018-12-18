@@ -1,25 +1,24 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/print.hpp>
+#include <vapaee/slug_asset.hpp>
 
 using namespace eosio;
-using namespace vapaee;
+namespace vapaee {
 
 CONTRACT vapaeeauthor : public eosio::contract {
     public:
 
         using contract::contract;
 
-        vapaeeauthor(){}
-
         ACTION registernick(name owner, slug nick) {
 
         }
 
-        ACTION transfernick(nmae owner, name newowner, slug nick) {
+        ACTION transfernick(name owner, name newowner, slug nick) {
             
         }
 
-        ACTION transferid(nmae owner, name newowner, uint64_t id) {
+        ACTION transferid(name owner, name newowner, uint64_t id) {
             
         }
 
@@ -30,7 +29,7 @@ CONTRACT vapaeeauthor : public eosio::contract {
             slug          nick;
             uint64_t primary_key() const { return id;  }
             uint64_t by_owner_key() const { return owner.value;  }
-            uint128_t secondary_key() const { return supply.symbol.code().raw().to128bits(); }
+            uint128_t secondary_key() const { return nick.to128bits(); }
         };
         
         typedef eosio::multi_index<"authors"_n, author_slug,
@@ -39,3 +38,5 @@ CONTRACT vapaeeauthor : public eosio::contract {
         > author_slugs;
 
 };
+
+}; // namespace

@@ -45,21 +45,21 @@ fi
 echo "-------- boardbagebox ---------"
 cd $BOARDGAMEBOX_HOME
 if [[ boardbagebox.cpp -nt boardbagebox.wasm || boardbagebox.hpp -nt boardbagebox.wasm ]]; then
-    eosio-cpp -o boardbagebox.wasm boardbagebox.cpp --abigen
+    eosio-cpp -o boardbagebox.wasm boardbagebox.cpp --abigen -I ../includes
     cleos set contract boardbagebox $PWD -p boardbagebox@active
 fi
 
 echo "-------- vapaeeauthor ---------"
 cd $VAPAEEAUTHOR_HOME
 if [[ vapaeeauthor.cpp -nt vapaeeauthor.wasm || vapaeeauthor.hpp -nt vapaeeauthor.wasm ]]; then
-    eosio-cpp -o vapaeeauthor.wasm vapaeeauthor.cpp --abigen
+    eosio-cpp -o vapaeeauthor.wasm vapaeeauthor.cpp --abigen -I ../includes
     cleos set contract vapaeeauthor $PWD -p vapaeeauthor@active
 fi
 
 echo "-------- vapaeetokens ---------"
 cd $VAPAEETOKENS_HOME
 if [[ vapaeetokens.cpp -nt vapaeetokens.wasm || vapaeetokens.hpp -nt vapaeetokens.wasm ]]; then
-    eosio-cpp -o vapaeetokens.wasm vapaeetokens.cpp --abigen
+    eosio-cpp -o vapaeetokens.wasm vapaeetokens.cpp --abigen -I ../includes
     cleos set contract vapaeetokens $PWD -p vapaeetokens@active
 fi
 
