@@ -174,7 +174,9 @@ CONTRACT boardbagebox : public eosio::contract {
             indexed_by<"second"_n, const_mem_fun<container_instance, uint128_t, &container_instance::secondary_key>>
         > containers;
 
-        // Lista de todos los contenedores definidos. Cada app tiene varios contenedores definidos
+        // Lista de todos los contenedores definidos. Cada app tiene varios contenedores definidos.
+        // TODAS LAS APPS TIENEN AL MENOS UNA CONTENEDOR LLAMADO INVENTARIO (es una forma de saber si una app está registrada)
+        // DEBE DEFINIR UN FILTRO PARA LOS ITEMS QUE SE PUEDEN PONER. dEBE ESPECIFICARSE QUE ITEM_SPEC SE PUEDEN PONER
         // scope: contract
         // row: representa un container definido para la aplicación app con el apodo nick
         TABLE container_spec {
@@ -221,7 +223,7 @@ CONTRACT boardbagebox : public eosio::contract {
             indexed_by<"second"_n, const_mem_fun<item_asset, uint128_t, &item_asset::secondary_key>>
         > stats;
 
-        
+
         // Mastery ------------------------------------------------
         TABLE mastery_spec { // scope: self
             uint64_t          id;
