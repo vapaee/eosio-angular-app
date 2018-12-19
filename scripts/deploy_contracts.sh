@@ -72,8 +72,12 @@ if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntoken
 fi
 
 
-#echo "-------- test ---------"
+TESTING_HOME=$HOME/contracts/hello
+# echo "-------- test ---------"
 # cd $TESTING_HOME
+# eosio-cpp -o hello.wasm hello.cpp --abigen
+# cleos set contract hello $PWD -p hello@active
+
 # echo $PWD
 # echo -e "\n\n"
 # g++ -o main -I ../includes main.cpp -I /usr/opt/eosio.cdt/1.4.1/include -I /usr/opt/eosio.cdt/1.4.1/include/libcxx && ./main    

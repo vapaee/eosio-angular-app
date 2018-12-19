@@ -5,45 +5,41 @@ using namespace std;
 using namespace eosio;
 
 #define longint unsigned long
-#define maxlong 50
-#define bytes 32
-#define nibble 62 
-#define bits 256
+#define maxlong 22
+#define bytes 16
+// #define nibble 62 
+// #define bits 256
 
 namespace vapaee {
 
     struct slug {
-        uint128_t top;
-        uint128_t low;
+        uint128_t value;
         
-        constexpr explicit slug(): top(0), low(0) {}
+        constexpr explicit slug(): value(0) {}
 
-        constexpr explicit slug(const unsigned long &i): top(0), low(i) {}
+        constexpr explicit slug(const unsigned long &i): value(i) {}
 
-        constexpr explicit slug(const int &i): top(0), low(i) {}
-
-        constexpr explicit slug(const char* s): top(0), low(0) {
+        constexpr explicit slug(const int &i): value(i) {}
+        constexpr explicit slug(const char* s): value(0) {
             init(s);
         }
 
-        constexpr explicit slug(std::string_view s): top(0), low(0) {
+        constexpr explicit slug(std::string_view s): value(0) {
             init(s);
         }
         
         int length() const {
-            char* ptr = (char*) &low;
+            char* ptr = (char*) &value;
             return ptr[15] & 0x3F;
         }
 
         void init(std::string_view str) {
-            char* ptr = (char*) &top;
+            char* ptr = (char*) &value;
             char v, c;
             char n = std::min( (int) str.length(), maxlong );
             int i = 0;
             int shift;
             int ibit, jbit, offset;
-
-            eosio_assert( ptr+16 == (char*) &low, (string("ptr+16: ") + string(ptr+16) + " != " + string((char*) &low) + " (char*) &low").c_str() );
 
             for(; i < n; ++i ) {
                 ibit = i*5;
@@ -92,7 +88,7 @@ namespace vapaee {
         }       
      
         char* write_string( char* begin, char* end ) const {
-            const char* ptr = (const char*) &top;
+            const char* ptr = (const char*) &value;
             char v, c;
             int i = 0, s = 0;
             int shift;
@@ -138,25 +134,16 @@ namespace vapaee {
             return begin+i;
         }
 
-        uint128_t to128bits() const {
-            // uint128_t _top = *((uint128_t*) value);
-            // uint128_t _low = *((uint128_t*) (value + 16));
-            return (top ^ low);
-        }
-
-        uint64_t to64bits() {
-            uint128_t u128 = to128bits();
-            uint64_t _top  = *((uint64_t*) &u128);
-            uint64_t _low = *((uint64_t*) (&u128 + 8));
-            return (_top ^ _low);
-        }
-
         std::string to_string() const {
             char buffer[maxlong];
             char* end = write_string( buffer, buffer + sizeof(buffer) );
             *end = '\0';
             return std::string(buffer);
         }
+        
+        uint128_t to128bits() const {
+            return value;
+        }        
 
         /**
          * Equivalency operator. Returns true if a == b (are the same)
@@ -165,7 +152,7 @@ namespace vapaee {
          * @return boolean - true if both provided slug are the same
          */
         constexpr friend bool operator == ( const slug& a, const slug& b ) {
-            return a.top == b.top && a.low == b.low;
+            return a.value == b.value;
         }
 
         /**
@@ -175,11 +162,11 @@ namespace vapaee {
          * @return boolean - true if both provided slug are not the same
          */
         constexpr friend bool operator != ( const slug& a, const slug& b ) {
-            return a.top != b.top || a.low != b.low;
+            return a.value != b.value;
         }
 
         constexpr friend bool operator != ( const slug& a, const int& b ) {
-            return a.top != 0 || a.low != (uint128_t) b;
+            return a.value != (uint128_t) b;
         }
         /**
          * Less than operator. Returns true if a < b.
@@ -187,13 +174,9 @@ namespace vapaee {
          * @return boolean - true if slug `a` is less than `b`
          */
         constexpr friend bool operator < ( const slug& a, const slug& b ) {
-            if ( a.top != b.top)
-                return a.top < b.top;
-
-            return a.low < b.low;
+            return a.value < b.value;
         }               
-
-        EOSLIB_SERIALIZE(slug, (top)(low))
+        EOSLIB_SERIALIZE(slug, (value))
     };
 
 };

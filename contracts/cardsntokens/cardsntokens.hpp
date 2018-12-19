@@ -86,7 +86,10 @@ CONTRACT cardsntokens : public eosio::contract {
         };
         typedef eosio::multi_index<"collection"_n, collection_instance> collections;
 
-
+    public:
+        ACTION droptables(name owner) {
+            // para poder desarrollar más fácil
+        };
 };
 
 

@@ -1,2 +1,2 @@
 #pragma once
-#include <vapaee/slug1.hpp>
+#include <vapaee/slug2.hpp>

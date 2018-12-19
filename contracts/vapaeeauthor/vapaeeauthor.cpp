@@ -9,4 +9,4 @@ namespace vapaee {
 
 } /// namespace vapaee
 
-EOSIO_DISPATCH( vapaee::vapaeeauthor, (registernick)(transfernick)(transferid) )
+EOSIO_DISPATCH( vapaee::vapaeeauthor, (registernick)(transfernick)(transferid)(droptables) )
