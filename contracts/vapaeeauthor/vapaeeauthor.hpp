@@ -49,6 +49,7 @@ CONTRACT vapaeeauthor : public eosio::contract {
         }
 
         ACTION droptables() {
+            // https://eosio.stackexchange.com/questions/1214/delete-all-multi-index-records-without-iterator
             // para poder desarrollar más fácil            
             
             for (auto itr = this->authors.begin(); itr != this->authors.end(); ) {
