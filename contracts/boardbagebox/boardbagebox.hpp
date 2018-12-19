@@ -2,7 +2,9 @@
 #include <eosiolib/print.hpp>
 #include <vapaee/slug_asset.hpp>
 #include <vapaee/mastery_property.hpp>
+#include <vapaee/aux_functions.hpp>
 
+#define inventary_default_space 8
 
 using namespace eosio;
 namespace vapaee {
@@ -60,7 +62,7 @@ CONTRACT boardbagebox : public eosio::contract {
             uint64_t         app; // table vapaeeaouthor::authors.id
             int            space; // espacio base que tendrá el container cuando se lo instancie para un usuario. 0 para infinito.
             uint64_t primary_key() const { return id;  }
-            uint128_t secondary_key() const { return boardbagebox::combine(nick, app); }
+            uint128_t secondary_key() const { return vapaee::combine(nick, app); }
         };
         typedef eosio::multi_index<"containerspec"_n, container_spec,
             indexed_by<"second"_n, const_mem_fun<container_spec, uint128_t, &container_spec::secondary_key>>
@@ -75,7 +77,7 @@ CONTRACT boardbagebox : public eosio::contract {
             uint64_t         app; // table vapaeeaouthor::authors.id
             int         maxgroup; // MAX (max quantity in same slot), 1 (no agroup), 0 (no limit)
             uint64_t primary_key() const { return id;  }
-            uint128_t secondary_key() const { return boardbagebox::combine(nick, app); }
+            uint128_t secondary_key() const { return vapaee::combine(nick, app); }
         };
         typedef eosio::multi_index<"itemspec"_n, item_spec,
             indexed_by<"second"_n, const_mem_fun<item_spec, uint128_t, &item_spec::secondary_key>>
@@ -111,7 +113,7 @@ CONTRACT boardbagebox : public eosio::contract {
                 // "item_spec": esta maestría es para tunear un objeto de tipo descrito en la fila row
                 // "item_asset": esta maestría es para tunear un objeto identificado con un slug item_asset[row].supply.symbol.row()
             uint64_t primary_key() const { return id; }
-            uint128_t secondary_key() const { return boardbagebox::combine(nick, app); }
+            uint128_t secondary_key() const { return vapaee::combine(nick, app); }
         };
         typedef eosio::multi_index<"mastery"_n, mastery_spec,
             indexed_by<"second"_n, const_mem_fun<mastery_spec, uint128_t, &mastery_spec::secondary_key>>
@@ -163,7 +165,7 @@ CONTRACT boardbagebox : public eosio::contract {
             uint64_t  acumulable; // indica la cantidad de veces que se puede acumular
             // TODO: implementar los points: lista de tuplas (prop-level-points-value)
             uint64_t primary_key() const { return id; }
-            uint128_t secondary_key() const { return boardbagebox::combine(nick, app); }
+            uint128_t secondary_key() const { return vapaee::combine(nick, app); }
         };
         typedef eosio::multi_index<"aura"_n, aura_spec,
             indexed_by<"second"_n, const_mem_fun<aura_spec, uint128_t, &aura_spec::secondary_key>>
@@ -189,14 +191,21 @@ CONTRACT boardbagebox : public eosio::contract {
         ACTION newapp(name author_owner,
                         uint64_t author_app,
                         int inventory_space,
-                        const std::vector<mastery_prop>& mastery_properties
+                        const std::vector<mastery_property>& mastery_properties
         ) {
             // inline::action(newctner, author_owner, author_app, "inventory", inventory_space)
             // inline::action(newmtery, author_owner, author_app, "mastery", mastery_properties)
+            action(
+                permission_level{get_self(),"active"_n},
+                get_self(),
+                "newcontainer"_n,
+                std::make_tuple(author_owner, author_app, "inventary"_n, inventary_default_space)
+            ).send();
+        
         };
 
         // 
-        ACTION newmastery(name author_owner, uint64_t author_app, slug mastery_name, const std::vector<mastery_prop>& mastery_properties) {
+        ACTION newmastery(name author_owner, uint64_t author_app, slug mastery_name, const std::vector<mastery_property>& mastery_properties) {
             // inline::action(newctner, author_owner, author_app, mastery_name, ?)
             // crear una entrada en mastery_spec con mastery_name
             // iterar sobre los properties y crear una entrada por cada uno en el scope del mastery_spec.id
@@ -293,9 +302,7 @@ CONTRACT boardbagebox : public eosio::contract {
             return itr->balance;
         }
 
-        static uint128_t combine( name nick, uint64_t author ) {
-            return (uint128_t{nick.value} << 64) | uint128_t{author};
-        }
+
 
 
 
