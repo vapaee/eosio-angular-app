@@ -18,12 +18,12 @@ CONTRACT vapaeeauthor : public eosio::contract {
         ACTION registernick(name owner, string nickstr) {
             // print(string(" owner: ") + owner.to_string());
             // print(string(" nick: ") + nick.to_string());
+            require_auth( owner );
             slug nick(nickstr);
-            print("owner: ", owner.to_string());
-            print("nick: ", nick.to_string());
+            print("owner: ", owner.to_string(), "\n");
+            print("nick: ", nick.to_string(), "\n");
             
-            
-            auto index = this->authors.template get_index<"second"_n>();
+            auto index = this->authors.template get_index<"nick"_n>();
             auto itr = index.find( nick.to128bits() );
 
             while (itr != index.end() && itr->nick != nick) {
@@ -52,11 +52,35 @@ CONTRACT vapaeeauthor : public eosio::contract {
             // https://eosio.stackexchange.com/questions/1214/delete-all-multi-index-records-without-iterator
             // para poder desarrollar más fácil            
             
+            // recorremos por id
             for (auto itr = this->authors.begin(); itr != this->authors.end(); ) {
-                print(itr->to_string());
-                itr = this->authors.erase(itr);
+                print("id", itr->to_string(), "\n");
+                itr++;
+                // itr = this->authors.erase(itr);
             }
-            
+
+            // recorremos por owner
+            auto index_owner = this->authors.template get_index<"owner"_n>();
+            for (auto itr = index_owner.begin(); itr != index_owner.end(); ) {
+                print("owner", itr->to_string(), "\n");
+                itr++;
+                // itr = index_nick.erase(itr);
+            }
+
+            // recorremos por slug
+            auto index_nick = this->authors.template get_index<"nick"_n>();
+            for (auto itr = index_nick.begin(); itr != index_nick.end(); ) {
+                print("nick", itr->to_string(), "\n");
+                itr++;
+                // itr = index_nick.erase(itr);
+            }
+
+                     
+            // borro las filas ----
+            for (auto itr = this->authors.begin(); itr != this->authors.end(); ) {
+                print("id", itr->to_string(), "\n");
+                itr = this->authors.erase(itr);
+            }             
         };
 
     private:
@@ -73,10 +97,10 @@ CONTRACT vapaeeauthor : public eosio::contract {
                 return std::string(" owner: ") + owner.to_string() + " - " + nick.to_string();
             };
         };
-       
+        
         typedef eosio::multi_index<"authors"_n, author_slug,
             indexed_by<"owner"_n, const_mem_fun<author_slug, uint64_t, &author_slug::by_owner_key>>,
-            indexed_by<"second"_n, const_mem_fun<author_slug, uint128_t, &author_slug::secondary_key>>
+            indexed_by<"nick"_n, const_mem_fun<author_slug, uint128_t, &author_slug::secondary_key>>
         > author_slugs ;
         
         author_slugs authors;

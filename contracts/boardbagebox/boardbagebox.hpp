@@ -1,6 +1,8 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/print.hpp>
 #include <vapaee/slug_asset.hpp>
+#include <vapaee/mastery_property.hpp>
+
 
 using namespace eosio;
 namespace vapaee {
@@ -119,9 +121,12 @@ CONTRACT boardbagebox : public eosio::contract {
         // scope: mastery
         // row: representa una property de la maestría
         TABLE mastery_prop {
-            uint64_t          id;
-            slug        property; 
-            // TODO: no se como voy a representar la evaluación de cada una de sus leves
+            uint64_t                   id;
+            string                   name;
+            string                   desc;
+            slug                 property;
+            iconinfo                 icon;        
+            std::vector<levelinfo> levels;
             uint64_t primary_key() const { return id;  }
             uint128_t secondary_key() const { return property.to128bits(); }
         };

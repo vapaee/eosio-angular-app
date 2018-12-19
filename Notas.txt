@@ -5,6 +5,37 @@ https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
 
 
 
+
+{
+  "rows": [{
+      "id": 0,
+      "owner": "alice",
+      "nick": {
+        "top": "0xffffffffffffffffffffffffffffffff",    z1
+        "low": "0xfffffffffffffffffffffffffffff8b2"     0000 0001  0111 0010
+      }
+    },{
+      "id": 1,
+      "owner": "bob",
+      "nick": {
+        "top": "0xffffffffffffffffffffffffffffffff",
+        "low": "0xfffffffffffffffffffffffffffff8f2"
+      }
+    },{
+      "id": 2,
+      "owner": "bob",
+      "nick": {
+        "top": "0xffffffffffffffffffffffffffffffff",
+        "low": "0xfffffffffffffffffffffffffffff832"     0000 0000  0011 0010
+      }
+    }
+  ],
+  "more": false
+}
+
+
+
+
 ------------------------------------------
 BG-Box es capaz de recibir registros de publisher como apps.
 Cada app tiene un inventario por defecto donde recibir las transferencias de items asociados a esa app (sólo si tiene espacio).
