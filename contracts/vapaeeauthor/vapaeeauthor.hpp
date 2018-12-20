@@ -101,7 +101,7 @@ CONTRACT vapaeeauthor : public eosio::contract {
         typedef eosio::multi_index<"authors"_n, author_slug,
             indexed_by<"owner"_n, const_mem_fun<author_slug, uint64_t, &author_slug::by_owner_key>>,
             indexed_by<"nick"_n, const_mem_fun<author_slug, uint128_t, &author_slug::secondary_key>>
-        > author_slugs ;
+        > author_slugs;
         
         author_slugs authors;
         

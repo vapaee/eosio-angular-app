@@ -6,8 +6,52 @@ using namespace eosio;
 
 namespace vapaee {
 
-    static uint128_t combine( name nick, uint64_t author ) {
-        return (uint128_t{nick.value} << 64) | uint128_t{author};
+    // Structures --------------------------
+
+    TABLE author_slug {
+        uint64_t        id;
+        name         owner;
+        slug          nick;
+        uint64_t primary_key() const { return id;  }
+        uint64_t by_owner_key() const { return owner.value;  }
+        uint128_t secondary_key() const { return nick.to128bits(); }
+        std::string to_string() const {
+            return std::string(" owner: ") + owner.to_string() + " - " + nick.to_string();
+        };
+    };
+    
+    typedef eosio::multi_index<"authors"_n, author_slug,
+        indexed_by<"owner"_n, const_mem_fun<author_slug, uint64_t, &author_slug::by_owner_key>>,
+        indexed_by<"nick"_n, const_mem_fun<author_slug, uint128_t, &author_slug::secondary_key>>
+    > author_slugs; 
+
+    // API --------------------------------
+
+    static uint128_t combine( uint64_t key1, uint64_t key2 ) {
+        return (uint128_t{key1} << 64) | uint128_t{key2};
+    }
+
+    static uint128_t combine(uint64_t key1, name key2 ) {
+        // return (uint128_t{key1.value} << 64) | uint128_t{key2};
+        return vapaee::combine(key1, key2.value);
+    }
+
+    static uint128_t combine( name key1, name key2 ) {
+        return vapaee::combine(key1.value, key2.value);
+    }
+
+    static name get_author_owner(uint64_t author_id) {
+        author_slugs authors("vapaeeauthor"_n, ("vapaeeauthor"_n).value);
+        auto itr = authors.find(author_id);
+        eosio_assert(itr != authors.end(), "Author id does NOT exist");
+        return itr->owner;
+    }
+
+    static slug get_author_nick(uint64_t author_id) {
+        author_slugs authors("vapaeeauthor"_n, ("vapaeeauthor"_n).value);
+        auto itr = authors.find(author_id);
+        eosio_assert(itr != authors.end(), "Author id does NOT exist");
+        return itr->nick;
     }
 
     /*

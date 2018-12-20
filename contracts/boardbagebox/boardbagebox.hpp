@@ -62,7 +62,7 @@ CONTRACT boardbagebox : public eosio::contract {
             uint64_t         app; // table vapaeeaouthor::authors.id
             int            space; // espacio base que tendrá el container cuando se lo instancie para un usuario. 0 para infinito.
             uint64_t primary_key() const { return id;  }
-            uint128_t secondary_key() const { return vapaee::combine(nick, app); }
+            uint128_t secondary_key() const { return vapaee::combine(app, nick); }
         };
         typedef eosio::multi_index<"containerspec"_n, container_spec,
             indexed_by<"second"_n, const_mem_fun<container_spec, uint128_t, &container_spec::secondary_key>>
@@ -77,7 +77,7 @@ CONTRACT boardbagebox : public eosio::contract {
             uint64_t         app; // table vapaeeaouthor::authors.id
             int         maxgroup; // MAX (max quantity in same slot), 1 (no agroup), 0 (no limit)
             uint64_t primary_key() const { return id;  }
-            uint128_t secondary_key() const { return vapaee::combine(nick, app); }
+            uint128_t secondary_key() const { return vapaee::combine(app, nick); }
         };
         typedef eosio::multi_index<"itemspec"_n, item_spec,
             indexed_by<"second"_n, const_mem_fun<item_spec, uint128_t, &item_spec::secondary_key>>
@@ -109,11 +109,11 @@ CONTRACT boardbagebox : public eosio::contract {
             name            nick; 
             uint64_t         app; // table vapaeeaouthor::authors.id
             name           table; // table affected: "", "item_spec", "item_asset"
-            uint64_t         row; // row.id 
+            uint64_t         row; // mastery_prop.id 
                 // "item_spec": esta maestría es para tunear un objeto de tipo descrito en la fila row
                 // "item_asset": esta maestría es para tunear un objeto identificado con un slug item_asset[row].supply.symbol.row()
             uint64_t primary_key() const { return id; }
-            uint128_t secondary_key() const { return vapaee::combine(nick, app); }
+            uint128_t secondary_key() const { return vapaee::combine(app, nick); }
         };
         typedef eosio::multi_index<"mastery"_n, mastery_spec,
             indexed_by<"second"_n, const_mem_fun<mastery_spec, uint128_t, &mastery_spec::secondary_key>>
@@ -124,10 +124,10 @@ CONTRACT boardbagebox : public eosio::contract {
         // row: representa una property de la maestría
         TABLE mastery_prop {
             uint64_t                   id;
-            string                   name;
-            string                   desc;
+            name                    title; // localstrings.strings.key
+            name                     desc; // localstrings.strings.key
             slug                 property;
-            iconinfo                 icon;        
+            iconinfo                 icon;
             std::vector<levelinfo> levels;
             uint64_t primary_key() const { return id;  }
             uint128_t secondary_key() const { return property.to128bits(); }
@@ -165,7 +165,7 @@ CONTRACT boardbagebox : public eosio::contract {
             uint64_t  acumulable; // indica la cantidad de veces que se puede acumular
             // TODO: implementar los points: lista de tuplas (prop-level-points-value)
             uint64_t primary_key() const { return id; }
-            uint128_t secondary_key() const { return vapaee::combine(nick, app); }
+            uint128_t secondary_key() const { return vapaee::combine(app, nick); }
         };
         typedef eosio::multi_index<"aura"_n, aura_spec,
             indexed_by<"second"_n, const_mem_fun<aura_spec, uint128_t, &aura_spec::secondary_key>>
@@ -187,28 +187,87 @@ CONTRACT boardbagebox : public eosio::contract {
     public:
         using contract::contract;
 
-        // --------------------- APPS ------------------
-        ACTION newapp(name author_owner,
-                        uint64_t author_app,
-                        int inventory_space,
-                        const std::vector<mastery_property>& mastery_properties
-        ) {
-            // inline::action(newctner, author_owner, author_app, "inventory", inventory_space)
-            // inline::action(newmtery, author_owner, author_app, "mastery", mastery_properties)
+        // 
+        ACTION newmastery(
+                name author_owner,
+                uint64_t author_app,
+                name nick,
+                name title,
+                name desc,
+                name table, // only if it is a item mastery "item_spec" or "item_asset". Else leave empty "".
+                uint64_t row, // if of item_spec or item_asset
+                const std::vector<mastery_property>& mastery_properties) {
+            // inline::action(newctner, author_owner, author_app, mastery_name, ?)
+            // crear una entrada en mastery_spec con mastery_name
+            // iterar sobre los properties y crear una entrada por cada uno en el scope del mastery_spec.id
+
+            // verify if table and row were specified
+            name item_spec_table = name{"item_spec"};
+            name item_asset_table = name{"item_asset"};
+            name no_table = name{""};
+            if (table != no_table) {
+                eosio_assert(table == item_spec_table || table == item_asset_table, "table MUST be '' or 'item_spec' or 'item_asset'");
+
+                // assert row exist
+                if (table == item_spec_table) {
+                    item_specs items(get_self(), get_self().value);
+                    auto row_spec = items.find(row);
+                    eosio_assert(row_spec != items.end(), "Item spec not found");
+                }
+
+                if (table == item_asset_table) {
+                    stats assets(get_self(), get_self().value);
+                    auto row_asset = assets.find(row);
+                    eosio_assert(row_asset != assets.end(), "Item asset not found");
+                }
+            }
+
+            // verify app exists
+            slug app_nick = vapaee::get_author_nick(author_app);
+
+            // verify mastery does not exist
+            mastery_specs masteries(get_self(), get_self().value);
+            auto mastery_index = masteries.template get_index<"second"_n>();
+            auto mastery_itr = mastery_index.find( vapaee::combine(author_app, nick) );
+            eosio_assert(mastery_itr == mastery_index.end(),
+                (string("Mastery ") + nick.to_string() + " already registered for app " + app_nick.to_string()).c_str() );
+
+            // create mastery
+            uint64_t id = masteries.available_primary_key();
+            masteries.emplace( author_owner, [&]( auto& s ) {
+                s.id = id;
+                s.nick = nick;
+                s.app = author_app;
+                s.table = table;
+                s.row = row;
+            });
+
             action(
                 permission_level{get_self(),"active"_n},
                 get_self(),
                 "newcontainer"_n,
-                std::make_tuple(author_owner, author_app, "inventary"_n, inventary_default_space)
+                std::make_tuple(author_owner, author_app, nick, 0)
             ).send();
-        
-        };
 
-        // 
-        ACTION newmastery(name author_owner, uint64_t author_app, slug mastery_name, const std::vector<mastery_property>& mastery_properties) {
-            // inline::action(newctner, author_owner, author_app, mastery_name, ?)
-            // crear una entrada en mastery_spec con mastery_name
-            // iterar sobre los properties y crear una entrada por cada uno en el scope del mastery_spec.id
+            // mastery_properties
+            mastery_props properties(get_self(), id);
+            for (int i; i<mastery_properties.size(); i++) {
+                mastery_property prop = mastery_properties[i];
+                properties.emplace( author_owner, [&]( auto& p ) {
+                    p.id = properties.available_primary_key();
+                    p.property = mastery_properties[i].property;
+                    
+                    // uint64_t                   id;
+                    // name                    title; // localstrings.strings.key
+                    // name                     desc; // localstrings.strings.key
+                    // slug                 property;
+                    // iconinfo                 icon;
+                    // std::vector<levelinfo> levels;
+
+
+                });                
+            }
+                        
         };
 
         // new container_spec
@@ -228,7 +287,7 @@ CONTRACT boardbagebox : public eosio::contract {
             // una entrada en account con balance 0 y una entrada en authorship con balance 100 
         };
 
-        ACTION issue(name to, slug_asset quantity, string memo){
+        ACTION issueunits(name to, slug_asset quantity, string memo){
             // crea quantity unidades para to (no necesita tener espacio)
             // tiene que requerir la firma de quien sea que sea el owner actual del publisher de este asset
         };
@@ -301,10 +360,6 @@ CONTRACT boardbagebox : public eosio::contract {
             
             return itr->balance;
         }
-
-
-
-
 
         
 

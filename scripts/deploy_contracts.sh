@@ -9,6 +9,7 @@ CARDSNTOKENS_HOME=$HOME/contracts/cardsntokens
 VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
 BOARDGAMEBOX_HOME=$HOME/contracts/boardbagebox
 VAPAEEAUTHOR_HOME=$HOME/contracts/vapaeeauthor
+LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 
 TESTING_HOME=$HOME/contracts/testing
 
@@ -71,6 +72,14 @@ if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntoken
     cleos set contract cardsntokens $PWD -p cardsntokens@active
 fi
 
+
+echo "-------- localstrings ---------"
+cd $LOCALSTRINGS_HOME
+if [[ localstrings.cpp -nt localstrings.wasm || localstrings.hpp -nt localstrings.wasm ]]; then
+    # echo "skipping..."
+    eosio-cpp -o localstrings.wasm localstrings.cpp --abigen -I ../includes
+    cleos set contract localstrings $PWD -p localstrings@active
+fi
 
 TESTING_HOME=$HOME/contracts/hello
 # echo "-------- test ---------"
