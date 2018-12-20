@@ -10,6 +10,7 @@ namespace vapaee {
         return (uint128_t{nick.value} << 64) | uint128_t{author};
     }
 
+    /*
     char int_to_hexa(int n) const {
         if (n >= 0 && n <= 9) return '0' + n;
         if (n >= 10 && n <= 15) return 'A' + (n-10);
@@ -70,4 +71,5 @@ namespace vapaee {
         *end = '\0';
         return std::string(buffer);
     }
+    */
 }
