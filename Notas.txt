@@ -3,6 +3,71 @@ https://get-scatter.com/docs/examples-interaction-flow
 https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
 
 
+
+
+
+{
+  "rows": [{
+      "id": 0,
+      "owner": "alice",
+      "nick": {
+        "top": "0xffffffffffffffffffffffffffffffff",    z1
+        "low": "0xfffffffffffffffffffffffffffff8b2"     0000 0001  0111 0010
+      }
+    },{
+      "id": 1,
+      "owner": "bob",
+      "nick": {
+        "top": "0xffffffffffffffffffffffffffffffff",
+        "low": "0xfffffffffffffffffffffffffffff8f2"
+      }
+    },{
+      "id": 2,
+      "owner": "bob",
+      "nick": {
+        "top": "0xffffffffffffffffffffffffffffffff",
+        "low": "0xfffffffffffffffffffffffffffff832"     0000 0000  0011 0010
+      }
+    }
+  ],
+  "more": false
+}
+
+
+
+
+------------------------------------------
+BG-Box es capaz de recibir registros de publisher como apps.
+Cada app tiene un inventario por defecto donde recibir las transferencias de items asociados a esa app (sólo si tiene espacio).
+BG-Box es capaz de recibir registros de item_spec asociados a una app (cartas a cnt, torretas a turretdefence, unit a war_game ).
+BG-Box es capaz de recibir registros de item_asset asociados a una item_spec
+    ("100 viter.telos-card-telosvenezuela", "1000000 turretdefence.turrets", "10000 war_game.soldier","10000 war_game.tank").
+Hay que poner en BG-Box un accounts que tenga un balance de tipo item_asset
+Hay que crear en VapaeeTokens una tabla de perfiles
+Se queda la implementación de accounts en C&T porque será una implementación concreta de item
+
+Cada vez que alguien transfiera unidaades en C&T se ejecutará a BG-Box el mismo transfer para que mueva los items de inventarios
+
+
+En BG-Box tenés:
+- lista de todas las app registradas con prefix como id y self como scope.
+- lista de todos los item_spec registrados con id autogenerado con segundo index un name. El scope es self.
+- lista de todos los publishers que crearon algun item_asset para ese item_spec. El scope es el id del item_spec
+  - en C&T te da una lista de los publisher que crearon alguna carta: muchas filas
+  - en Turrent deffence te da una por cada torreta diferente y todas hechas por la misma app: pocas filas
+- lista de todos los item_asset creados por algun publisher, donde el scope es el publisher prefix.
+  - en C&T te da cosas como "100 viter.telos-card-telosvenezuela", "200 carlos.tremenda-carta-me-mande"
+  - en Turrent deffence te da: "1000000 turretdefence.basic-turret", "1000000 turretdefence.medium-turret" , "1000000 turretdefence.bkt-turret" 
+
+------------------------------------------                           
+
+cards&tokens
+masterystones
+
+
+
+
+
 -- Scatter Apps --
 La Metadata se agrega generando un pull request y agregando la imagen en la carpeta como un svg
 https://github.com/GetScatter/ScatterApps
@@ -13,7 +78,40 @@ CPU used - 1495 Bytes / 24548 Bytes
 
 
 
-
-
 esto es lo que devuele una transacción:
 {"transaction_id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","processed":{"id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","block_num":28218650,"block_time":"2018-11-22T05:12:08.000","producer_block_id":null,"receipt":{"status":"executed","cpu_usage_us":300,"net_usage_words":17},"elapsed":300,"net_usage":136,"scheduled":false,"action_traces":[{"receipt":{"receiver":"eosio.token","act_digest":"fb8a00dce5cfbcfc3957327637c4074584b384afcbdb8f02f6db44cdf1d91f06","global_sequence":1919481787,"recv_sequence":293058129,"auth_sequence":[["gqydoobuhege",176]],"code_sequence":2,"abi_sequence":2},"act":{"account":"eosio.token","name":"transfer","authorization":[{"actor":"gqydoobuhege","permission":"active"}],"data":{"from":"gqydoobuhege","to":"dailyselfies","quantity":"0.0001 EOS","memo":"testing"},"hex_data":"a0986afa509abc6580955b51611f9d49010000000000000004454f53000000000774657374696e67"},"context_free":false,"elapsed":132,"console":"","trx_id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","block_num":28218650,"block_time":"2018-11-22T05:12:08.000","producer_block_id":null,"account_ram_deltas":[{"account":"gqydoobuhege","delta":240}],"except":null,"inline_traces":[{"receipt":{"receiver":"gqydoobuhege","act_digest":"fb8a00dce5cfbcfc3957327637c4074584b384afcbdb8f02f6db44cdf1d91f06","global_sequence":1919481788,"recv_sequence":253,"auth_sequence":[["gqydoobuhege",177]],"code_sequence":2,"abi_sequence":2},"act":{"account":"eosio.token","name":"transfer","authorization":[{"actor":"gqydoobuhege","permission":"active"}],"data":{"from":"gqydoobuhege","to":"dailyselfies","quantity":"0.0001 EOS","memo":"testing"},"hex_data":"a0986afa509abc6580955b51611f9d49010000000000000004454f53000000000774657374696e67"},"context_free":false,"elapsed":3,"console":"","trx_id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","block_num":28218650,"block_time":"2018-11-22T05:12:08.000","producer_block_id":null,"account_ram_deltas":[],"except":null,"inline_traces":[]},{"receipt":{"receiver":"dailyselfies","act_digest":"fb8a00dce5cfbcfc3957327637c4074584b384afcbdb8f02f6db44cdf1d91f06","global_sequence":1919481789,"recv_sequence":1,"auth_sequence":[["gqydoobuhege",178]],"code_sequence":2,"abi_sequence":2},"act":{"account":"eosio.token","name":"transfer","authorization":[{"actor":"gqydoobuhege","permission":"active"}],"data":{"from":"gqydoobuhege","to":"dailyselfies","quantity":"0.0001 EOS","memo":"testing"},"hex_data":"a0986afa509abc6580955b51611f9d49010000000000000004454f53000000000774657374696e67"},"context_free":false,"elapsed":4,"console":"","trx_id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","block_num":28218650,"block_time":"2018-11-22T05:12:08.000","producer_block_id":null,"account_ram_deltas":[],"except":null,"inline_traces":[]}]}],"except":null}}
+
+git clone https://github.com/Telos-Foundation/telos.git
+cd telos
+git checkout stage3.2
+git submodule update --init --recursive
+./telos_build.sh         <<-- FALLA
+sudo ./telos_install.sh
+
+git clone https://github.com/EOSIO/eosio.cdt.git toolkit-eosio.cdt
+cd toolkit-eosio.cdt/
+git checkout v1.4.1
+git submodule update --init --recursive
+./build.sh
+
+git clone https://github.com/EOSIO/eos.git cleos
+cd cleos
+git checkout v1.4.1
+git submodule update --init --recursive
+./build.sh
+
+
+
+/usr/opt/eosio.cdt/1.3.2/bin/clang-7: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.22' not found (required by /usr/opt/eosio.cdt/1.3.2/bin/clang-7)
+issue: https://github.com/EOSIO/eosio.cdt/issues/284
+solution: https://stackoverflow.com/a/46613765
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install gcc-4.9
+sudo apt-get upgrade libstdc++6
+
+
+Visual Code plugin (C++)
+ms-vscode.cpptools
+https://code.visualstudio.com/docs/languages/cpp
+

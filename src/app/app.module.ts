@@ -14,11 +14,13 @@ import { IdenticonComponent } from './components/identicon/identicon.component';
 import { EosioAccountComponent } from './components/eosio-account/eosio-account.component';
 import { EosioTokenMathService } from './services/eosio.token-math.service';
 import { LoadingOverall } from './services/common/app.service';
+import { VideoPage } from './pages/video/video.page';
 
 @NgModule({
     declarations: [
         AppComponent,
         HomePage,
+        VideoPage,
         NotFoundPage,
         RootPage,
         AccountPage,
