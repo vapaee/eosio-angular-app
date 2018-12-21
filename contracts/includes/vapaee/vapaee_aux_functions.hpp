@@ -1,5 +1,6 @@
 #pragma once
 #include <eosiolib/eosio.hpp>
+#include <vapaee/vapaee_aux_functions.hpp>
 
 using namespace std;
 using namespace eosio;
@@ -53,6 +54,15 @@ namespace vapaee {
         eosio_assert(itr != authors.end(), "Author id does NOT exist");
         return itr->nick;
     }
+
+    static void get_authors_for_owner(name owner, std::vector<uint64_t> &authors) {
+        // owner index
+        auto index_owner = this->authors.template get_index<"owner"_n>();
+        for (auto itr = index_owner.lower_bound(owner); itr != index_owner.end() && itr->owner == owner; itr++;) {
+            authors.push(itr->id);
+        }
+    }
+    
 
     /*
     char int_to_hexa(int n) const {

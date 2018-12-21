@@ -2,7 +2,7 @@
 #include <eosiolib/print.hpp>
 #include <vapaee/slug_asset.hpp>
 #include <vapaee/mastery_property.hpp>
-#include <vapaee/aux_functions.hpp>
+#include <vapaee/vapaee_aux_functions.hpp>
 
 #define inventary_default_space 8
 
@@ -51,6 +51,15 @@ CONTRACT boardbagebox : public eosio::contract {
         };
         typedef eosio::multi_index<"containers"_n, container_instance> containers;
 
+        // lista de todos los usuarios que usaron el sistema. es para poder iterar sobre todos los nombres
+        // scope: contract
+        // row: representa un usuario
+        TABLE user_reg {
+            name user;
+            uint64_t primary_key() const { return user.value;  }
+        };
+        typedef eosio::multi_index<"users"_n, user_reg> users;
+
         // -- Lista de todos los contenedores definidos. Cada app tiene varios contenedores definidos. --
         // TODAS LAS APPS TIENEN AL MENOS UNA CONTENEDOR LLAMADO INVENTARIO (es una forma de saber si una app está registrada)
         // DEBE DEFINIR UN FILTRO PARA LOS ITEMS QUE SE PUEDEN PONER. dEBE ESPECIFICARSE QUE ITEM_SPEC SE PUEDEN PONER
@@ -63,9 +72,11 @@ CONTRACT boardbagebox : public eosio::contract {
             int            space; // espacio base que tendrá el container cuando se lo instancie para un usuario. 0 para infinito.
             uint64_t primary_key() const { return id;  }
             uint128_t secondary_key() const { return vapaee::combine(app, nick); }
+            uint64_t app_key() const { return app; }
         };
         typedef eosio::multi_index<"containerspec"_n, container_spec,
-            indexed_by<"second"_n, const_mem_fun<container_spec, uint128_t, &container_spec::secondary_key>>
+            indexed_by<"second"_n, const_mem_fun<container_spec, uint128_t, &container_spec::secondary_key>>,
+            indexed_by<"app"_n, const_mem_fun<container_spec, uint64_t, &container_spec::app_key>>
         > container_specs; 
 
         // -- Lista de todos los TIPOS de items que existen. Cada App define varios tipos de items --
@@ -78,9 +89,11 @@ CONTRACT boardbagebox : public eosio::contract {
             int         maxgroup; // MAX (max quantity in same slot), 1 (no agroup), 0 (no limit)
             uint64_t primary_key() const { return id;  }
             uint128_t secondary_key() const { return vapaee::combine(app, nick); }
+            uint64_t app_key() const { return app; }
         };
         typedef eosio::multi_index<"itemspec"_n, item_spec,
-            indexed_by<"second"_n, const_mem_fun<item_spec, uint128_t, &item_spec::secondary_key>>
+            indexed_by<"second"_n, const_mem_fun<item_spec, uint128_t, &item_spec::secondary_key>>,
+            indexed_by<"app"_n, const_mem_fun<item_spec, uint64_t, &item_spec::app_key>>
         > item_specs;
 
         // -- Lista de todos los ITEMS definidos por alguien (los cuales tienen un TIPO de item) --
@@ -95,9 +108,11 @@ CONTRACT boardbagebox : public eosio::contract {
             uint32_t           block; // tapos_block_num() in eosiolib/transaction.hpp https://eosio.stackexchange.com/a/759
             uint64_t primary_key() const { return id;  }
             uint128_t secondary_key() const { return supply.symbol.code().raw().to128bits(); }
+            uint64_t publisher_key() const { return publisher; }
         };
         typedef eosio::multi_index<"stat"_n, item_asset,
-            indexed_by<"second"_n, const_mem_fun<item_asset, uint128_t, &item_asset::secondary_key>>
+            indexed_by<"second"_n, const_mem_fun<item_asset, uint128_t, &item_asset::secondary_key>>,
+            indexed_by<"publisher"_n, const_mem_fun<item_asset, uint64_t, &item_asset::publisher_key>>
         > stats;
 
 
@@ -263,8 +278,6 @@ CONTRACT boardbagebox : public eosio::contract {
                     // slug                 property;
                     // iconinfo                 icon;
                     // std::vector<levelinfo> levels;
-
-
                 });                
             }
                         
@@ -327,8 +340,49 @@ CONTRACT boardbagebox : public eosio::contract {
             // cualquie rusuario puede quemar una cantidad de sus promias unidades
         };
 
-        ACTION droptables(name owner) {
+        // -------------------- debugging porpuses ---------------------
+        ACTION dropuser(name owner) {
             // para poder desarrollar más fácil
+
+        };
+
+        ACTION droptables() {
+            name user;
+            uint64_t author;
+            users user_table(get_self(), get_self().value);
+            for (auto itr = user_table.begin(); itr != user_table.end(); itr = user_table.begin()) {
+                user = itr->user;
+                action(
+                    permission_level{get_self(),"active"_n},
+                    get_self(),
+                    "dropuser"_n,
+                    std::make_tuple(user)
+                ).send();
+            }
+            
+            vector<uint> list();
+            vapaee::get_authors_for_owner(user, list);
+            for (int i=0; i<list.size(); i++) {
+                /*
+        TABLE container_spec {
+            uint64_t          id;
+            name            nick; // el apodo de este container debe ser único para cada app
+            uint64_t         app; // table vapaeeaouthor::authors.id
+            int            space; // espacio base que tendrá el container cuando se lo instancie para un usuario. 0 para infinito.
+            uint64_t primary_key() const { return id;  }
+            uint128_t secondary_key() const { return vapaee::combine(app, nick); }
+        };
+        typedef eosio::multi_index<"containerspec"_n, container_spec,
+            indexed_by<"second"_n, const_mem_fun<container_spec, uint128_t, &container_spec::secondary_key>>
+        > container_specs; 
+                        
+                */
+
+                container_specs cont_table(get_self(), get_self().value);
+                auto index_cont = cont_table.template get_index<"second"_n>();
+
+
+            }
         };
     
 
