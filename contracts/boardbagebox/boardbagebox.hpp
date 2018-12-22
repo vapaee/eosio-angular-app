@@ -341,9 +341,14 @@ CONTRACT boardbagebox : public eosio::contract {
         };
 
         // -------------------- debugging porpuses ---------------------
-        ACTION dropuser(name owner) {
+        void dropuser(name owner) {
             // para poder desarrollar más fácil
+            users user_table(get_self(), get_self().value);
+            auto itr = user_table.find(owner.value);
+            eosio_assert(itr != user_table.end(), (string("user not found: ") + owner.to_string()).c_str());
+            user_table.erase(itr);
 
+            // TODO: falta borrar todas sus cosas: items, containers, experiences, etc...
         };
 
         ACTION droptables() {
@@ -352,35 +357,85 @@ CONTRACT boardbagebox : public eosio::contract {
             users user_table(get_self(), get_self().value);
             for (auto itr = user_table.begin(); itr != user_table.end(); itr = user_table.begin()) {
                 user = itr->user;
-                action(
-                    permission_level{get_self(),"active"_n},
-                    get_self(),
-                    "dropuser"_n,
-                    std::make_tuple(user)
-                ).send();
-            }
-            
-            vector<uint> list();
-            vapaee::get_authors_for_owner(user, list);
-            for (int i=0; i<list.size(); i++) {
-                /*
-        TABLE container_spec {
+                dropuser(user);
+
+                vector<uint64_t> list;
+                list.clear(); // no se, por las dudas
+                vapaee::get_authors_for_owner(user, list);
+                for (int i=0; i<list.size(); i++) {
+                    author = list[i];
+
+                    // borro todos los containers definidos por esta app
+                    container_specs cont_table(get_self(), get_self().value);
+                    auto index_cont = cont_table.template get_index<"app"_n>();
+                    for (auto itr = index_cont.lower_bound(author); itr != index_cont.end() && itr->app == author;) {
+                        itr = index_cont.erase(itr);
+                    }
+
+                    // borro todos los items_spec definidos por esta app
+                    item_specs spec_table(get_self(), get_self().value);
+                    auto index_spec = spec_table.template get_index<"app"_n>();
+                    for (auto itr = index_spec.lower_bound(author); itr != index_spec.end() && itr->app == author;) {
+                        itr = index_spec.erase(itr);
+                    }
+
+                    // borro todos los items_asset definidos por este publisher
+                    item_asset asset_table(get_self(), get_self().value);
+                    auto index_asset = asset_table.template get_index<"publisher"_n>();
+                    for (auto itr = index_asset.lower_bound(author); itr != index_asset.end() && itr->publisher == author;) {
+                        itr = index_asset.erase(itr);
+                    }
+
+                    // borro todos los mastery_spec definidos por esta app
+                    mastery_spec mastery_table(get_self(), get_self().value);
+                    auto index_mty = mastery_table.template get_index<"app"_n>();
+                    for (auto itr = index_mty.lower_bound(author); itr != index_mty.end() && itr->app == author;) {
+                        // borro todos los mastery_prop definidos por este mastery_spec
+                        mastery_props props_table(get_self(), itr->id);
+                        for (auto prop_itr = props_table.begin(); itr != props_table.end();) {
+                            prop_itr = props_table.erase(prop_itr);
+                        }
+
+                        itr = index_mty.erase(itr);
+                    }
+
+
+                    /*
+        TABLE mastery_spec {
             uint64_t          id;
-            name            nick; // el apodo de este container debe ser único para cada app
+            name            nick; 
             uint64_t         app; // table vapaeeaouthor::authors.id
-            int            space; // espacio base que tendrá el container cuando se lo instancie para un usuario. 0 para infinito.
-            uint64_t primary_key() const { return id;  }
+            name           table; // table affected: "", "item_spec", "item_asset"
+            uint64_t         row; // mastery_prop.id 
+                // "item_spec": esta maestría es para tunear un objeto de tipo descrito en la fila row
+                // "item_asset": esta maestría es para tunear un objeto identificado con un slug item_asset[row].supply.symbol.row()
+            uint64_t primary_key() const { return id; }
             uint128_t secondary_key() const { return vapaee::combine(app, nick); }
         };
-        typedef eosio::multi_index<"containerspec"_n, container_spec,
-            indexed_by<"second"_n, const_mem_fun<container_spec, uint128_t, &container_spec::secondary_key>>
-        > container_specs; 
-                        
-                */
+        typedef eosio::multi_index<"mastery"_n, mastery_spec,
+            indexed_by<"second"_n, const_mem_fun<mastery_spec, uint128_t, &mastery_spec::secondary_key>>
+        > mastery_specs;        
 
-                container_specs cont_table(get_self(), get_self().value);
-                auto index_cont = cont_table.template get_index<"second"_n>();
 
+        TABLE mastery_prop {
+            uint64_t                   id;
+            name                    title; // localstrings.strings.key
+            name                     desc; // localstrings.strings.key
+            slug                 property;
+            iconinfo                 icon;
+            std::vector<levelinfo> levels;
+            uint64_t primary_key() const { return id;  }
+            uint128_t secondary_key() const { return property.to128bits(); }
+        };
+        typedef eosio::multi_index<"masteryprop"_n, mastery_prop,
+            indexed_by<"second"_n, const_mem_fun<mastery_prop, uint128_t, &mastery_prop::secondary_key>>
+        > mastery_props;
+
+                    */
+                    
+
+
+                }
 
             }
         };

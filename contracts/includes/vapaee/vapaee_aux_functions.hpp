@@ -55,11 +55,12 @@ namespace vapaee {
         return itr->nick;
     }
 
-    static void get_authors_for_owner(name owner, std::vector<uint64_t> &authors) {
+    static void get_authors_for_owner(name owner, std::vector<uint64_t> &author_list) {
         // owner index
-        auto index_owner = this->authors.template get_index<"owner"_n>();
-        for (auto itr = index_owner.lower_bound(owner); itr != index_owner.end() && itr->owner == owner; itr++;) {
-            authors.push(itr->id);
+        author_slugs authors("vapaeeauthor"_n, ("vapaeeauthor"_n).value);
+        auto index_owner = authors.template get_index<"owner"_n>();
+        for (auto itr = index_owner.lower_bound(owner.value); itr != index_owner.end() && itr->owner == owner; itr++) {
+            author_list.push_back(itr->id);
         }
     }
     
