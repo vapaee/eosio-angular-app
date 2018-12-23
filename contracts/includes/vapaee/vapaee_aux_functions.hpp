@@ -64,7 +64,13 @@ namespace vapaee {
         }
     }
     
-
+    static name get_owner_for_author(uint64_t author_id) {
+        // owner index
+        author_slugs authors("vapaeeauthor"_n, ("vapaeeauthor"_n).value);
+        auto itr = authors.find(author_id);
+        eosio_assert(itr != authors.end(), "Author not found");
+        return itr->owner;
+    }
     /*
     char int_to_hexa(int n) const {
         if (n >= 0 && n <= 9) return '0' + n;

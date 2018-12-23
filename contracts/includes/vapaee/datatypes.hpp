@@ -6,6 +6,15 @@ using namespace eosio;
 
 namespace vapaee {
 
+    struct slotinfo {
+        uint8_t position;
+        uint8_t container;
+        slotinfo():position(0), container(0) {}
+        slotinfo(const slotinfo &c):position(c.position), container(c.container) {}
+        uint128_t to128bits() const { return vapaee::combine(container, position); }
+        EOSLIB_SERIALIZE(slotinfo, (position)(container))
+    };    
+
     struct requireinfo {
         uint8_t points;
         uint8_t mastery;
@@ -25,13 +34,13 @@ namespace vapaee {
     };
 
     struct mastery_property {
-        string name;
-        string desc;
+        name title;
+        name desc;
         slug property;
         iconinfo icon;        
         std::vector<levelinfo> levels;
 
-        EOSLIB_SERIALIZE(mastery_property, (name)(desc)(property)(icon)(levels))
+        EOSLIB_SERIALIZE(mastery_property, (title)(desc)(property)(icon)(levels))
     };
 
 };
