@@ -1,5 +1,6 @@
 #pragma once
 #include <eosiolib/eosio.hpp>
+#include <vapaee/vapaee_aux_functions.hpp>
 
 using namespace std;
 using namespace eosio;

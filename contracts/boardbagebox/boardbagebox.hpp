@@ -37,13 +37,13 @@ CONTRACT boardbagebox : public eosio::contract {
                 int          quantity;  // quantity <= item_asset.spec.maxgroup
                 uint64_t primary_key() const { return id;  }
                 uint64_t asset_key() const { return asset;  }
-                uint64_t container_key() const { return container; }
+                uint64_t container_key() const { return slot.container; }
                 uint128_t slot_key() const { return slot.to128bits(); }
             };
             typedef eosio::multi_index<"items"_n, item_unit,
                 indexed_by<"second"_n, const_mem_fun<item_unit, uint64_t, &item_unit::asset_key>>,
                 indexed_by<"container"_n, const_mem_fun<item_unit, uint64_t, &item_unit::container_key>>,
-                indexed_by<"slot"_n, const_mem_fun<item_unit, uint128_t, &item_unit::where_key>>
+                indexed_by<"slot"_n, const_mem_fun<item_unit, uint128_t, &item_unit::slot_key>>
                 
             > item_units;
         // ------------------------------------
@@ -57,8 +57,11 @@ CONTRACT boardbagebox : public eosio::contract {
                 int        empty;
                 int        space;
                 uint64_t primary_key() const { return id;  }
+                uint64_t spec_key() const { return spec; }
             };
-            typedef eosio::multi_index<"containers"_n, container_instance> containers;
+            typedef eosio::multi_index<"containers"_n, container_instance,
+                indexed_by<"spec"_n, const_mem_fun<container_instance, uint64_t, &container_instance::spec_key>>
+            > containers;
         // ------------------------------------
 
         // TABLE user_reg: lista de todos los usuarios que usaron el sistema. es para poder iterar sobre todos los nombres
@@ -441,13 +444,16 @@ CONTRACT boardbagebox : public eosio::contract {
             sub_balance(from, quantity);
             add_balance(to, quantity, ram_payer);
 
+            slotinfo target_slot;
+            item_spec spec;
+            find_item_spec(quantity.symbol, spec);
             for (int i=0; i<items.size(); i++) {
-                slotinfo target_slot = find_room_for_unit(to, quantity.symbol);
+                find_room_for_unit(to, quantity.symbol, spec, target_slot);
                 swap(from, items[i], to, target_slot);
             }
 
 
-
+            // TODO: terminar
             // tiene que buscar en item_slot del from y sacar quantity unidades
             // tiene que buscar en item_slot del to y sacar verificar que tiene empty <= quantity
             // hubicar uno por uno los quantity slots y hacer el cambio de cointainer.id y position
@@ -459,9 +465,10 @@ CONTRACT boardbagebox : public eosio::contract {
         };
 
         void swap(name from, uint64_t unit, name to, slotinfo target_slot) {
+            // TODO: implementar
             if (from == to) {
                 // hay que ver si existe algo en el target_slot
-                if (/*existe*/) {
+                if (true/*existe*/) {
 
                 } else {
                     // solamente hay que modificar la entrada unit y poner la nueva posición ahi
@@ -471,39 +478,130 @@ CONTRACT boardbagebox : public eosio::contract {
             }
         }
 
-        void find_room_for_unit(name owner, const slug_symbol& symbol, slotinfo &slot) {
-            // 
+        void find_item_spec(const slug_symbol& symbol, item_spec &spec) {
 
+            // search asset identified by symbol
+            stats asset_table(get_self(), get_self().value);
+            auto index = asset_table.template get_index<"second"_n>();
+            auto itr = index.find( symbol.code().raw().to128bits() );
+
+            while (itr != index.end() && itr->supply.symbol.raw() != symbol.code().raw()) {
+                itr++;
+            }
+
+            eosio_assert(itr != index.end(), (string("no asset was found with the name: ") + symbol.code().raw().to_string()).c_str() );
+
+            // extract spec with the spec_id
+            uint64_t spec_id = itr->spec;
+            item_specs spec_table(get_self(), get_self().value);
+            auto spec_itr = spec_table.get(spec_id, (string("no spec was found for the the name: ") + symbol.code().raw().to_string()).c_str() );
+
+            // poblate answer 
+            spec.id = spec_itr.id;
+            spec.nick = spec_itr.nick;
+            spec.app = spec_itr.app;
+            spec.maxgroup = spec_itr.maxgroup;
+        }
+
+
+        void find_app_inventory(name user, uint64_t app, container_instance &container) {
+            // find container_spec for app|inventory
+            container_specs cont_spec_table(get_self(), get_self().value);
+            auto index = cont_spec_table.template get_index<"second"_n>();
+            auto itr = index.find( vapaee::combine(app, "inventory"_n.value) );
+            eosio_assert(itr != index.end(), "no inventory registered for app");
+            
+            // find container_instance of the user for that spec
+            containers cont_table(get_self(), user.value);
+            auto index_inv = cont_table.template get_index<"spec"_n>();
+            auto itr_inv = index_inv.find( vapaee::combine(app, "inventory"_n.value) );
+            eosio_assert(itr_inv != index_inv.end(), "no inventory registered for app");
+
+            // poblate answer
+            container.id = itr_inv.id;
+            container.spec = itr_inv.spec;
+            container.empty = itr_inv.empty;
+            container.space = itr_inv.space;
+        }        
+
+        void find_room_for_unit(name owner, const slug_symbol& symbol, item_spec &spec, slotinfo &slot) {
+            // TODO: implementar
+            // 
+            // tengo que saber dar con la instancia de container del usuario para este tipo de item
+            container_instance container;
+            find_app_inventory(owner, spec.app, container);
+
+            eosio_assert(container.empty > 0, "User does not have any space left in the app inventory");
+
+
+
+            // el container.empty > 0
+            // tengo que recorrer los item_units ordenados por posición y filtrado por container
+            // buscar el menor posicion que esté disponible
+            // poblar el slotinfo con container/newposition
             
             /*
-            uint64_t asset_id = itr->id;
-            vector<uint64_t> units;
-            item_units units_from(get_self(), from.value);
-            auto units_index = units_from.template get_index<"second"_n>();
-            auto units_itr = units_index.lower_bound(asset_id);
-            for (int i=0; i<quantity.amount && units_itr != units_index.end(); i++, units_itr++) {
-                if (units_itr->asset == asset_id) {
-                    units.push_back(units_itr->id);
-                }
-            }
+
+
+            TABLE container_instance {
+                uint64_t      id;
+                uint64_t    spec; // table container_specs.id
+                int        empty;
+                int        space;
+                uint64_t primary_key() const { return id;  }
+                uint64_t spec_key() const { return spec; }
+            };
+            typedef eosio::multi_index<"containers"_n, container_instance,
+                indexed_by<"spec"_n, const_mem_fun<container_instance, uint64_t, &container_instance::spec_key>>
+            > containers;
+
+
+            TABLE item_unit {
+                uint64_t           id;
+                uint64_t        asset;  // item_asset
+                slotinfo         slot; 
+                int          quantity;  // quantity <= item_asset.spec.maxgroup
+                uint64_t primary_key() const { return id;  }
+                uint64_t asset_key() const { return asset;  }
+                uint64_t container_key() const { return slot.container; }
+                uint128_t slot_key() const { return slot.to128bits(); }
+            };
+            typedef eosio::multi_index<"items"_n, item_unit,
+                indexed_by<"second"_n, const_mem_fun<item_unit, uint64_t, &item_unit::asset_key>>,
+                indexed_by<"container"_n, const_mem_fun<item_unit, uint64_t, &item_unit::container_key>>,
+                indexed_by<"slot"_n, const_mem_fun<item_unit, uint128_t, &item_unit::slot_key>>
+                
+            > item_units;
+
+
             */            
         }
 
         ACTION open( name owner, const slug_symbol& symbol, name ram_payer ) {
-
+            // TODO: implementar
         };
 
         ACTION close( name owner, const slug_symbol& symbol ) {
             require_auth( owner );
-            accounts acnts( _self, owner.value );
-            auto it = acnts.find( symbol.code().raw() );
+
+            accounts account_table( get_self(), owner.value );
+            auto index = account_table.template get_index<"second"_n>();
+            auto itr = index.find( symbol.code().raw().to128bits());
+            
+            // we make sure we have the correct asset (avoiding 128 bit colusion)
+            while ( itr != index.end() && itr->balance.symbol != symbol ) {
+                itr++;
+            }
+            
             eosio_assert( itr != index.end(), "Balance row already deleted or never existed. Action won't have any effect." );
             eosio_assert( itr->balance.amount == 0, "Cannot close because the balance is not zero." );
-            account_table.erase( itr );
+
+            account_table.erase( *itr );
         };
 
         ACTION burn( name owner, const slug_asset& quantity ) {
             // cualquie rusuario puede quemar una cantidad de sus promias unidades
+            // TODO: implementar
         };
 
         // -------------------- debugging porpuses ---------------------
@@ -546,7 +644,7 @@ CONTRACT boardbagebox : public eosio::contract {
                     }
 
                     // borro todos los items_asset definidos por este publisher
-                    stats asset_table(get_self(), get_self().value);
+                    stats cont_spec_table(get_self(), get_self().value);
                     auto index_asset = asset_table.template get_index<"publisher"_n>();
                     for (auto itr = index_asset.lower_bound(author); itr != index_asset.end() && itr->publisher == author;) {
                         itr = index_asset.erase(itr);
@@ -602,10 +700,10 @@ CONTRACT boardbagebox : public eosio::contract {
 
             eosio_assert(itr != index.end(), (value.symbol.code().raw().to_string() + " was not registered as asset.").c_str() );
             eosio_assert(itr->balance <= value, (string("not enough funds in asset ") + value.symbol.code().raw().to_string()).c_str() );
-            uint64_t final_balance = itr->balance - value;
+            uint64_t final_balance = itr->balance.amount - value.amount;
             account_table.modify( *itr, same_payer, [&]( auto& a ) {
-                a.balance = final_balance;
-            });            
+                a.balance.amount = final_balance;
+            });
             if (final_balance == 0) {
                 // we call close to release RAM
                 action(
@@ -619,15 +717,15 @@ CONTRACT boardbagebox : public eosio::contract {
         }
 
         static slug_asset get_supply( name token_contract_account, slug_symbol_code sym_code ) {
-            stats statstable( token_contract_account, sym_code.raw().to64bits() );
-            auto index = statstable.template get_index<"second"_n>();
+            stats asset_table(token_contract_account, token_contract_account.value);
+            auto index = asset_table.template get_index<"second"_n>();
             auto itr = index.find( sym_code.raw().to128bits() ); // sym_code.raw().to64bits()
 
             while (itr != index.end() && itr->supply.symbol.raw() != sym_code.raw()) {
                 itr++;
             }
 
-            eosio_assert(itr != index.end(), (string("no asset was found named ") + sym_code.to_string()).c_str() );
+            eosio_assert(itr != index.end(), (string("no asset was found with the name: ") + sym_code.to_string()).c_str() );
 
             return itr->supply;
         }
