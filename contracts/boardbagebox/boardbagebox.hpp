@@ -336,6 +336,7 @@ CONTRACT boardbagebox : public eosio::contract {
             });
         };
 
+        // -- INCOMPLETO --
         ACTION newasset(name author_owner, uint64_t author_issuer, slug_asset maximum_supply, uint64_t spec) {
             // una entrada en item_asset con supply 0
             // verifica que no exista un nickname para el author_app
@@ -424,57 +425,73 @@ CONTRACT boardbagebox : public eosio::contract {
             ).send();
         };
 
+        // -- REVISAR COMPLETITUD --
         ACTION transfunits( name         from,
                             name         to,
                             slug_asset   quantity,
                             const std::vector<uint64_t>& items, // id en la tabla item_slot
                             string       memo ) {
-            // tiene que exigir la firma de from, que no sea autopago y que exista el destinatario
+            // tiene que exigir la firma de "from", que no sea autopago y que exista el destinatario
             eosio_assert( from != to, "cannot transfer to self" );
             require_auth( from );
             eosio_assert( is_account( to ), "to account does not exist");
 
-            // validation
+            // params validation
             eosio_assert( quantity.is_valid(), "invalid quantity" );
             eosio_assert( quantity.amount > 0, "must transfer positive quantity" );
             eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
 
-            // tiene que descontar del balance de from y aumentarlo en to (table account)
+            // tiene que descontar del balance de "from" y aumentarlo en "to" (table account)
             auto ram_payer = has_auth( to ) ? to : from;
             sub_balance(from, quantity);
             add_balance(to, quantity, ram_payer);
 
+            // Encuentro un nuevo slot para cada unidad y a continuación hago un swap
             slotinfo target_slot;
             item_spec spec;
             find_item_spec(quantity.symbol, spec);
             for (int i=0; i<items.size(); i++) {
                 find_room_for_unit(to, quantity.symbol, spec, target_slot);
-                swap(from, items[i], to, target_slot);
+                swap(from, items[i], to, target_slot, ram_payer);
             }
-
-
-            // TODO: terminar
-            // tiene que buscar en item_slot del from y sacar quantity unidades
-            // tiene que buscar en item_slot del to y sacar verificar que tiene empty <= quantity
-            // hubicar uno por uno los quantity slots y hacer el cambio de cointainer.id y position
-            // actualizar el empty para ambos containers (el del from y el del to)
-            // items.size()
-            // items[i]
-
-
         };
 
-        void swap(name from, uint64_t unit, name to, slotinfo target_slot) {
-            // TODO: implementar
+        // -- INCOMPLETO --
+        void swap(name from, uint64_t unit, name to, slotinfo target_slot, name ram_payer) {
             if (from == to) {
+                /// ---------- TENGO QUE RE VER TODO ESTETEMA ------------
+
+                if (/*los containers origen y destino son diferentes*/) {
+                    // hay que aumentar el empty del container origen
+                } else {
+
+                }
+
+                // no se crean ni se destruyen rows, sólo se modifican
                 // hay que ver si existe algo en el target_slot
                 if (true/*existe*/) {
-
+                    // hay que averiguar si ambos unidades pertenecen al mismo item_asset
+                    // si es así, hay que preguntar si el item_spec especifica un máximo para el agrupamiento (dif de 1)
+                    // si el maxgroup == 0 -> son acumulables
+                    // si el maxgroup > 1 -> hay que preguntar si (target_slot.quantity <= maxgroup - origin_slot.quantity)
+                    if (/*acumulables*/) {
+                        // el dato empty del container debe aumentar (ya que agrupamos dos o más unidaes en un mismo slot)
+                        // debe eliminarse la entrada del origin_slot
+                    } else {
+                        // el dato empty del container permanece intacto
+                        // deben modificarse ambas entradas, intercambiando la infoslot en cada una
+                    }                    
                 } else {
-                    // solamente hay que modificar la entrada unit y poner la nueva posición ahi
+                    // solamente hay que modificar la entrada unit y poner la nueva target_slot ahi
                 }
             } else {
-
+                // es una transferencia de un usuario a otro
+                // - exigir que el target_slot esté vacío
+                // - crear un nuevo row en el item_unit del usuario "to" y ponerle la unidad ahi
+                // - eliminar el row del item_unit para el usuario "from"
+                // - exigir container.empty > 0
+                // - from_container.empty += 1;
+                // - target_container.empty -= 1;
             }
         }
 
@@ -503,7 +520,6 @@ CONTRACT boardbagebox : public eosio::contract {
             spec.maxgroup = spec_itr.maxgroup;
         }
 
-
         void find_app_inventory(name user, uint64_t app, container_instance &container) {
             // find container_spec for app|inventory
             container_specs cont_spec_table(get_self(), get_self().value);
@@ -518,12 +534,13 @@ CONTRACT boardbagebox : public eosio::contract {
             eosio_assert(itr_inv != index_inv.end(), "no inventory registered for app");
 
             // poblate answer
-            container.id = itr_inv.id;
-            container.spec = itr_inv.spec;
-            container.empty = itr_inv.empty;
-            container.space = itr_inv.space;
-        }        
+            container.id = itr_inv->id;
+            container.spec = itr_inv->spec;
+            container.empty = itr_inv->empty;
+            container.space = itr_inv->space;
+        }
 
+        // -- INCOMPLETO --
         void find_room_for_unit(name owner, const slug_symbol& symbol, item_spec &spec, slotinfo &slot) {
             // TODO: implementar
             // 
@@ -577,6 +594,7 @@ CONTRACT boardbagebox : public eosio::contract {
             */            
         }
 
+        // -- INCOMPLETO --
         ACTION open( name owner, const slug_symbol& symbol, name ram_payer ) {
             // TODO: implementar
         };
@@ -599,12 +617,14 @@ CONTRACT boardbagebox : public eosio::contract {
             account_table.erase( *itr );
         };
 
+        // -- INCOMPLETO --
         ACTION burn( name owner, const slug_asset& quantity ) {
             // cualquie rusuario puede quemar una cantidad de sus promias unidades
             // TODO: implementar
         };
 
         // -------------------- debugging porpuses ---------------------
+        // -- INCOMPLETO --
         void dropuser(name owner) {
             // para poder desarrollar más fácil
             users user_table(get_self(), get_self().value);
@@ -645,7 +665,7 @@ CONTRACT boardbagebox : public eosio::contract {
 
                     // borro todos los items_asset definidos por este publisher
                     stats cont_spec_table(get_self(), get_self().value);
-                    auto index_asset = asset_table.template get_index<"publisher"_n>();
+                    auto index_asset = cont_spec_table.template get_index<"publisher"_n>();
                     for (auto itr = index_asset.lower_bound(author); itr != index_asset.end() && itr->publisher == author;) {
                         itr = index_asset.erase(itr);
                     }
