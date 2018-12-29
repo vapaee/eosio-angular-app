@@ -28,10 +28,11 @@ CONTRACT boardbagebox : public eosio::contract {
         // ------------------------------------
 
         // TABLE item_unit: donde están las unidades de items
-            // scope: user
+            // scope: app (unit.asset.spec.app)
             // row: representa un slot conteniendo quantity unidades del item definido por asset en la posición position
             TABLE item_unit {
                 uint64_t           id;
+                name            owner;
                 uint64_t        asset;  // item_asset
                 slotinfo         slot; 
                 int          quantity;  // quantity <= item_asset.spec.maxgroup
@@ -39,11 +40,13 @@ CONTRACT boardbagebox : public eosio::contract {
                 uint64_t asset_key() const { return asset;  }
                 uint64_t container_key() const { return slot.container; }
                 uint128_t slot_key() const { return slot.to128bits(); }
+                uint64_t owner_key() const { return slot.container; }
             };
             typedef eosio::multi_index<"items"_n, item_unit,
                 indexed_by<"second"_n, const_mem_fun<item_unit, uint64_t, &item_unit::asset_key>>,
                 indexed_by<"container"_n, const_mem_fun<item_unit, uint64_t, &item_unit::container_key>>,
-                indexed_by<"slot"_n, const_mem_fun<item_unit, uint128_t, &item_unit::slot_key>>
+                indexed_by<"slot"_n, const_mem_fun<item_unit, uint128_t, &item_unit::slot_key>>,
+                indexed_by<"owner"_n, const_mem_fun<item_unit, uint128_t, &item_unit::owner_key>>
                 
             > item_units;
         // ------------------------------------
@@ -83,14 +86,17 @@ CONTRACT boardbagebox : public eosio::contract {
                 uint64_t          id;
                 name            nick; // el apodo de este container debe ser único para cada app
                 uint64_t         app; // table vapaeeaouthor::authors.id
+                uint64_t     mastery; // table vapaeeaouthor::authors.id
                 int            space; // espacio base que tendrá el container cuando se lo instancie para un usuario. 0 para infinito.
                 uint64_t primary_key() const { return id;  }
                 uint128_t secondary_key() const { return vapaee::combine(app, nick); }
                 uint64_t app_key() const { return app; }
+                uint64_t mastery_key() const { return mastery; }
             };
             typedef eosio::multi_index<"contspec"_n, container_spec,
                 indexed_by<"second"_n, const_mem_fun<container_spec, uint128_t, &container_spec::secondary_key>>,
-                indexed_by<"app"_n, const_mem_fun<container_spec, uint64_t, &container_spec::app_key>>
+                indexed_by<"app"_n, const_mem_fun<container_spec, uint64_t, &container_spec::app_key>>,
+                indexed_by<"mastery"_n, const_mem_fun<container_spec, uint64_t, &container_spec::mastery_key>>
             > container_specs; 
         // ------------------------------------
 
@@ -136,7 +142,8 @@ CONTRACT boardbagebox : public eosio::contract {
             // scope: contract
             TABLE mastery_spec {
                 uint64_t          id;
-                name            nick; 
+                name            nick;
+                uint64_t   container; // container_spec
                 uint64_t         app; // table vapaeeaouthor::authors.id
                 name           table; // table affected: "", "item_spec", "item_asset"
                 uint64_t         row; // mastery_prop.id 
@@ -177,16 +184,16 @@ CONTRACT boardbagebox : public eosio::contract {
                 uint64_t         id;
                 uint64_t    mastery; // mastery_spec
                 uint64_t  container; // container_instance donde están los Mastery-Tokens
-                name          table; // table affected: "", "item_unit", "item_asset"
+                name          table; // table affected: "", "itemunit", "itemasset"
                 uint64_t        row; // row.id
-                    // "item_spec": esta maestría es para tunear un objeto de tipo descrito en la fila row
-                    // "item_asset": esta maestría es para tunear un objeto identificado con un slug item_asset[row].supply.symbol.row()
+                    // "itemunit": esta unidad está tuneada
+                    // "itemasset": esta maestría es para tunear un objeto identificado con un slug item_asset[row].supply.symbol.row()
                 // TODO: ver la posibilidad de implementar un cache aca
                 uint64_t primary_key() const { return id; }
-                uint64_t secondary_key() const { return mastery; }
+                uint64_t mastery_key() const { return mastery; }
             };
             typedef eosio::multi_index<"experience"_n, experience,
-                indexed_by<"second"_n, const_mem_fun<experience, uint64_t, &experience::secondary_key>>
+                indexed_by<"mastery"_n, const_mem_fun<experience, uint64_t, &experience::mastery_key>>
             > experiences;
         // ------------------------------------
 
@@ -270,11 +277,16 @@ CONTRACT boardbagebox : public eosio::contract {
             eosio_assert(mastery_itr == mastery_index.end(),
                 (string("Mastery ") + nick.to_string() + " already registered for app " + app_nick.to_string()).c_str() );
 
+            
+            container_specs container_table(get_self(), get_self().value);
+            uint64_t mastery_id = masteries.available_primary_key();
+            uint64_t container_id = container_table.available_primary_key();
+
             // create mastery
-            uint64_t id = masteries.available_primary_key();
             masteries.emplace( author_owner, [&]( auto& s ) {
-                s.id = id;
+                s.id = mastery_id;
                 s.nick = nick;
+                s.container = container_id;
                 s.app = author_app;
                 s.table = table;
                 s.row = row;
@@ -284,11 +296,11 @@ CONTRACT boardbagebox : public eosio::contract {
                 permission_level{get_self(),"active"_n},
                 get_self(),
                 "newcontainer"_n,
-                std::make_tuple(author_owner, author_app, nick, 0)
+                std::make_tuple(author_owner, author_app, mastery_id, nick, 0)
             ).send();
 
             // mastery_properties
-            mastery_props properties(get_self(), id);
+            mastery_props properties(get_self(), mastery_id);
             for (int i; i<mastery_properties.size(); i++) {
                 mastery_property prop = mastery_properties[i];
                 properties.emplace( author_owner, [&]( auto& p ) {
@@ -305,7 +317,7 @@ CONTRACT boardbagebox : public eosio::contract {
         };
 
         // new container_spec
-        ACTION newcontainer(name author_owner, uint64_t author_app, name nickname, int space) {
+        ACTION newcontainer(name author_owner, uint64_t author_app, uint64_t mastery, name nickname, int space) {
             // se fija que no exista en container_spec un nickname para author_app 
             container_specs container_table(get_self(), get_self().value);
             auto index = container_table.template get_index<"second"_n>();
@@ -317,6 +329,7 @@ CONTRACT boardbagebox : public eosio::contract {
                 s.nick = nickname;
                 s.app = author_app;
                 s.space = space;
+                s.mastery = mastery;
             });
         };
 
@@ -379,49 +392,126 @@ CONTRACT boardbagebox : public eosio::contract {
             add_balance( owner, quantity, owner );
         };
 
-        ACTION transfer( name         from,
-                         name         to,
-                         slug_asset   quantity,
-                         string       memo) {
-            // toma los primeros quantity items que encuentre en la tabla item_units
-            // itera sobre los resultados y arma un vector con los id de los resultados
-            // inline::action (transfunits, from , to, items, memo)
+        static void get_mastery(uint64_t mastery_id, mastery_spec &mastery) {
+            // find container_spec for app|inventory
+            name _self = "boardgamebox"_n;
+            mastery_specs cont_spec_table(_self, _self.value);
+            auto index = cont_spec_table.get_index();
+            auto itr = index.find( mastery_id );
+            eosio_assert(itr != index.end(), "no mastery registered for id");
+            
+            // poblate answer
+            mastery.id = itr->id;
+            mastery.nick = itr->nick;
+            mastery.app = itr->app;
+            mastery.table = itr->table;
+            mastery.row = itr->row;
+        }
 
+        static void find_app_inventory(name user, uint64_t app, container_instance &container) {
+            // find container_spec for app|inventory
+            boardbagebox::find_app_container(user, app, "inventory"_n ,container);
+        }
+
+        static void find_app_container(name user, uint64_t app, name nick, container_instance &container) {
+            // find container_spec for app|inventory
+            name _self = "boardgamebox"_n;
+            container_specs cont_spec_table(_self, _self.value);
+            auto index = cont_spec_table.template get_index<"second"_n>();
+            auto itr = index.find( vapaee::combine(app, nick) );
+            eosio_assert(itr != index.end(), "no inventory registered for app");
+            
+            // find container_instance of the user for that spec
+            containers cont_table(_self, user.value);
+            auto index_inv = cont_table.template get_index<"spec"_n>();
+            auto itr_inv = index_inv.find( vapaee::combine(app, nick) );
+            eosio_assert(itr_inv != index_inv.end(), "no inventory registered for app");
+
+            // poblate answer
+            container.id = itr_inv->id;
+            container.spec = itr_inv->spec;
+            container.empty = itr_inv->empty;
+            container.space = itr_inv->space;
+        }
+
+        static void get_item_asset_for_slag(const slug &asset_slug, item_asset &asset) {
             // aux variables
-            slug asset_slug = quantity.symbol.code().raw();
             const char * error_str = (asset_slug.to_string() + " was not registered as item asset").c_str();
-
             // we search for the asset identityed by quantity.symbol (asset_slug)
-            stats assets_table(get_self(), get_self().value);
+            name _self = "boardgamebox"_n;
+            stats assets_table(_self, _self.value);
             auto index = assets_table.template get_index<"second"_n>();
             auto itr = index.find( asset_slug.to128bits() );
             eosio_assert(itr != index.end(), error_str);
             // we make sure we have the correct asset (avoiding 128 bit colusion)
-            while (itr->supply.symbol != quantity.symbol && itr != index.end()) {
+            while (itr->supply.symbol.code().raw() != asset_slug && itr != index.end()) {
                 itr++;
             }
             eosio_assert(itr != index.end(), error_str);
-            eosio_assert(itr->supply.symbol != quantity.symbol, error_str);
+            eosio_assert(itr->supply.symbol.code().raw() == asset_slug, error_str);
+            
+            asset.id = itr->id;
+            asset.supply = itr->supply;
+            asset.max_supply = itr->max_supply;
+            asset.spec = itr->spec;
+            asset.publisher = itr->publisher;
+            asset.block = itr->block;
+        }
+
+        static void get_item_spec_for_slag(const slug &asset_slug, item_asset &asset, item_asset &asset, item_spec &spec) {
+            name _self = "boardgamebox"_n;
+            item_specs specs_table(_self, _self.value);
+            boardbagebox::get_item_asset_for_slag(asset_slug, asset);
+            auto index = specs_table.get_index();
+            auto itr = index.find(asset.spec);
+            eosio_assert(itr != index.end(), "asset point to a null spec");
+
+            spec.id = itr->id;
+            spec.nick = itr->nick;
+            spec.app = itr->app;
+            spec.maxgroup = itr->maxgroup;
+        }        
+
+        ACTION transfer( name         from,
+                         name         to,
+                         slug_asset   quantity,
+                         string       memo) {
+
+            // aux variables
+            slug asset_slug = quantity.symbol.code().raw();
+            item_asset asset;
+            item_spec spec;
+            boardgamebox::get_item_spec_for_slag(quantity.symbol.code().raw(), asset, spec);
 
             // we search over owner's units of this asset. We put the first quantity.amount units id ina list
-            uint64_t asset_id = itr->id;
+            uint64_t asset_id = asset.id;
             vector<uint64_t> units;
-            item_units units_from(get_self(), from.value);
+            vector<int> quantities;
+            item_units units_from(get_self(), spec.app);
+            int plus_quantity, listed;
             auto units_index = units_from.template get_index<"second"_n>();
             auto units_itr = units_index.lower_bound(asset_id);
-            for (int i=0; i<quantity.amount && units_itr != units_index.end(); i++, units_itr++) {
+            for (listed=0; listed<quantity.amount && units_itr != units_index.end(); units_itr++) {
                 if (units_itr->asset == asset_id) {
                     units.push_back(units_itr->id);
+                    plus_quantity = units_itr->quantity;
+                    if (listed + plus_quantity > quantity.amount) {
+                        plus_quantity = quantity.amount - listed;
+                    }
+                    listed += plus_quantity;
+                    quantities.push_back(plus_quantity);
                 }
             }
-            eosio_assert(units.size() == quantity.amount, (string("Not enough items of asset ") + asset_slug.to_string()).c_str());
+
+            // we ensure 'from' has enough units to send
+            eosio_assert(listed == quantity.amount, (string("Not enough items of asset ") + asset_slug.to_string()).c_str());
 
             // we call for a unit list trastaction to be perfpormed
             action(
                 permission_level{from,"active"_n},
                 get_self(),
                 "transfunits"_n,
-                std::make_tuple(from, to, quantity, units, memo)
+                std::make_tuple(from, to, quantity, units, quantities, memo)
             ).send();
         };
 
@@ -430,7 +520,11 @@ CONTRACT boardbagebox : public eosio::contract {
                             name         to,
                             slug_asset   quantity,
                             const std::vector<uint64_t>& items, // id en la tabla item_slot
+                            vector<int> quantities, // 
                             string       memo ) {
+            // tiene que haber coherencia entre las listas
+            eosio_assert( items.size() == quantities.size(), "items list and quantities list mus match sizes" );
+            
             // tiene que exigir la firma de "from", que no sea autopago y que exista el destinatario
             eosio_assert( from != to, "cannot transfer to self" );
             require_auth( from );
@@ -446,98 +540,362 @@ CONTRACT boardbagebox : public eosio::contract {
             sub_balance(from, quantity);
             add_balance(to, quantity, ram_payer);
 
-            // Encuentro un nuevo slot para cada unidad y a continuación hago un swap
+            // Encuentro un nuevo slot vacío para cada unidad y a continuación hago un swap
             slotinfo target_slot;
+            item_asset asset;
             item_spec spec;
-            find_item_spec(quantity.symbol, spec);
+            boardbagebox::get_item_spec_for_slag(quantity.symbol.code().raw(), asset, spec);
             for (int i=0; i<items.size(); i++) {
                 find_room_for_unit(to, quantity.symbol, spec, target_slot);
-                swap(from, items[i], to, target_slot, ram_payer);
+                swap(from, items[i], spec.app, to, target_slot, ram_payer, quantities[i]);
             }
         };
 
-        // -- INCOMPLETO --
-        void swap(name from, uint64_t unit, name to, slotinfo target_slot, name ram_payer) {
-            if (from == to) {
-                /// ---------- TENGO QUE RE VER TODO ESTETEMA ------------
+        // -- INCOMPLETO (FASE 2) --
+        ACTION newuserexp (name user, uint64_t mastery, name table, uint64_t row, name ram_payer) {
+            require_auth(user);
 
-                if (/*los containers origen y destino son diferentes*/) {
-                    // hay que aumentar el empty del container origen
-                } else {
+            // get next container id
+            containers user_containers(get_self(), user.value);
+            uint64_t container_id = user_containers.available_primary_key();
 
+            mastery_specs registered_mastery(get_self(), get_self().value);
+            auto reg_mastery_index = registered_mastery.get_index();
+            auto reg_mastery_itr = reg_mastery_index.find(mastery);
+            uint64_t container_spec_id = reg_mastery_itr->container;
+
+            container_specs registered_cont(get_self(), get_self().value);
+            auto reg_cont_index = registered_cont.template get_index<"app"_n>();
+            auto reg_cont_itr = reg_cont_index.lower_bound(app);
+
+            // call for container creation
+            action(
+                permission_level{from,"active"_n},
+                get_self(),
+                "newusercont"_n,
+                std::make_tuple(user, container_spec_id, ram_payer)
+            ).send();
+
+            // verify if table and row were specified
+            name item_unit_table = name{"itemunit"};
+            name item_asset_table = name{"itemasset"};
+            name no_table = name{""};
+            if (table != no_table) {
+                eosio_assert(table == item_unit_table || table == item_asset_table, "table MUST be '' or 'itemunit' or 'itemasset'");
+
+                // assert row exist
+                if (table == item_unit_table) {
+                    item_units items(get_self(), reg_mastery_itr->app);
+                    auto row_unit = items.find(row);
+                    eosio_assert(row_unit != items.end(), "Item unit not found");
+                    eosio_assert(row_unit->quantity == 1, "Item Mastery can only affect units with quantityt exacly 1");
                 }
 
-                // no se crean ni se destruyen rows, sólo se modifican
-                // hay que ver si existe algo en el target_slot
-                if (true/*existe*/) {
-                    // hay que averiguar si ambos unidades pertenecen al mismo item_asset
+                if (table == item_asset_table) {
+                    stats assets(get_self(), get_self().value);
+                    auto row_asset = assets.find(row);
+                    eosio_assert(row_asset != assets.end(), "Item asset not found");
+                }
+
+                // TODO: hay que checkear que el mastery_spec tiene en sus table y row el corresponeidnte
+            }
+
+            // crear una experience // reg_mastery_itr
+            experiences user_experiences(get_self(), user.value);
+            auto reg_exp_index = user_experiences.template get_index<"mastery"_n>();
+            auto user_exp_itr = reg_exp_index.find(mastery);
+            eosio_assert(user_exp_itr == reg_exp_index.end(), "experience already exist for this user");
+
+            user_experiences.emplace(ram_payer, [&](auto&s){
+                s.id = user_experiences.available_primary_key();
+                s.mastery = mastery;
+                s.container = container_id;
+                s.table = table;
+                s.row = row;
+            });
+
+        }
+        
+        ACTION newusercont (name user, uint64_t spec, name ram_payer) {
+            require_auth(user);
+
+            container_specs specs_table(get_self(), get_self().value);
+            auto index = specs_table.get_index();
+            auto spec_itr = index.find(spec);
+            eosio_assert(spec_itr != index.end(), "container_spec not found");
+
+            containers user_containers(get_self(), user.value);
+            auto reg_cont_index = user_containers.template get_index<"spec"_n>();
+            auto user_cont_itr = reg_cont_index.find(spec);
+            eosio_assert(user_cont_itr == reg_cont_index.end(), "container already exist for this user");
+
+            user_containers.emplace(ram_payer, [&](auto&s){
+                s.id = user_containers.available_primary_key();
+                s.spec = spec_itr->id;
+                s.space = spec_itr->space;
+                s.empty = spec_itr->space;
+            });
+        }
+
+        ACTION newuser4app (name user, uint64_t, app, name ram_payer) {
+            // El objetivo es crearle al usuario todas las instancias de containers y masteries registrados por esa app
+            require_auth(user);
+
+            mastery_specs registered_mastery(get_self(), get_self().value);
+            auto reg_mastery_index = registered_mastery.template get_index<"app"_n>();
+            
+            container_specs registered_cont(get_self(), get_self().value);
+            auto reg_cont_index = registered_cont.template get_index<"app"_n>();
+
+
+            experiences user_experiences(get_self(), user.value);
+            auto reg_exp_index = user_experiences.template get_index<"mastery"_n>();
+            auto user_exp_itr = reg_exp_index.begin();        
+            // iterar sobre todos los mastery_spec registrados por esta app
+            for (
+                auto reg_mastery_itr = reg_mastery_index.lower_bound(app);
+                reg_mastery_itr != reg_mastery_index.end() && reg_mastery_itr->app == app;
+                reg_mastery_itr++) {
+
+                // verificar si el usuario ya tine una experiencia para esta mastery
+                if (reg_mastery_itr->table.value != (uint64_t)0) {
+                    // skip this one because is an item mastery (not an app mastery)
+                    continue;
+                }
+
+                user_exp_itr = reg_exp_index.find(reg_mastery_itr->id);
+                if (user_exp_itr == user_experiences.end()) {
+                    // we call for a unit list trastaction to be perfpormed
+                    action(
+                        permission_level{user,"active"_n},
+                        get_self(),
+                        "newuserexp"_n,
+                        std::make_tuple(user, reg_mastery_itr->id, ram_payer)
+                    ).send();
+                }
+            }
+
+            containers user_containers(get_self(), user.value);
+            auto cont_index = user_containers.template get_index<"spec"_n>();
+            auto user_cont_itr = cont_index.begin();
+            // iterar sobre todos los container_spec registrados por esta app
+            for (
+                auto reg_cont_itr = reg_cont_index.lower_bound(app);
+                reg_cont_itr != reg_cont_index.end() && reg_cont_itr->app == app;
+                reg_cont_itr++ ) {
+
+                // verificar que no pertenezca a una mastery
+                if (reg_cont_index->mastery.value != (uint64_t)0) {
+                    // skip this one because is a mastery container (not an app container)
+                    continue;
+                }
+
+                user_cont_itr = reg_cont_index.find(reg_cont_itr->id);
+                if (user_cont_itr == reg_cont_index.end()) {
+                    // we call for a unit list trastaction to be perfpormed
+                    action(
+                        permission_level{user,"active"_n},
+                        get_self(),
+                        "newusercont"_n,
+                        std::make_tuple(user, reg_cont_itr->id, ram_payer)
+                    ).send();
+                }
+            }
+
+            
+        };
+
+        
+        void swap_self(
+            name from,
+            uint64_t unit,
+            uint64_t app,
+            int quantity,
+            name to,
+            const slotinfo &target_slot,
+            name ram_payer) {
+
+            // SWAP: un usuario ueve de lugar uno de sus items
+            // no se crean ni se destruyen rows, sólo se modifican
+            // hay que ver si existe algo en el target_slot
+            item_units units_table(get_self(), app);
+            auto slots_index = units_table.template get_index<"slot"_n>();
+            auto target_slot_itr = slots_index.find(target_slot.to128bits());
+            eosio_assert(target_slot_itr->id != unit, "swap orign and destiny slots can't be the same");
+            
+            // origin_slot
+            auto from_units_itr = units_table.find(unit);
+            string error_str1 = string("unit does not exist for account ") + from.to_string();
+            eosio_assert(from_units_itr != from_units_table.end(), error_str1.c_str());
+            eosio_assert(quantity <= from_units_itr->quantity, "cant transfer more units that exist in origin slot");
+
+            // asset table
+            stats assets_table(get_self(), get_self().value);
+            auto from_asset_itr = assets_table.find(from_units_itr->asset);
+            eosio_assert(from_asset_itr != assets_table.end(), "assset 'from' does no exist");
+
+            // item spec table
+            item_specs specs_table(get_self(), get_self().value);
+            auto from_spec_itr = specs_table.find(from_asset_itr->spec);
+            eosio_assert(from_spec_itr != specs_table.end(), "item spec 'from' does no exist");
+
+            // from container table
+            containers from_containers_table(get_self(), from.value);
+            auto from_cont_itr = from_containers_table.find(from_units_itr->slot.container);
+            eosio_assert(from_cont_itr != from_containers_table.end(), "contaner instance for 'from' does no exist");
+            // to container table
+            containers to_containers_table(get_self(), to.value);
+            auto to_cont_itr = to_containers_table.find(target_slot.container);
+            eosio_assert(to_cont_itr != to_containers_table.end(), "contaner instance for 'to' does no exist");                
+            // TODO: es posible que el destinatario desee que se le cree en ese momento el inventario
+
+            if (target_slot_itr != slots_index.end() && target_slot_itr->quantity > 0) {
+                // hay algo en el slot destino así que debemos hacer un swap o  acumular las unidades en el target_slot
+                // hay que averiguar si se pueden acumular en el mismo slot 
+                bool acumulables = false;
+
+                // hay que averiguar si ambos unidades pertenecen al mismo item_asset
+                auto to_asset_itr = assets_table.find(target_slot_itr->asset);
+                eosio_assert(to_asset_itr != assets_table.end(), "assset 'to' does no exist");
+                
+                auto to_spec_itr = specs_table.find(to_asset_itr->spec);
+                eosio_assert(to_spec_itr != specs_table.end(), "item spec 'to' does no exist");
+                
+                // pertenecen al mismo tipo de item?
+                if (to_spec_itr == from_spec_itr) {
                     // si es así, hay que preguntar si el item_spec especifica un máximo para el agrupamiento (dif de 1)
                     // si el maxgroup == 0 -> son acumulables
-                    // si el maxgroup > 1 -> hay que preguntar si (target_slot.quantity <= maxgroup - origin_slot.quantity)
-                    if (/*acumulables*/) {
-                        // el dato empty del container debe aumentar (ya que agrupamos dos o más unidaes en un mismo slot)
-                        // debe eliminarse la entrada del origin_slot
-                    } else {
-                        // el dato empty del container permanece intacto
-                        // deben modificarse ambas entradas, intercambiando la infoslot en cada una
-                    }                    
-                } else {
-                    // solamente hay que modificar la entrada unit y poner la nueva target_slot ahi
+                    if (to_spec_itr->maxgroup == 0) {
+                        acumulables = true;
+                    }
+                    // si el maxgroup > 1 ?
+                    else if (to_spec_itr->maxgroup > 1) {
+                        eosio_assert(target_slot_itr->quantity + quantity <= to_spec_itr->maxgroup, "exiding maxgroup in target slot");
+                        acumulables = true;
+                    }
                 }
+
+                if (acumulables) {
+                    // hay que incrementarle el target_slot_itr->quantity
+                    units_table.modify( *target_slot_itr, ram_payer, [&]( auto& a ) {
+                        a.quantity += quantity;
+                    });       
+                    if (quantity == from_units_itr->quantity) {
+                        // tengo que incrementar en 1 el empty del container porque voy a eliminar un slot y juntar todo en el target_slot
+                        from_containers_table.modify(*from_cont_itr, ram_payer, [&](auto &a){
+                            a.empty += 1;
+                        });
+
+                        // this slot is empty
+                        units_table.modify( *from_units_itr, ram_payer, [&]( auto& a ) {
+                            a.quantity = 0;
+                            a.asset = (uint64_t)0;
+                        });
+                    } else {
+                        // hay que restarle al slot origen quantity
+                        units_table.modify( *from_units_itr, ram_payer, [&]( auto& a ) {
+                            a.quantity -= quantity;
+                        });
+                    }
+                } else {
+                    // el dato empty de los containers permanece intacto (se intercambia slot x slot)
+                    // deben modificarse ambas entradas, intercambiando la infoslot en cada una
+                    units_table.modify( *target_slot_itr, ram_payer, [&]( auto& a ) {
+                        a.slot.container = from_units_itr->slot.container;
+                        a.slot.position = from_units_itr->slot.position;
+                    });
+
+                    units_table.modify( *from_units_itr, ram_payer, [&]( auto& a ) {
+                        a.slot.container = target_slot.container;
+                        a.slot.position = target_slot.position;
+                    });
+                }                    
             } else {
-                // es una transferencia de un usuario a otro
-                // - exigir que el target_slot esté vacío
-                // - crear un nuevo row en el item_unit del usuario "to" y ponerle la unidad ahi
-                // - eliminar el row del item_unit para el usuario "from"
-                // - exigir container.empty > 0
-                // - from_container.empty += 1;
-                // - target_container.empty -= 1;
+                // no existe el item_unit para el target_slot dado o existe pero está vacío (con quantity = 0)
+                // vemos si hay que mover todas las unidades del slot
+                if (quantity == from_units_itr->quantity) {
+                    if (target_slot_itr != slots_index.end()) {
+                        // en este caso ya existía un slot instanciado en ese lugar destino, así que lo intercambiamos con el lugar de origen
+                        eosio_assert(target_slot_itr->quantity == 0, "swap target slot is not empty");
+                        units_table.modify( *target_slot_itr, ram_payer, [&]( auto& a ) {
+                            a.slot.container = from_units_itr->container;
+                            a.slot.position = from_units_itr->position;
+                        });
+                    }
+                    // simplemente modificamos el slot de from_units_itr
+                    units_table.modify( *from_units_itr, ram_payer, [&]( auto& a ) {
+                        a.slot.container = target_slot.container;
+                        a.slot.position = target_slot.position;
+                    });
+
+                    if (to_cont_itr != from_cont_itr) {
+                        // decrementar empty destino
+                        to_containers_table.modify(*to_cont_itr, ram_payer, [&](auto &a){
+                            a.empty -= 1;
+                        }); 
+
+                        // incrementar empty origen
+                        from_containers_table.modify(*from_cont_itr, ram_payer, [&](auto &a){
+                            a.empty += 1;
+                        });
+                    }
+                } else {
+                    // transfer parcial
+                    // hay que restarle al slot origen quantity unidades
+                    units_table.modify( *from_units_itr, ram_payer, [&]( auto& a ) {
+                        a.quantity -= quantity;
+                    });
+                    
+                    if (target_slot_itr != slots_index.end()) {
+                        // hay que crear una instancia nueva de item_units con el quantity
+                        units_table.emplace(ram_payer, [&](auto &a){
+                            a.id = units_table.available_primary_key();
+                            a.owner = to;
+                            a.asset = from_units_itr->asset;
+                            a.slot.container = target_slot.container;
+                            a.slot.position = target_slot.position;
+                            a.quantity = quantity;
+                        });
+                    } else {
+                        // ya tenemos el slot, hay que cargarle las unidades
+                        eosio_assert(target_slot_itr->quantity == 0, "swap target slot is not empty");
+                        units_table.modify( *target_slot_itr, ram_payer, [&]( auto& a ) {
+                            a.asset = from_units_itr->asset;
+                            a.quantity = quantity;
+                        });                            
+                    }
+                    // hay que asegurar que existe el target_slot.container
+                    eosio_assert(to_cont_itr !=  to_containers_table.end(), "target container does not exist");
+
+                    // decrementar empty destino
+                    to_containers_table.modify(*to_cont_itr, ram_payer, [&](auto &a){
+                        a.empty -= 1;
+                    });
+                }
             }
         }
 
-        void find_item_spec(const slug_symbol& symbol, item_spec &spec) {
-
-            // search asset identified by symbol
-            stats asset_table(get_self(), get_self().value);
-            auto index = asset_table.template get_index<"second"_n>();
-            auto itr = index.find( symbol.code().raw().to128bits() );
-
-            while (itr != index.end() && itr->supply.symbol.raw() != symbol.code().raw()) {
-                itr++;
-            }
-
-            eosio_assert(itr != index.end(), (string("no asset was found with the name: ") + symbol.code().raw().to_string()).c_str() );
-
-            // extract spec with the spec_id
-            uint64_t spec_id = itr->spec;
-            item_specs spec_table(get_self(), get_self().value);
-            auto spec_itr = spec_table.get(spec_id, (string("no spec was found for the the name: ") + symbol.code().raw().to_string()).c_str() );
-
-            // poblate answer 
-            spec.id = spec_itr.id;
-            spec.nick = spec_itr.nick;
-            spec.app = spec_itr.app;
-            spec.maxgroup = spec_itr.maxgroup;
-        }
-
-        void find_app_inventory(name user, uint64_t app, container_instance &container) {
-            // find container_spec for app|inventory
-            container_specs cont_spec_table(get_self(), get_self().value);
-            auto index = cont_spec_table.template get_index<"second"_n>();
-            auto itr = index.find( vapaee::combine(app, "inventory"_n.value) );
-            eosio_assert(itr != index.end(), "no inventory registered for app");
+        // -- INCOMPLETO --
+        void swap_p2p(name from, uint64_t unit, uint64_t app, int quantity, name to, const slotinfo &target_slot, name ram_payer) {
             
-            // find container_instance of the user for that spec
-            containers cont_table(get_self(), user.value);
-            auto index_inv = cont_table.template get_index<"spec"_n>();
-            auto itr_inv = index_inv.find( vapaee::combine(app, "inventory"_n.value) );
-            eosio_assert(itr_inv != index_inv.end(), "no inventory registered for app");
+            // TRANSFER: es una transferencia de un usuario a otro
+            // - exigir que el target_slot esté vacío (no existe swap de units ni agrupamiento)
+            // - crear un nuevo row en el item_unit del usuario "to" y ponerle la unidad ahi
+            // - eliminar el row del item_unit para el usuario "from"
+            // - exigir container.empty > 0
+            // - from_container.empty += 1;
+            // - target_container.empty -= 1;            
+        }
 
-            // poblate answer
-            container.id = itr_inv->id;
-            container.spec = itr_inv->spec;
-            container.empty = itr_inv->empty;
-            container.space = itr_inv->space;
+        void swap(name from, uint64_t unit, uint64_t app, int quantity, name to, const slotinfo &target_slot, name ram_payer) {
+            // assert positive quantity
+            eosio_assert(quantity > 0, "can't transfer 0 units");
+
+            if (from == to) {
+                swap_self(from, unit, app, quantity, target_slot, ram_payer);
+            } else {
+                swap_p2p(from, unit, app, quantity, target_slot, ram_payer);
+            }
         }
 
         // -- INCOMPLETO --
@@ -546,7 +904,7 @@ CONTRACT boardbagebox : public eosio::contract {
             // 
             // tengo que saber dar con la instancia de container del usuario para este tipo de item
             container_instance container;
-            find_app_inventory(owner, spec.app, container);
+            boardbagebox::find_app_inventory(owner, spec.app, container);
 
             eosio_assert(container.empty > 0, "User does not have any space left in the app inventory");
 
@@ -556,42 +914,7 @@ CONTRACT boardbagebox : public eosio::contract {
             // tengo que recorrer los item_units ordenados por posición y filtrado por container
             // buscar el menor posicion que esté disponible
             // poblar el slotinfo con container/newposition
-            
-            /*
-
-
-            TABLE container_instance {
-                uint64_t      id;
-                uint64_t    spec; // table container_specs.id
-                int        empty;
-                int        space;
-                uint64_t primary_key() const { return id;  }
-                uint64_t spec_key() const { return spec; }
-            };
-            typedef eosio::multi_index<"containers"_n, container_instance,
-                indexed_by<"spec"_n, const_mem_fun<container_instance, uint64_t, &container_instance::spec_key>>
-            > containers;
-
-
-            TABLE item_unit {
-                uint64_t           id;
-                uint64_t        asset;  // item_asset
-                slotinfo         slot; 
-                int          quantity;  // quantity <= item_asset.spec.maxgroup
-                uint64_t primary_key() const { return id;  }
-                uint64_t asset_key() const { return asset;  }
-                uint64_t container_key() const { return slot.container; }
-                uint128_t slot_key() const { return slot.to128bits(); }
-            };
-            typedef eosio::multi_index<"items"_n, item_unit,
-                indexed_by<"second"_n, const_mem_fun<item_unit, uint64_t, &item_unit::asset_key>>,
-                indexed_by<"container"_n, const_mem_fun<item_unit, uint64_t, &item_unit::container_key>>,
-                indexed_by<"slot"_n, const_mem_fun<item_unit, uint128_t, &item_unit::slot_key>>
-                
-            > item_units;
-
-
-            */            
+                        
         }
 
         // -- INCOMPLETO --
@@ -767,17 +1090,17 @@ CONTRACT boardbagebox : public eosio::contract {
 
 
 /*
--- ACTIONS for developers --
-- registerPublisher(owner, publisher, prefix, isapp): registra un publisher co un pefix (que deberá usar en el slug de las cartas y albums que publique)
-- addInventory(owner, publisher, settings...) // solo si publisher isapp
-- registerItemSpec(publisher, associated_app, settings...)
-- registerContainerSpec(publisher, settings...)
+    -- ACTIONS for developers --
+    - registerPublisher(owner, publisher, prefix, isapp): registra un publisher co un pefix (que deberá usar en el slug de las cartas y albums que publique)
+    - addInventory(owner, publisher, settings...) // solo si publisher isapp
+    - registerItemSpec(publisher, associated_app, settings...)
+    - registerContainerSpec(publisher, settings...)
 
--- ACTIONS for clients --
-- registerItemSpec(publisher, "cardsntokens", settings...) // se repite porque en C&T sería el cliente que quiere hacer una carta nueva
-- issueItems(publisher, quantity);
-- transferItems(from, to, units); // el destinatario debe tener espacio en su inventario de la aplicación asociada al item
-- moveItem() // swap del contenido de dos slots en mysql
+    -- ACTIONS for clients --
+    - registerItemSpec(publisher, "cardsntokens", settings...) // se repite porque en C&T sería el cliente que quiere hacer una carta nueva
+    - issueItems(publisher, quantity);
+    - transferItems(from, to, units); // el destinatario debe tener espacio en su inventario de la aplicación asociada al item
+    - moveItem() // swap del contenido de dos slots en mysql
 
 
 */
@@ -785,24 +1108,24 @@ CONTRACT boardbagebox : public eosio::contract {
 
 /*
 
--- Items & Containers --
+    -- Items & Containers --
 
--- Market --
-- subasta, ordenes de compra o venta
+    -- Market --
+    - subasta, ordenes de compra o venta
 
--- Masteries --
--- Masteries: Auras --
--- Masteries: Tokens --
+    -- Masteries --
+    -- Masteries: Auras --
+    -- Masteries: Tokens --
 
--- Gaming --
-- ranking
+    -- Gaming --
+    - ranking
 
--- Tournament --
+    -- Tournament --
 
--- Dice -- servicio de randomization con parametros para otros smart contracts.
+    -- Dice -- servicio de randomization con parametros para otros smart contracts.
 
 
-*/
+    */
 };
 
 }; // namespace
