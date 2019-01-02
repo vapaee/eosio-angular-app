@@ -45,7 +45,10 @@ fi
 
 echo "-------- boardgamebox ---------"
 cd $BOARDGAMEBOX_HOME
-if [[ boardgamebox.cpp -nt boardgamebox.wasm || boardgamebox.hpp -nt boardgamebox.wasm ]]; then
+if [[ boardgamebox.core.hpp -nt boardgamebox.wasm || 
+      boardgamebox.tables.hpp -nt boardgamebox.wasm ||
+      boardgamebox.cpp -nt boardgamebox.wasm ||
+      boardgamebox.hpp -nt boardgamebox.wasm ]]; then
     eosio-cpp -o boardgamebox.wasm boardgamebox.cpp --abigen -I ../includes
     cleos set contract boardgamebox $PWD -p boardgamebox@active
 fi

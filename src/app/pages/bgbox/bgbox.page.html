@@ -1,0 +1,21 @@
+<!-- 
+<div class="text-left margin-top-xxxl">
+    <pre>{{account|json}}</pre>
+</div>
+-->
+
+
+<div class="container margin-top-xxl">
+    <div class="card text-white bg-dark">
+        <div class="card-body">
+            <div class="row">
+                <div class="input-group col-sm-12">
+                    <input type="text" class="form-control form-control-sm" [value]="account.account_name" (input)="account.account_name = $event.target.value">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary btn-sm" (click)="search(account.account_name)">search</button>
+                    </div>
+                </div>            
+            </div>
+        </div>
+    </div>
+</div>

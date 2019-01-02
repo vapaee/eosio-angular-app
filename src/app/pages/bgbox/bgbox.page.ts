@@ -10,11 +10,11 @@ import { EosioTokenMathService } from 'src/app/services/eosio.token-math.service
 import { Observable, Subject } from 'rxjs';
 
 @Component({
-    selector: 'account-page',
-    templateUrl: './account.page.html',
-    styleUrls: ['./account.page.scss', '../common.page.scss']
+    selector: 'bgbox-page',
+    templateUrl: './bgbox.page.html',
+    styleUrls: ['./bgbox.page.scss', '../common.page.scss']
 })
-export class AccountPage implements OnInit {
+export class BGBoxPage implements OnInit {
 
     account: AccountData;
     data: any;
@@ -74,7 +74,7 @@ export class AccountPage implements OnInit {
     }
 
     search(account_name) {
-        console.log("AccountPage.search()", this.app.state, this.app.path);
+        console.log("BGBoxPage.search()", this.app.state, this.app.path);
 
         this.app.navigate("/" + this.scatter.network.slug + "/account/" + account_name);
         

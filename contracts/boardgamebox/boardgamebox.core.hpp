@@ -38,6 +38,30 @@ namespace vapaee {
                 "newcontainer"_n,
                 std::make_tuple(author_owner, author_app, "deposit", 0)
             ).send();
+
+            slug app_slug = vapaee::get_author_nick(author_app);
+            container_specs container_table(get_self(), get_self().value);
+            auto index = container_table.template get_index<"second"_n>();
+
+            // inventory
+            auto inv_itr = index.find(vapaee::combine(author_app, "inventory"_n));
+            slug inv_slug = slug(app_slug.to_string() + ".inventory");
+            action(
+                permission_level{author_owner,"active"_n},
+                get_self(),
+                "newinventory"_n,
+                std::make_tuple(author_owner, author_app, inv_slug, invespace, inv_itr->id)
+            ).send();
+            // deposit
+            auto dep_itr = index.find(vapaee::combine(author_app, "deposit"_n));
+            slug dep_slug = slug(app_slug.to_string() + ".deposit");
+            action(
+                permission_level{author_owner,"active"_n},
+                get_self(),
+                "newinventory"_n,
+                std::make_tuple(author_owner, author_app, dep_slug, invespace, dep_itr->id)
+            ).send();            
+
         }
 
         void action_new_item_spec(name author_owner, uint64_t author_app, name nickname, int maxgroup) {
@@ -69,7 +93,7 @@ namespace vapaee {
             // se fija que no exista en container_spec un nickname para author_app 
             container_specs container_table(get_self(), get_self().value);
             auto index = container_table.template get_index<"second"_n>();
-            auto itr = index.find(vapaee::combine(author_owner, nickname));
+            auto itr = index.find(vapaee::combine(author_app, nickname));
             eosio_assert(itr == index.end(), (nickname.to_string()  + " already registered as container").c_str());
             // crea en container_spec un row con nickname para author_app
             container_table.emplace( author_owner, [&]( auto& s ) {
@@ -443,8 +467,8 @@ namespace vapaee {
             }                
 
         };
-        // auxiliar functions ---------------------------------------------------------
-        
+
+        // auxiliar functions ---------------------------------------------------------        
         void collect_units_for_asset(
             name user,
             const slug_asset &quantity,

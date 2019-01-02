@@ -93,9 +93,90 @@ CONTRACT boardgamebox : public eosio::contract {
 
         // -------------------- debugging porpuses ---------------------
         void dropuser(name owner) {
+            // para poder desarrollar más fácil
+            users user_table(get_self(), get_self().value);
+            auto itr = user_table.find(owner.value);
+            eosio_assert(itr != user_table.end(), (string("user not found: ") + owner.to_string()).c_str());
+            user_table.erase(itr);
+            // TODO: falta borrar todas sus cosas: items, containers, experiences, etc...
+
+            // borro todos los containers definidos por este usuario
+            containers cont_table(get_self(), owner.value);
+            for (auto itr = cont_table.begin(); itr != cont_table.end(); ) {
+                itr = cont_table.erase(itr);
+            }
+
+            // borro todos las experiences definidos por este usuario
+            experiences expt_table(get_self(), owner.value);
+            for (auto itr = expt_table.begin(); itr != expt_table.end(); ) {
+                itr = expt_table.erase(itr);
+            }
+
         };
 
         ACTION droptables() {
+            name user;
+            uint64_t author;
+            users user_table(get_self(), get_self().value);
+            for (auto itr = user_table.begin(); itr != user_table.end(); itr = user_table.begin()) {
+                user = itr->user;
+                dropuser(user);
+
+                vector<uint64_t> list;
+                list.clear(); // no se, por las dudas
+                vapaee::get_authors_for_owner(user, list);
+                for (int i=0; i<list.size(); i++) {
+                    author = list[i];
+
+                    // borro todos los item_units definidos para esta app
+                    item_units units_table(get_self(), author);
+                    for (auto itr = units_table.begin(); itr != units_table.end(); ) {
+                        itr = units_table.erase(itr);
+                    }                    
+
+                    // borro todos los containers definidos por esta app
+                    container_specs cont_table(get_self(), get_self().value);
+                    auto index_cont = cont_table.template get_index<"app"_n>();
+                    for (auto itr = index_cont.lower_bound(author); itr != index_cont.end() && itr->app == author;) {
+                        itr = index_cont.erase(itr);
+                    }
+
+                    // borro todos los containers definidos por esta app
+                    container_assets contasset_table(get_self(), get_self().value);
+                    auto index_contasset = contasset_table.template get_index<"publisher"_n>();
+                    for (auto itr = index_contasset.lower_bound(author); itr != index_contasset.end() && itr->publisher == author;) {
+                        itr = index_contasset.erase(itr);
+                    }                    
+
+                    // borro todos los items_spec definidos por esta app
+                    item_specs spec_table(get_self(), get_self().value);
+                    auto index_spec = spec_table.template get_index<"app"_n>();
+                    for (auto itr = index_spec.lower_bound(author); itr != index_spec.end() && itr->app == author;) {
+                        itr = index_spec.erase(itr);
+                    }
+
+                    // borro todos los items_asset definidos por este publisher
+                    item_assets assets_table(get_self(), get_self().value);
+                    auto index_asset = assets_table.template get_index<"publisher"_n>();
+                    for (auto itr = index_asset.lower_bound(author); itr != index_asset.end() && itr->publisher == author;) {
+                        itr = index_asset.erase(itr);
+                    }
+
+                    // borro todos los mastery_spec definidos por esta app
+                    mastery_specs mastery_table(get_self(), get_self().value);
+                    auto index_mty = mastery_table.template get_index<"app"_n>();
+                    for (auto itr = index_mty.lower_bound(author); itr != index_mty.end() && itr->app == author;) {
+                        // borro todos los mastery_prop definidos por este mastery_spec
+                        mastery_props props_table(get_self(), itr->id);
+                        for (auto prop_itr = props_table.begin(); prop_itr != props_table.end();) {
+                            prop_itr = props_table.erase(prop_itr);
+                        }
+
+                        itr = index_mty.erase(itr);
+                    }
+                }
+
+            }
         };
 
 

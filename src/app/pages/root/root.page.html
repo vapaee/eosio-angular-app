@@ -26,6 +26,10 @@
                 <!--li class="nav-item" [ngClass]="{active: app.stateStartsWith('faq')}">
                     <a class="nav-link" routerLink="/faq" >{{local.string.FAQ}}</a>
                 </li-->
+                <li class="nav-item" [ngClass]="{active: app.stateStartsWith('bgbox')}">
+                    <a class="nav-link" [routerLink]="'/' + scatter.network.slug + '/bgbox'" >BG-Box</a>
+                </li>
+
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('account')}">
                     <a class="nav-link" [routerLink]="'/' + scatter.network.slug + '/account'" >{{local.string.Account}}</a>
                 </li>

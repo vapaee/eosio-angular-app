@@ -405,16 +405,19 @@ export class ScatterService {
             table_key: ""
         */
         console.log("ScatterService.queryAccountData("+name+") ");
-        this._account_queries[name] = this._account_queries[name] || new Promise<AccountData>((resolve) => {
+        this._account_queries[name] = this._account_queries[name] || new Promise<AccountData>((resolve, reject) => {
             console.log("PASO 1 ------", [this._account_queries])
             this.waitEosjs.then(() => {
                 console.log("PASO 2 (eosjs) ------");
                 this.eos.getAccount({account_name: name}).then((response) => {
                     console.log("PASO 3 (eosjs.getAccount) ------", response);
                     resolve(response);
+                }).catch((err) => {
+                    reject(err);
                 });
             }).catch((error) => {
                 console.error(error);
+                reject(error);
             });
         });
 
