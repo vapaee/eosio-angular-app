@@ -3,6 +3,76 @@ https://get-scatter.com/docs/examples-interaction-flow
 https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
 
 
+newapp
+newitem
+newcontainer
+
+newasset
+newinventory <- nuevo
+issueunits
+swap
+transfer
+transfunits
+newuser4app <- sacarle la parte de mastery
+newusercont
+open
+close
+burn
+droptables
+
+-- Versions --
+- Basic:
+  - users can register apps, items and containers
+  - publishers can create assets and issue units
+- Mastery
+newuserexp
+newmastery
+
+
+
+--------- Casos de uso Basico -----------
+-- All --
+- Register author 
+
+-- APPs --
+- Registro de una app (app_name, inventory, deposit)   // C&T
+- Registro de un item Spec                   // Card, Envelop, Box
+- Registro de container Spec                 // Album, Envelop, Box
+
+-- Publisher --
+- Registro de un Item Asset                  // openmic-w107-orrslaw-not-sorry: publicación de una carta específica
+- Registro de un Container Asset             // openmic-100-weeks: publicación de un album concreto
+- Issue copies of an Item Asset              // Crea N copias de una carta, que se sumarán al supply existente sin pasar de un máximo
+
+-- User --
+-- Swap units places (container / position)  // move cards in the inventory or album
+-- use container                             // issues an instance of Container Asset
+-- transfer units                            // give cards to someone else
+
+
+Las aplicaciones deben ser registradas dando el account del contrato inteligente que cumple con un api para poder avisarle cada evento.
+De esta manera el BG-Box se encarga con las reglas de Items y Containers Genéricos mientras que el el handler se encarga de reglas más específicas de la app.
+Por ejemplo, se pueden exigir comisiones por cada evento, cumplir con mínimos o máximos, disparar otras acciones como cobrar impuesto, etc.
+
+
+--------- Casos de uso Medio -----------
+-- market 
+  -- order units                               // creates an order to buy or sell any amount of owning copies of the same card
+  -- cancel order                              // cancel previously created order
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -33,44 +103,6 @@ En BG-Box tenés:
 
 ------------------------------------------                           
 
-cards&tokens
-masterystones
-
-
-
-
-
--- Scatter Apps --
-La Metadata se agrega generando un pull request y agregando la imagen en la carpeta como un svg
-https://github.com/GetScatter/ScatterApps
-
-
-el estado del CPU es este. Fijate cuanto dice mañana
-CPU used - 1495 Bytes / 24548 Bytes
-
-
-
-esto es lo que devuele una transacción:
-{"transaction_id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","processed":{"id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","block_num":28218650,"block_time":"2018-11-22T05:12:08.000","producer_block_id":null,"receipt":{"status":"executed","cpu_usage_us":300,"net_usage_words":17},"elapsed":300,"net_usage":136,"scheduled":false,"action_traces":[{"receipt":{"receiver":"eosio.token","act_digest":"fb8a00dce5cfbcfc3957327637c4074584b384afcbdb8f02f6db44cdf1d91f06","global_sequence":1919481787,"recv_sequence":293058129,"auth_sequence":[["gqydoobuhege",176]],"code_sequence":2,"abi_sequence":2},"act":{"account":"eosio.token","name":"transfer","authorization":[{"actor":"gqydoobuhege","permission":"active"}],"data":{"from":"gqydoobuhege","to":"dailyselfies","quantity":"0.0001 EOS","memo":"testing"},"hex_data":"a0986afa509abc6580955b51611f9d49010000000000000004454f53000000000774657374696e67"},"context_free":false,"elapsed":132,"console":"","trx_id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","block_num":28218650,"block_time":"2018-11-22T05:12:08.000","producer_block_id":null,"account_ram_deltas":[{"account":"gqydoobuhege","delta":240}],"except":null,"inline_traces":[{"receipt":{"receiver":"gqydoobuhege","act_digest":"fb8a00dce5cfbcfc3957327637c4074584b384afcbdb8f02f6db44cdf1d91f06","global_sequence":1919481788,"recv_sequence":253,"auth_sequence":[["gqydoobuhege",177]],"code_sequence":2,"abi_sequence":2},"act":{"account":"eosio.token","name":"transfer","authorization":[{"actor":"gqydoobuhege","permission":"active"}],"data":{"from":"gqydoobuhege","to":"dailyselfies","quantity":"0.0001 EOS","memo":"testing"},"hex_data":"a0986afa509abc6580955b51611f9d49010000000000000004454f53000000000774657374696e67"},"context_free":false,"elapsed":3,"console":"","trx_id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","block_num":28218650,"block_time":"2018-11-22T05:12:08.000","producer_block_id":null,"account_ram_deltas":[],"except":null,"inline_traces":[]},{"receipt":{"receiver":"dailyselfies","act_digest":"fb8a00dce5cfbcfc3957327637c4074584b384afcbdb8f02f6db44cdf1d91f06","global_sequence":1919481789,"recv_sequence":1,"auth_sequence":[["gqydoobuhege",178]],"code_sequence":2,"abi_sequence":2},"act":{"account":"eosio.token","name":"transfer","authorization":[{"actor":"gqydoobuhege","permission":"active"}],"data":{"from":"gqydoobuhege","to":"dailyselfies","quantity":"0.0001 EOS","memo":"testing"},"hex_data":"a0986afa509abc6580955b51611f9d49010000000000000004454f53000000000774657374696e67"},"context_free":false,"elapsed":4,"console":"","trx_id":"f700aa09a5ebb4fecc4281bed32fc5e76275d807e0e73bd514764fc6051371ab","block_num":28218650,"block_time":"2018-11-22T05:12:08.000","producer_block_id":null,"account_ram_deltas":[],"except":null,"inline_traces":[]}]}],"except":null}}
-
-git clone https://github.com/Telos-Foundation/telos.git
-cd telos
-git checkout stage3.2
-git submodule update --init --recursive
-./telos_build.sh         <<-- FALLA
-sudo ./telos_install.sh
-
-git clone https://github.com/EOSIO/eosio.cdt.git toolkit-eosio.cdt
-cd toolkit-eosio.cdt/
-git checkout v1.4.1
-git submodule update --init --recursive
-./build.sh
-
-git clone https://github.com/EOSIO/eos.git cleos
-cd cleos
-git checkout v1.4.1
-git submodule update --init --recursive
-./build.sh
 
 
 
@@ -83,7 +115,6 @@ sudo apt-get install gcc-4.9
 sudo apt-get upgrade libstdc++6
 
 
-Visual Code plugin (C++)
-ms-vscode.cpptools
-https://code.visualstudio.com/docs/languages/cpp
+
+
 

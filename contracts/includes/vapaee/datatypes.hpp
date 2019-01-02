@@ -5,14 +5,23 @@
 using namespace std;
 using namespace eosio;
 
+#define FULL64BITS 0xFFFFFFFFFFFFFFFF
+
 namespace vapaee {
 
     struct slotinfo {
-        uint8_t position;
-        uint8_t container;
+        uint64_t position;
+        uint64_t container;
         slotinfo():position(0), container(0) {}
         slotinfo(const slotinfo &c):position(c.position), container(c.container) {}
         uint128_t to128bits() const { return vapaee::combine(container, position); }
+        void setAux() {
+            position = FULL64BITS;
+            container = FULL64BITS;
+        }
+        bool isAux() const {
+            return position == FULL64BITS && container == FULL64BITS;
+        }        
         EOSLIB_SERIALIZE(slotinfo, (position)(container))
     };    
 

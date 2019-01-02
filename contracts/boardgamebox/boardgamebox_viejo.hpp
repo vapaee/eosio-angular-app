@@ -5,11 +5,13 @@
 #include <vapaee/vapaee_aux_functions.hpp>
 
 #define inventary_default_space 8
+#define NULL_MASTERY 0xFFFFFFFFFFFFFFFF
+
 
 using namespace eosio;
 namespace vapaee {
 
-CONTRACT boardbagebox : public eosio::contract {
+CONTRACT boardgamebox : public eosio::contract {
 
     private:
         // TABLE account (balances) -----------
@@ -46,7 +48,7 @@ CONTRACT boardbagebox : public eosio::contract {
                 indexed_by<"second"_n, const_mem_fun<item_unit, uint64_t, &item_unit::asset_key>>,
                 indexed_by<"container"_n, const_mem_fun<item_unit, uint64_t, &item_unit::container_key>>,
                 indexed_by<"slot"_n, const_mem_fun<item_unit, uint128_t, &item_unit::slot_key>>,
-                indexed_by<"owner"_n, const_mem_fun<item_unit, uint128_t, &item_unit::owner_key>>
+                indexed_by<"owner"_n, const_mem_fun<item_unit, uint64_t, &item_unit::owner_key>>
                 
             > item_units;
         // ------------------------------------
@@ -59,6 +61,7 @@ CONTRACT boardbagebox : public eosio::contract {
                 uint64_t    spec; // table container_specs.id
                 int        empty;
                 int        space;
+                vector<uint64_t> slots;
                 uint64_t primary_key() const { return id;  }
                 uint64_t spec_key() const { return spec; }
             };
@@ -232,7 +235,23 @@ CONTRACT boardbagebox : public eosio::contract {
     public:
         using contract::contract;
 
-        // 
+        // -- INCOMPLETO --
+        ACTION newapp(name owner, uint64_t app, int invespace) {
+            action(
+                permission_level{owner,"active"_n},
+                get_self(),
+                "newcontainer"_n,
+                std::make_tuple(owner, app, NULL_MASTERY, "inventory", invespace)
+            ).send();
+
+            action(
+                permission_level{owner,"active"_n},
+                get_self(),
+                "newcontainer"_n,
+                std::make_tuple(owner, app, NULL_MASTERY, "deposit", 0)
+            ).send();
+        }
+
         ACTION newmastery(
                 name author_owner,
                 uint64_t author_app,
@@ -335,6 +354,11 @@ CONTRACT boardbagebox : public eosio::contract {
 
         // --------------------- ITEM ------------------
         ACTION newitem(name author_owner, uint64_t author_app, name nickname, int maxgroup) {
+            // exigir al firma de author_owner y que sea el owner del author
+            name owner = vapaee::get_owner_for_author(asset.publisher);
+            require_auth(owner);
+            eosio_assert(owner == author_owner, "given author_owner is not the current owner of author");
+            
             // verifica que no exista un nickname para el author_app
             item_specs item_table(get_self(), get_self().value);
             auto index = item_table.template get_index<"second"_n>();
@@ -372,33 +396,44 @@ CONTRACT boardbagebox : public eosio::contract {
         };
 
         ACTION issueunits(name to, slug_asset quantity, string memo) {
-            // tiene que requerir la firma de quien sea que sea el owner actual del publisher de este asset
-            stats assets_table(get_self(), get_self().value);
-            auto index = assets_table.template get_index<"second"_n>();
-            auto itr = index.find(quantity.symbol.code().raw().to128bits());
-            eosio_assert(itr != index.end(), (quantity.to_string()  + " is not registered as item_asset").c_str());
-            name owner = vapaee::get_owner_for_author(itr->publisher);
-            require_auth(owner);
+
+            slug       asset_slug = quantity.symbol.code().raw();
+            item_asset asset;
+            item_spec  spec;
+            item_unit units;
+            boardgamebox::get_item_spec_for_slag(asset_slug, asset, spec);
 
             eosio_assert( quantity.is_valid(), "invalid quantity" );
-            eosio_assert( quantity.amount > 0, "must issue positive quantity" );
+            eosio_assert( quantity.amount > 0, "must issue positive quantity" );            
+
+            // tiene que requerir la firma de quien sea que sea el owner actual del publisher de este asset
+            name owner = vapaee::get_owner_for_author(asset.publisher);
+            require_auth(owner);
 
             // update total supply
-            eosio_assert(quantity.amount <= itr->max_supply.amount - itr->supply.amount, "Can't print over maximun");
-            assets_table.modify( *itr, same_payer, [&]( auto& s ) {
-                s.supply += quantity;
+            stats assets_table(get_self(), get_self().value);
+            eosio_assert(quantity.amount <= asset.max_supply.amount - asset.supply.amount, "Can't print over maximun");
+            assets_table.modify( asset, same_payer, [&]( auto& s ) {
+                s.supply.amount += quantity.amount;
             });
 
-            add_balance( owner, quantity, owner );
+            auto ram_payer = has_auth( to ) ? to : owner;
+            add_balance(to, quantity, ram_payer);
+
+            // cargo un item_unit con los datos del issue
+            units.owner = owner;
+            units.asset = asset.id;
+            units.quantity = quantity.amount;
+            // hago instanciar en memoria un item_unit con estos datos en un slot del container "deposit" de este usuario
+            put_slot_in_deposit(to, quantity.symbol, spec, units);
         };
 
         static void get_mastery(uint64_t mastery_id, mastery_spec &mastery) {
             // find container_spec for app|inventory
             name _self = "boardgamebox"_n;
             mastery_specs cont_spec_table(_self, _self.value);
-            auto index = cont_spec_table.get_index();
-            auto itr = index.find( mastery_id );
-            eosio_assert(itr != index.end(), "no mastery registered for id");
+            auto itr = cont_spec_table.find( mastery_id );
+            eosio_assert(itr != cont_spec_table.end(), "no mastery registered for id");
             
             // poblate answer
             mastery.id = itr->id;
@@ -408,30 +443,37 @@ CONTRACT boardbagebox : public eosio::contract {
             mastery.row = itr->row;
         }
 
-        static void find_app_inventory(name user, uint64_t app, container_instance &container) {
+        static void find_app_inventory(name user, uint64_t app, container_spec &spec, container_instance &container) {
             // find container_spec for app|inventory
-            boardbagebox::find_app_container(user, app, "inventory"_n ,container);
+            boardgamebox::find_app_container(user, app, "inventory"_n, spec ,container);
         }
 
-        static void find_app_container(name user, uint64_t app, name nick, container_instance &container) {
-            // find container_spec for app|inventory
+        static void find_app_container(name user, uint64_t app, name nick, container_spec &spec, container_instance &container) {
+            // find container_spec for app|container
             name _self = "boardgamebox"_n;
             container_specs cont_spec_table(_self, _self.value);
             auto index = cont_spec_table.template get_index<"second"_n>();
             auto itr = index.find( vapaee::combine(app, nick) );
-            eosio_assert(itr != index.end(), "no inventory registered for app");
+            eosio_assert(itr != index.end(), "no container registered for app");
             
             // find container_instance of the user for that spec
             containers cont_table(_self, user.value);
             auto index_inv = cont_table.template get_index<"spec"_n>();
             auto itr_inv = index_inv.find( vapaee::combine(app, nick) );
-            eosio_assert(itr_inv != index_inv.end(), "no inventory registered for app");
+            eosio_assert(itr_inv != index_inv.end(), "no container registered for app");
 
             // poblate answer
+            spec.id = itr->id;
+            spec.nick = itr->nick;
+            spec.app = itr->app;
+            spec.mastery = itr->mastery;
+            spec.space = itr->space;
+
             container.id = itr_inv->id;
             container.spec = itr_inv->spec;
             container.empty = itr_inv->empty;
             container.space = itr_inv->space;
+            container.slots = itr_inv->slots;
         }
 
         static void get_item_asset_for_slag(const slug &asset_slug, item_asset &asset) {
@@ -458,38 +500,38 @@ CONTRACT boardbagebox : public eosio::contract {
             asset.block = itr->block;
         }
 
-        static void get_item_spec_for_slag(const slug &asset_slug, item_asset &asset, item_asset &asset, item_spec &spec) {
+        static void get_item_spec_for_slag(const slug &asset_slug, item_asset &asset, item_spec &spec) {
             name _self = "boardgamebox"_n;
             item_specs specs_table(_self, _self.value);
-            boardbagebox::get_item_asset_for_slag(asset_slug, asset);
-            auto index = specs_table.get_index();
-            auto itr = index.find(asset.spec);
-            eosio_assert(itr != index.end(), "asset point to a null spec");
+            boardgamebox::get_item_asset_for_slag(asset_slug, asset);
+            auto itr = specs_table.find(asset.spec);
+            eosio_assert(itr != specs_table.end(), "asset point to a null spec");
 
             spec.id = itr->id;
             spec.nick = itr->nick;
             spec.app = itr->app;
             spec.maxgroup = itr->maxgroup;
-        }        
-
-        ACTION transfer( name         from,
-                         name         to,
-                         slug_asset   quantity,
-                         string       memo) {
+        }
+        
+        static void collect_units_for_asset(
+            name user,
+            const slug_asset &quantity,
+            vector<uint64_t> units,
+            vector<int> quantities) {
+            // ------------------------------
 
             // aux variables
             slug asset_slug = quantity.symbol.code().raw();
             item_asset asset;
             item_spec spec;
-            boardgamebox::get_item_spec_for_slag(quantity.symbol.code().raw(), asset, spec);
+            boardgamebox::get_item_spec_for_slag(asset_slug, asset, spec);
 
             // we search over owner's units of this asset. We put the first quantity.amount units id ina list
             uint64_t asset_id = asset.id;
-            vector<uint64_t> units;
-            vector<int> quantities;
-            item_units units_from(get_self(), spec.app);
+            name _self = "boardgamebox"_n;
+            item_units units_table(_self, spec.app);
             int plus_quantity, listed;
-            auto units_index = units_from.template get_index<"second"_n>();
+            auto units_index = units_table.template get_index<"second"_n>();
             auto units_itr = units_index.lower_bound(asset_id);
             for (listed=0; listed<quantity.amount && units_itr != units_index.end(); units_itr++) {
                 if (units_itr->asset == asset_id) {
@@ -505,6 +547,15 @@ CONTRACT boardbagebox : public eosio::contract {
 
             // we ensure 'from' has enough units to send
             eosio_assert(listed == quantity.amount, (string("Not enough items of asset ") + asset_slug.to_string()).c_str());
+        }
+
+        ACTION transfer( name         from,
+                         name         to,
+                         slug_asset   quantity,
+                         string       memo) {
+            vector<uint64_t> units;
+            vector<int> quantities;
+            boardgamebox::collect_units_for_asset(from, quantity, units, quantities);
 
             // we call for a unit list trastaction to be perfpormed
             action(
@@ -541,13 +592,13 @@ CONTRACT boardbagebox : public eosio::contract {
             add_balance(to, quantity, ram_payer);
 
             // Encuentro un nuevo slot vacío para cada unidad y a continuación hago un swap
-            slotinfo target_slot;
+            item_unit unit;
             item_asset asset;
             item_spec spec;
-            boardbagebox::get_item_spec_for_slag(quantity.symbol.code().raw(), asset, spec);
+            boardgamebox::get_item_spec_for_slag(quantity.symbol.code().raw(), asset, spec);
             for (int i=0; i<items.size(); i++) {
-                find_room_for_unit(to, quantity.symbol, spec, target_slot);
-                swap(from, items[i], spec.app, to, target_slot, ram_payer, quantities[i]);
+                find_inventory_slot(to, quantity.symbol, spec, unit);
+                swap(from, items[i], spec.app, quantities[i], to, unit.slot, ram_payer);
             }
         };
 
@@ -560,17 +611,16 @@ CONTRACT boardbagebox : public eosio::contract {
             uint64_t container_id = user_containers.available_primary_key();
 
             mastery_specs registered_mastery(get_self(), get_self().value);
-            auto reg_mastery_index = registered_mastery.get_index();
-            auto reg_mastery_itr = reg_mastery_index.find(mastery);
+            auto reg_mastery_itr = registered_mastery.find(mastery);
             uint64_t container_spec_id = reg_mastery_itr->container;
 
             container_specs registered_cont(get_self(), get_self().value);
             auto reg_cont_index = registered_cont.template get_index<"app"_n>();
-            auto reg_cont_itr = reg_cont_index.lower_bound(app);
+            auto reg_cont_itr = reg_cont_index.lower_bound(reg_mastery_itr->app);
 
             // call for container creation
             action(
-                permission_level{from,"active"_n},
+                permission_level{user,"active"_n},
                 get_self(),
                 "newusercont"_n,
                 std::make_tuple(user, container_spec_id, ram_payer)
@@ -620,9 +670,8 @@ CONTRACT boardbagebox : public eosio::contract {
             require_auth(user);
 
             container_specs specs_table(get_self(), get_self().value);
-            auto index = specs_table.get_index();
-            auto spec_itr = index.find(spec);
-            eosio_assert(spec_itr != index.end(), "container_spec not found");
+            auto spec_itr = specs_table.find(spec);
+            eosio_assert(spec_itr != specs_table.end(), "container_spec not found");
 
             containers user_containers(get_self(), user.value);
             auto reg_cont_index = user_containers.template get_index<"spec"_n>();
@@ -637,7 +686,7 @@ CONTRACT boardbagebox : public eosio::contract {
             });
         }
 
-        ACTION newuser4app (name user, uint64_t, app, name ram_payer) {
+        ACTION newuser4app (name user, uint64_t app, name ram_payer) {
             // El objetivo es crearle al usuario todas las instancias de containers y masteries registrados por esa app
             require_auth(user);
 
@@ -650,7 +699,7 @@ CONTRACT boardbagebox : public eosio::contract {
 
             experiences user_experiences(get_self(), user.value);
             auto reg_exp_index = user_experiences.template get_index<"mastery"_n>();
-            auto user_exp_itr = reg_exp_index.begin();        
+            // auto user_exp_itr = reg_exp_index.begin();        
             // iterar sobre todos los mastery_spec registrados por esta app
             for (
                 auto reg_mastery_itr = reg_mastery_index.lower_bound(app);
@@ -663,8 +712,8 @@ CONTRACT boardbagebox : public eosio::contract {
                     continue;
                 }
 
-                user_exp_itr = reg_exp_index.find(reg_mastery_itr->id);
-                if (user_exp_itr == user_experiences.end()) {
+                auto user_exp_itr = reg_exp_index.find(reg_mastery_itr->id);
+                if (user_exp_itr == reg_exp_index.end()) {
                     // we call for a unit list trastaction to be perfpormed
                     action(
                         permission_level{user,"active"_n},
@@ -677,7 +726,7 @@ CONTRACT boardbagebox : public eosio::contract {
 
             containers user_containers(get_self(), user.value);
             auto cont_index = user_containers.template get_index<"spec"_n>();
-            auto user_cont_itr = cont_index.begin();
+            // auto user_cont_itr = cont_index.begin();
             // iterar sobre todos los container_spec registrados por esta app
             for (
                 auto reg_cont_itr = reg_cont_index.lower_bound(app);
@@ -685,13 +734,13 @@ CONTRACT boardbagebox : public eosio::contract {
                 reg_cont_itr++ ) {
 
                 // verificar que no pertenezca a una mastery
-                if (reg_cont_index->mastery.value != (uint64_t)0) {
+                if (reg_cont_itr->mastery != NULL_MASTERY) {
                     // skip this one because is a mastery container (not an app container)
                     continue;
                 }
 
-                user_cont_itr = reg_cont_index.find(reg_cont_itr->id);
-                if (user_cont_itr == reg_cont_index.end()) {
+                auto user_cont_itr = cont_index.find(reg_cont_itr->id);
+                if (user_cont_itr == cont_index.end()) {
                     // we call for a unit list trastaction to be perfpormed
                     action(
                         permission_level{user,"active"_n},
@@ -701,12 +750,9 @@ CONTRACT boardbagebox : public eosio::contract {
                     ).send();
                 }
             }
-
-            
         };
-
         
-        void swap_self(
+        void swap(
             name from,
             uint64_t unit,
             uint64_t app,
@@ -714,6 +760,8 @@ CONTRACT boardbagebox : public eosio::contract {
             name to,
             const slotinfo &target_slot,
             name ram_payer) {
+            // assert positive quantity
+            eosio_assert(quantity > 0, "can't transfer 0 units");
 
             // SWAP: un usuario ueve de lugar uno de sus items
             // no se crean ni se destruyen rows, sólo se modifican
@@ -726,8 +774,9 @@ CONTRACT boardbagebox : public eosio::contract {
             // origin_slot
             auto from_units_itr = units_table.find(unit);
             string error_str1 = string("unit does not exist for account ") + from.to_string();
-            eosio_assert(from_units_itr != from_units_table.end(), error_str1.c_str());
+            eosio_assert(from_units_itr != units_table.end(), error_str1.c_str());
             eosio_assert(quantity <= from_units_itr->quantity, "cant transfer more units that exist in origin slot");
+            eosio_assert(from_units_itr->owner == from, "origin slot owner != 'from'");                
 
             // asset table
             stats assets_table(get_self(), get_self().value);
@@ -743,6 +792,7 @@ CONTRACT boardbagebox : public eosio::contract {
             containers from_containers_table(get_self(), from.value);
             auto from_cont_itr = from_containers_table.find(from_units_itr->slot.container);
             eosio_assert(from_cont_itr != from_containers_table.end(), "contaner instance for 'from' does no exist");
+            
             // to container table
             containers to_containers_table(get_self(), to.value);
             auto to_cont_itr = to_containers_table.find(target_slot.container);
@@ -753,6 +803,8 @@ CONTRACT boardbagebox : public eosio::contract {
                 // hay algo en el slot destino así que debemos hacer un swap o  acumular las unidades en el target_slot
                 // hay que averiguar si se pueden acumular en el mismo slot 
                 bool acumulables = false;
+
+                eosio_assert(target_slot_itr->owner == to, "target slot owner != 'to'");                
 
                 // hay que averiguar si ambos unidades pertenecen al mismo item_asset
                 auto to_asset_itr = assets_table.find(target_slot_itr->asset);
@@ -777,11 +829,12 @@ CONTRACT boardbagebox : public eosio::contract {
 
                 if (acumulables) {
                     // hay que incrementarle el target_slot_itr->quantity
-                    units_table.modify( *target_slot_itr, ram_payer, [&]( auto& a ) {
+                    units_table.modify( *target_slot_itr, same_payer, [&]( auto& a ) {
                         a.quantity += quantity;
-                    });       
+                    });
+
                     if (quantity == from_units_itr->quantity) {
-                        // tengo que incrementar en 1 el empty del container porque voy a eliminar un slot y juntar todo en el target_slot
+                        // Si el contenedor origen es real, tengo que incrementar en 1 el empty porque voy a eliminar un slot y juntar todo en el target_slot
                         from_containers_table.modify(*from_cont_itr, ram_payer, [&](auto &a){
                             a.empty += 1;
                         });
@@ -789,7 +842,6 @@ CONTRACT boardbagebox : public eosio::contract {
                         // this slot is empty
                         units_table.modify( *from_units_itr, ram_payer, [&]( auto& a ) {
                             a.quantity = 0;
-                            a.asset = (uint64_t)0;
                         });
                     } else {
                         // hay que restarle al slot origen quantity
@@ -803,11 +855,13 @@ CONTRACT boardbagebox : public eosio::contract {
                     units_table.modify( *target_slot_itr, ram_payer, [&]( auto& a ) {
                         a.slot.container = from_units_itr->slot.container;
                         a.slot.position = from_units_itr->slot.position;
+                        a.owner = from;
                     });
 
-                    units_table.modify( *from_units_itr, ram_payer, [&]( auto& a ) {
+                    units_table.modify( *from_units_itr, same_payer, [&]( auto& a ) {
                         a.slot.container = target_slot.container;
                         a.slot.position = target_slot.position;
+                        a.owner = to;
                     });
                 }                    
             } else {
@@ -815,22 +869,24 @@ CONTRACT boardbagebox : public eosio::contract {
                 // vemos si hay que mover todas las unidades del slot
                 if (quantity == from_units_itr->quantity) {
                     if (target_slot_itr != slots_index.end()) {
-                        // en este caso ya existía un slot instanciado en ese lugar destino, así que lo intercambiamos con el lugar de origen
+                        // en este caso ya existía un slot instanciado en ese lugar destino, así que se lo intercambiamos al 'from' con el lugar de origen
                         eosio_assert(target_slot_itr->quantity == 0, "swap target slot is not empty");
                         units_table.modify( *target_slot_itr, ram_payer, [&]( auto& a ) {
-                            a.slot.container = from_units_itr->container;
-                            a.slot.position = from_units_itr->position;
+                            a.slot.container = from_units_itr->slot.container;
+                            a.slot.position = from_units_itr->slot.position;
+                            a.owner = from;
                         });
                     }
-                    // simplemente modificamos el slot de from_units_itr
-                    units_table.modify( *from_units_itr, ram_payer, [&]( auto& a ) {
+                    // el 'from' simplemente le pasa el slot entero a 'to'
+                    units_table.modify( *from_units_itr, same_payer, [&]( auto& a ) {
                         a.slot.container = target_slot.container;
                         a.slot.position = target_slot.position;
+                        a.owner = to;
                     });
 
                     if (to_cont_itr != from_cont_itr) {
                         // decrementar empty destino
-                        to_containers_table.modify(*to_cont_itr, ram_payer, [&](auto &a){
+                        to_containers_table.modify(*to_cont_itr, same_payer, [&](auto &a){
                             a.empty -= 1;
                         }); 
 
@@ -859,7 +915,7 @@ CONTRACT boardbagebox : public eosio::contract {
                     } else {
                         // ya tenemos el slot, hay que cargarle las unidades
                         eosio_assert(target_slot_itr->quantity == 0, "swap target slot is not empty");
-                        units_table.modify( *target_slot_itr, ram_payer, [&]( auto& a ) {
+                        units_table.modify( *target_slot_itr, same_payer, [&]( auto& a ) {
                             a.asset = from_units_itr->asset;
                             a.quantity = quantity;
                         });                            
@@ -868,53 +924,105 @@ CONTRACT boardbagebox : public eosio::contract {
                     eosio_assert(to_cont_itr !=  to_containers_table.end(), "target container does not exist");
 
                     // decrementar empty destino
-                    to_containers_table.modify(*to_cont_itr, ram_payer, [&](auto &a){
+                    to_containers_table.modify(*to_cont_itr, same_payer, [&](auto &a){
                         a.empty -= 1;
                     });
                 }
             }
         }
 
-        // -- INCOMPLETO --
-        void swap_p2p(name from, uint64_t unit, uint64_t app, int quantity, name to, const slotinfo &target_slot, name ram_payer) {
-            
-            // TRANSFER: es una transferencia de un usuario a otro
-            // - exigir que el target_slot esté vacío (no existe swap de units ni agrupamiento)
-            // - crear un nuevo row en el item_unit del usuario "to" y ponerle la unidad ahi
-            // - eliminar el row del item_unit para el usuario "from"
-            // - exigir container.empty > 0
-            // - from_container.empty += 1;
-            // - target_container.empty -= 1;            
-        }
+        void put_slot_in_deposit(name owner, const slug_symbol& symbol, const item_spec &spec, item_unit &units) {
+            // primero obtengo la instancia de container para el usuario
+            container_specs contspec_table(get_self(), get_self().value);
+            auto index_deposit = contspec_table.template get_index<"second"_n>();
+            auto deposit_spec_itr = index_deposit.find(vapaee::combine(spec.app, "deposit"_n));
+            eosio_assert(deposit_spec_itr != index_deposit.end(), "app didn't register deposit inventory");
 
-        void swap(name from, uint64_t unit, uint64_t app, int quantity, name to, const slotinfo &target_slot, name ram_payer) {
-            // assert positive quantity
-            eosio_assert(quantity > 0, "can't transfer 0 units");
+            containers cont_table(get_self(), owner.value);
+            auto index_cont = cont_table.template get_index<"spec"_n>();
+            auto deposit_itr = index_cont.find(deposit_spec_itr->id);
+            eosio_assert(deposit_itr != index_cont.end(), "user does not have deposit container");
 
-            if (from == to) {
-                swap_self(from, unit, app, quantity, target_slot, ram_payer);
+            item_units units_table(get_self(), spec.app);
+            auto unit_itr = units_table.begin();
+
+            uint64_t slot_id;
+            // si tiene slots vacios en lista
+            if (deposit_itr->slots.size() > 0) {
+                // saco el primero (pop)
+                slot_id = deposit_itr->slots[deposit_itr->slots.size()-1];
+                cont_table.modify( *deposit_itr, same_payer, [&](auto &a) {
+                    a.slots.pop_back();
+                });
+                
+                // lo relleno con la info de units
+                unit_itr = units_table.find(slot_id);
+                units_table.modify( *unit_itr, same_payer, [&](auto &a) {
+                    a.asset = units.asset;
+                    a.quantity = units.quantity;
+                });                
             } else {
-                swap_p2p(from, unit, app, quantity, target_slot, ram_payer);
+                // la lista de slots es vacía
+                // instancio un nuevo item_unit y le copio todo la info de units
+                units_table.emplace( owner, [&](auto &a) {
+                    a.id = units_table.available_primary_key();
+                    a.owner = owner;
+                    a.asset = units.asset;
+                    a.quantity = units.quantity;
+                    a.slot.container = units.slot.container;
+                    a.slot.position = units.slot.position;
+                });                
             }
         }
 
-        // -- INCOMPLETO --
-        void find_room_for_unit(name owner, const slug_symbol& symbol, item_spec &spec, slotinfo &slot) {
-            // TODO: implementar
-            // 
+        void find_inventory_slot(name owner, const slug_symbol& symbol, const item_spec &spec, item_unit & unit) {
             // tengo que saber dar con la instancia de container del usuario para este tipo de item
-            container_instance container;
-            boardbagebox::find_app_inventory(owner, spec.app, container);
+            container_instance inventory;
+            container_spec inv_spec;
+            boardgamebox::find_app_inventory(owner, spec.app, inv_spec, inventory);
+            eosio_assert(inventory.empty > 0, "User does not have any space left in the app inventory");
 
-            eosio_assert(container.empty > 0, "User does not have any space left in the app inventory");
+            item_units units_table(get_self(), spec.app);
+            uint64_t unit_id = 0;
 
+            if (inventory.slots.size() > 0) {
+                // tengo slots libres instanciados así que tomo el último y cargo la respuesta
+                unit_id = inventory.slots[inventory.slots.size()-1];
+                auto unit_itr = units_table.find(unit_id);
+                unit.id = unit_id;
+                unit.owner = owner;
+                unit.slot.container = inventory.id;
+                unit.slot.position = unit_itr->slot.position;
+                unit.quantity = 0;
+            } else {
+                // tengo que pedir un iterador sobre los item_units de este container
+                auto unit_index = units_table.template get_index<"slot"_n>();
+                auto unit_itr = unit_index.upper_bound(inventory.id);
+                uint64_t next_position = 0;
+                for ( ; unit_itr != unit_index.end(); unit_itr++) {
+                    // para cada item_unit del inventario pedirle su posición y quedarme con la pos más baja+1
+                    if (unit_itr->slot.container == inventory.id) {
+                        next_position = unit_itr->slot.position + 1;
+                        break;
+                    }
+                }
 
+                // instancio un item_unit con el owner, id, slot.position encontrada, quantity = 0 
+                unit_id = units_table.available_primary_key();
+                units_table.emplace(owner, [&](auto &a){
+                    a.id = unit_id;
+                    a.owner = owner;
+                    a.slot.container = inventory.id;
+                    a.slot.position = next_position;
+                    a.quantity = 0;
+                });
 
-            // el container.empty > 0
-            // tengo que recorrer los item_units ordenados por posición y filtrado por container
-            // buscar el menor posicion que esté disponible
-            // poblar el slotinfo con container/newposition
-                        
+                // tengo que agregar el item_unit.id a la lista de cointainer.slots porque sigue vacío
+                containers cont_table(get_self(), owner.value);
+                cont_table.modify(inventory, owner, [&](auto &a){
+                    a.slots.push_back(unit_id);
+                });
+            }                        
         }
 
         // -- INCOMPLETO --
@@ -940,10 +1048,31 @@ CONTRACT boardbagebox : public eosio::contract {
             account_table.erase( *itr );
         };
 
-        // -- INCOMPLETO --
-        ACTION burn( name owner, const slug_asset& quantity ) {
-            // cualquie rusuario puede quemar una cantidad de sus promias unidades
-            // TODO: implementar
+        ACTION burn( name owner, const slug_asset& quantity, slotinfo & slot) {
+            require_auth(owner);
+
+            slug asset_slug = quantity.symbol.code().raw();
+            item_asset asset;
+            item_spec spec;
+            boardgamebox::get_item_spec_for_slag(asset_slug, asset, spec);
+
+            item_units units_table(get_self(), spec.app);
+            auto slot_index = units_table.template get_index<"slot"_n>();
+            auto unit = slot_index.find(slot.to128bits());
+            eosio_assert(unit != slot_index.end(), "slot does not point to a unit for this slug_asset");
+
+            units_table.modify(*unit, owner, [&](auto &a){
+                a.quantity = 0;
+            });
+
+            containers cont_table(get_self(), owner.value);
+            auto cont = cont_table.find(unit->slot.container);
+            eosio_assert(cont != cont_table.end(), "slot does not point to a container for this user");
+            cont_table.modify(*cont, owner, [&](auto&a){
+                a.slots.push_back(unit->id);
+            });
+
+            sub_balance(owner, quantity);
         };
 
         // -------------------- debugging porpuses ---------------------

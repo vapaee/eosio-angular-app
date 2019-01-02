@@ -7,7 +7,7 @@ YOUVOTE_HOME=$HOME/contracts/_examples/youvote
 
 CARDSNTOKENS_HOME=$HOME/contracts/cardsntokens
 VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
-BOARDGAMEBOX_HOME=$HOME/contracts/boardbagebox
+BOARDGAMEBOX_HOME=$HOME/contracts/boardgamebox
 VAPAEEAUTHOR_HOME=$HOME/contracts/vapaeeauthor
 LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 
@@ -43,11 +43,11 @@ fi
 
 # --------------------------------------------------------------------
 
-echo "-------- boardbagebox ---------"
+echo "-------- boardgamebox ---------"
 cd $BOARDGAMEBOX_HOME
-if [[ boardbagebox.cpp -nt boardbagebox.wasm || boardbagebox.hpp -nt boardbagebox.wasm ]]; then
-    eosio-cpp -o boardbagebox.wasm boardbagebox.cpp --abigen -I ../includes
-    cleos set contract boardbagebox $PWD -p boardbagebox@active
+if [[ boardgamebox.cpp -nt boardgamebox.wasm || boardgamebox.hpp -nt boardgamebox.wasm ]]; then
+    eosio-cpp -o boardgamebox.wasm boardgamebox.cpp --abigen -I ../includes
+    cleos set contract boardgamebox $PWD -p boardgamebox@active
 fi
 
 echo "-------- vapaeeauthor ---------"
