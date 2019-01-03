@@ -15,13 +15,19 @@ import { EosioAccountComponent } from './components/eosio-account/eosio-account.
 import { EosioTokenMathService } from './services/eosio.token-math.service';
 import { LoadingOverall } from './services/common/app.service';
 import { VideoPage } from './pages/video/video.page';
+import { BGBoxPage } from './pages/bgbox/bgbox.page';
+import { AppsPage } from './pages/apps/apps.page';
+import { NewAppPage } from './pages/newapp/newapp.page';
 
 @NgModule({
     declarations: [
         AppComponent,
         HomePage,
         VideoPage,
+        BGBoxPage,
         NotFoundPage,
+        AppsPage,
+        NewAppPage,
         RootPage,
         AccountPage,
         IdenticonComponent,

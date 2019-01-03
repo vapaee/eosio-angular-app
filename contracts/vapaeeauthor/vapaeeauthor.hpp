@@ -15,7 +15,7 @@ CONTRACT vapaeeauthor : public eosio::contract {
         {}
 
 
-        ACTION registernick(name owner, string nickstr) {
+        ACTION registernick(name owner, string nickstr, string title) {
             // print(string(" owner: ") + owner.to_string());
             // print(string(" nick: ") + nick.to_string());
             require_auth( owner );
@@ -36,6 +36,7 @@ CONTRACT vapaeeauthor : public eosio::contract {
                 s.id            = this->authors.available_primary_key();
                 s.owner         = owner;
                 s.nick          = nick;
+                s.title         = title;
             });
             
         }
@@ -90,6 +91,7 @@ CONTRACT vapaeeauthor : public eosio::contract {
             uint64_t        id;
             name         owner;
             slug          nick;
+            string       title;
             uint64_t primary_key() const { return id;  }
             uint64_t by_owner_key() const { return owner.value;  }
             uint128_t secondary_key() const { return nick.to128bits(); }

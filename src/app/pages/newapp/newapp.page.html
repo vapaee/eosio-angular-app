@@ -1,0 +1,87 @@
+<div class="container margin-top-xxl">
+    <div class="card text-white bg-dark">
+        <div class="card-header">
+            <span class="text-lg color-green">Register New App</span>
+        </div>        
+        <div class="card-body">
+            <div class="row">
+                <div class="input-group col-sm-2">
+                    <span class="label">owner:</span>
+                </div>
+                <div class="input-group col-sm-10">
+                    <input type="text disabled" class="form-control form-control-sm" [value]="data.owner">
+                </div>
+            </div>
+            <div class="row margin-top">
+                <div class="input-group col-sm-2">
+                    <span class="label">Title:</span>
+                </div>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control form-control-sm" [value]="data.title || ''" (input)="data.title = $event.target.value">
+                </div>
+            </div>
+            <div class="row margin-top">                
+                <div class="input-group col-sm-2">
+                    <span class="label">namespace:</span>
+                </div>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control form-control-sm" [value]="data.nick || ''" (input)="data.nick = $event.target.value">
+                </div>
+                
+                <!--
+                <div class="input-group col-sm-12">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text form-control-sm">transfer</span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm" [value]="data.amount" (input)="data.amount = $event.target.value">
+                    <div class="input-group-append">
+                        <span class="input-group-text form-control-sm">to</span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm" [value]="data.to" (input)="data.to = $event.target.value">
+                    <div class="input-group-append">
+                        <span class="input-group-text form-control-sm">saying</span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm" [value]="data.memo" (input)="data.memo = $event.target.value">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary btn-sm" (click)="transfer()">now</button>
+                    </div>
+                </div>                    
+                -->
+       
+            </div>
+            <div class="row margin-top">
+                <div class="col-sm-12">
+                    <div class="pull-right">
+                        <span class="btn btn-primary" (click)="register()">Register</span>
+                    </div>
+                    <div class="pull-right">
+                        <span class="btn btn-primary" (click)="transfer()">Transfer</span>
+                    </div>
+                    <div class="pull-right">
+                        <span class="btn btn-primary" (click)="testScatterOnLocalNetwork()">testScatterOnLocalNetwork</span>
+                    </div>
+                </div>
+            </div>            
+            <div class="row margin-top">
+                <div class="input-group col-sm-12">
+                    <pre>{{data|json}}</pre>
+                </div>            
+            </div>            
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container margin-top-xxl">
+    <div class="card text-white bg-dark">
+        <div class="card-body">
+            <div class="row margin-top">
+                <div class="input-group col-sm-12">
+                    <pre>{{scatter.account|json}}</pre>
+                </div>            
+            </div>            
+        </div>
+    </div>
+</div>
+

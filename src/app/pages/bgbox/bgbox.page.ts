@@ -16,10 +16,7 @@ import { Observable, Subject } from 'rxjs';
 })
 export class BGBoxPage implements OnInit {
 
-    account: AccountData;
-    data: any;
-    response: any;
-    last_trx:string;
+    apps: any[];
     
     constructor(
         public app: AppService,
@@ -28,69 +25,30 @@ export class BGBoxPage implements OnInit {
         private route: ActivatedRoute,
         public tokenMath: EosioTokenMathService
     ) {
-        
+        this.apps = [];
     }
     
-    onNetworkChange(network) {
-        this.app.loading = true;
-        this.scatter.queryAccountData(this.account.account_name).then((account) => {
-            this.account = account;
-            this.app.loading = false;
-        }).catch((err) => {
-            this.app.loading = false;
-        });
-        this.data.amount = "0.0001 " + this.scatter.network.symbol;
-    }
-
     ngOnInit() {
-        this.data = {
-            to: "gqydoobuhege",
-            amount: "0.0001 EOS",
-            memo: "testing"
-        };
-
-        this.account = {
-            account_name:"guesst",
-            dummie: true
-        };
-        var name = this.route.snapshot.paramMap.get('name');
-        // console.log("name", name);
-        if (name) {
-            this.account.account_name = name;
-            if (this.scatter.account && this.scatter.account.name == name) {
-                this.account = this.scatter.account.data;
-            }
-            this.scatter.onNetworkChange.subscribe(this.onNetworkChange.bind(this));
-            setTimeout(() => {
-                this.scatter.setNetwork(this.scatter.network.slug, this.scatter.network.index);
-            }, 300);            
-        } else {
-            this.scatter.waitReady.then(() => {
-                if (this.scatter.logged) {
-                    this.app.navigate("/" + this.scatter.network.slug + "/account/" + this.scatter.account.name);
-                }
-            });
-        }        
+        var contract = "vapaeeauthor";
+        var scope = "vapaeeauthor";
+        var table = "authors";
+        var table_key = "0";
+        var lower_bound = "0";
+        var upper_bound = "-1";
+        var limit = 10;
+        var key_type = "i64"
+        var index_position = "1";
+        this.scatter.getTableRows(contract, scope, table, table_key, lower_bound, upper_bound, limit, key_type, index_position).then((result) => {
+            console.log("AAAAAAAAAAAAA this.scatter.getTableRows--> ", result);
+            for( var j = 0; j < result.rows.length; j++) {
+                console.log("result.rows[j]", result.rows[j]);
+            };
+            this.apps = result.rows;
+        })
     }
 
-    search(account_name) {
-        console.log("BGBoxPage.search()", this.app.state, this.app.path);
-
-        this.app.navigate("/" + this.scatter.network.slug + "/account/" + account_name);
-        
-        setTimeout(() => {
-            this.scatter.setNetwork(this.scatter.network.slug, this.scatter.network.index);
-        }, 300);        
-    }
-
-    login() {
-        this.scatter.login().then(() => {
-            if (this.scatter.logged) {
-                this.app.navigate("/" + this.scatter.network.slug + "/account/" + this.scatter.account.name);
-            }
-        });
-    }
-
+    /*
+    
     transfer() {
         // this.scatter.transfer(this.scatter.account.name, this.data.to, this.data.amount, this.data.memo);        
         this.app.loading = true;
@@ -117,6 +75,8 @@ export class BGBoxPage implements OnInit {
             console.error("err", e);
             this.app.loading = false;
         }
-    }
+    }    
+    */
+
 
 }

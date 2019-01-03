@@ -32,6 +32,7 @@ export class AccountPage implements OnInit {
     }
     
     onNetworkChange(network) {
+        console.log("AccountPage.onNetworkChange()");
         this.app.loading = true;
         this.scatter.queryAccountData(this.account.account_name).then((account) => {
             this.account = account;
@@ -96,12 +97,15 @@ export class AccountPage implements OnInit {
         this.app.loading = true;
         try {
             this.scatter.getContract("eosio.token").then(contract => {
+                const transactionOptions = {
+                    authorization:[`${this.scatter.account.name}@${this.scatter.account.authority}`]
+                };                
                 contract.transfer({
                     from:  this.scatter.account ? this.scatter.account.name : this.account.account_name,
                     memo: this.data.memo,
                     quantity: this.data.amount,
                     to: this.data.to
-                }).then((response => {
+                }, transactionOptions).then((response => {
                     console.log("response", response);
                     this.last_trx = response.transaction_id;
                     this.app.loading = false;
