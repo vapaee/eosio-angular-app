@@ -3,30 +3,14 @@ https://get-scatter.com/docs/examples-interaction-flow
 https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
 
 
-newapp
-newitem
-newcontainer
-
-newasset
-newinventory <- nuevo
-issueunits
-swap
-transfer
-transfunits
-newuser4app <- sacarle la parte de mastery
-newusercont
-open
-close
-burn
-droptables
-
--- Versions --
-- Basic:
-  - users can register apps, items and containers
-  - publishers can create assets and issue units
-- Mastery
-newuserexp
-newmastery
+---- TODO ----
+- box.action_new_app al final hay que ejecutar un evento dirigido al account de la app para verificar que es una app (y tiene handler para el evento)
+- transformar en javascript el datatype slug que viene como {top,low} en una string legible
+- generar un inline event al account de la aplicación involucrada después de realizado cada uno de los eventos de bgbox para que maneje los detalles
+- pasar en limpio el scatter:
+  - que se pueda ejecutar cualquier función en cualquier momento y si no está logueado que haga las dos cosas juntas (loguearse y ejecutar transacción)
+  - la librería no debería tratar de conectarse sólo una vez al principio sino cada N segundos
+  
 
 
 

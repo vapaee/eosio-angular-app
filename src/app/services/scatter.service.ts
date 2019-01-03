@@ -4,9 +4,9 @@ import ScatterEOS from 'scatterjs-plugin-eosjs'
 import Eos from 'eosjs';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+// import { EOS, Scatter, AccountData, Account, Endpoint, Eosconf, Network, ScatterJSDef } from './scatter.datatypes.service';
 
-declare var ScatterJS:any;
-
+// declare var ScatterJS:any;
 export interface EOS {
     getInfo:Function,
     getAccount:Function,
@@ -196,17 +196,19 @@ export interface Network {
     endpoints: Endpoint[]
 }
 
-export interface ScatterJS {
+export interface ScatterJSDef {
     plugins?:any,
     scatter?:any
 }
+
 
 @Injectable()
 export class ScatterService {
     
     public error: string;
+    private appTitle: string;
     private lib: Scatter;
-    private ScatterJS: ScatterJS;
+    private ScatterJS: ScatterJSDef;
     private _network: Network;
     private _networks: {[key:string]:Network};
     private _networks_slugs: string[];
@@ -232,6 +234,7 @@ export class ScatterService {
     });    
     
     constructor(private http: HttpClient) {
+        this.appTitle = "Cards & Tokens";
         this._networks_slugs = [];
         this._networks = {};
         this._network = {
@@ -347,7 +350,6 @@ export class ScatterService {
     initScatter() {
         console.log("ScatterService.initScatter()");
         this.error = "";
-        const connectionOptions = {initTimeout:10000}
         if ((<any>window).ScatterJS) {
             this.ScatterJS = (<any>window).ScatterJS;
             this.lib = this.ScatterJS.scatter;  
@@ -356,27 +358,36 @@ export class ScatterService {
         }
         console.log("EOSJS()",[this.network.eosconf]);
         this.eos = this.lib.eos(this.network.eosconf, Eos, { expireInSeconds:60 });
-        console.log("this.eos <<--------");
         this.setEosjs(this.eos);
-        this.lib.connect("Cards & Tokens", connectionOptions).then(connected => {
-            console.log("this.lib.connect()", connected);
-            if(!connected) {
-                this.error = "ERROR: can not connect to Scatter. Is it up and running?";
-                console.error(this.error);
-                return false;
-            }
-            // Get a proxy reference to eosjs which you can use to sign transactions with a user's Scatter.
-            console.log("ScatterService.setConnected()");
-            this.setConnected();
-            if (this.logged) {
-                this.login().then(() => this.setReady());
-            } else {
-                console.log("ScatterService.setReady()");
-                this.setReady();
-            }
-        });        
+        if (this.appTitle) this.connectApp(this.appTitle);
     }
 
+    connectApp(appTitle:string = "") {
+        if (appTitle != "") this.appTitle = appTitle;
+        console.log("ScatterService.connectApp("+this.appTitle+")");
+        const connectionOptions = {initTimeout:10000}
+        this.waitEosjs.then(() => {
+            this.lib.connect(this.appTitle, connectionOptions).then(connected => {
+                // si está logueado this.lib.identity se carga sólo y ya está disponible
+                console.log("this.lib.connect()", connected);
+                if(!connected) {
+                    this.error = "ERROR: can not connect to Scatter. Is it up and running?";
+                    console.error(this.error);
+                    return false;
+                }
+                // Get a proxy reference to eosjs which you can use to sign transactions with a user's Scatter.
+                console.log("ScatterService.setConnected()");
+                this.setConnected();
+                if (this.logged) {
+                    this.login().then(() => this.setReady());
+                } else {
+                    console.log("ScatterService.setReady()");
+                    this.setReady();
+                }
+            });    
+        });
+        return this.waitReady;
+    }
 
     private setIdentity(identity:any) {
         console.log("ScatterService.setIdentity()", identity);
@@ -391,7 +402,6 @@ export class ScatterService {
         });
     }
 
-    
     queryAccountData(name:string): Promise<AccountData> {
         /*
         // get_table_rows
@@ -470,7 +480,6 @@ export class ScatterService {
             });   
         });
     }
-
 
     login() {
         console.log("ScatterService.login()");

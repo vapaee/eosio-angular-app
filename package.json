@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --poll=2000",
-    "serve": "ng serve --poll=2000",
+    "start": "ng serve --poll=2000 -o",
+    "serve": "ng serve --poll=2000 -o",
     "build": "ng build",
     "postinstall": "node src/patch.js",
     "save": "git add -A; git commit -m 'save'; git push;",

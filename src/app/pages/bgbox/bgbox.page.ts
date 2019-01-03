@@ -39,12 +39,10 @@ export class BGBoxPage implements OnInit {
         var key_type = "i64"
         var index_position = "1";
         this.scatter.getTableRows(contract, scope, table, table_key, lower_bound, upper_bound, limit, key_type, index_position).then((result) => {
-            console.log("AAAAAAAAAAAAA this.scatter.getTableRows--> ", result);
             for( var j = 0; j < result.rows.length; j++) {
-                console.log("result.rows[j]", result.rows[j]);
             };
             this.apps = result.rows;
-        })
+        });
     }
 
     /*
