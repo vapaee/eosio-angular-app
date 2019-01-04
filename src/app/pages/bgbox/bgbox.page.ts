@@ -17,6 +17,10 @@ import { Observable, Subject } from 'rxjs';
 export class BGBoxPage implements OnInit {
 
     apps: any[];
+    code_0:number;
+    code_9:number;
+    code_a:number;
+    code_f:number;
     
     constructor(
         public app: AppService,
@@ -26,6 +30,49 @@ export class BGBoxPage implements OnInit {
         public tokenMath: EosioTokenMathService
     ) {
         this.apps = [];
+        this.code_0 = "0".charCodeAt(0);
+        this.code_9 = "9".charCodeAt(0);
+        this.code_a = "a".charCodeAt(0);
+        this.code_f = "f".charCodeAt(0);
+
+        console.log(this.code_0, this.code_9, this.code_a, this.code_f);
+    }
+
+    decodeNibble(nib, char) {
+        var nibble = [0,0,0,0];
+        var value = 0;
+        if (this.code_0 <= nib && nib <= this.code_9) {
+            value = nib - this.code_0;
+        } else if (this.code_a <= nib && nib <= this.code_f) {
+            value = nib - this.code_a + 10;
+        }
+
+
+        console.log("decodeNibble()", nib, char, value);
+
+        return ;
+    }
+
+    decodeUint64(_num: string) {
+        var num:string = _num.substr(2);
+        console.log("num: ", num);
+        for (var i=0; i<num.length; i++) {
+            this.decodeNibble(num.charCodeAt(i), num[i]);
+        }
+    }
+
+    decodificarSlug(nick:{top:string,low:string,str?:string}) {
+        // decodificarSlug() 0x41ae9c04d34873482a78000000000000 0x00000000000000000000000000000010
+        console.log("decodificarSlug()", nick.top, nick.low);
+        // var top_array:string[] = nick.top.split(""); top_array.shift(); top_array.shift();
+        // var low_array:string[] = nick.low.split(""); low_array.shift(); low_array.shift();
+        var top = this.decodeUint64(nick.top);
+
+
+
+
+        nick.str = nick.top + nick.low;
+        return nick;
     }
     
     ngOnInit() {
@@ -40,6 +87,7 @@ export class BGBoxPage implements OnInit {
         var index_position = "1";
         this.scatter.getTableRows(contract, scope, table, table_key, lower_bound, upper_bound, limit, key_type, index_position).then((result) => {
             for( var j = 0; j < result.rows.length; j++) {
+                result.rows[j].nick = this.decodificarSlug(result.rows[j].nick);
             };
             this.apps = result.rows;
         });
