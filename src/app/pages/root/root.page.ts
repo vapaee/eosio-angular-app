@@ -36,6 +36,7 @@ export class RootPage implements OnInit {
         } else {
             this.scatter.setNetwork("eos");
         }
+        this.scatter.connectApp("Cards & Tokens").catch(err => console.error(err));
     }
 
     collapseMenu() {

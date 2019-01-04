@@ -43,20 +43,18 @@ export class NewAppPage implements OnInit {
         this.app.loading = true;
         try {
             this.scatter.getContract("vapaeeauthor").then(contract => {
+                console.log('NewAppPage.register() --> this.scatter.getContract("vapaeeauthor") --> ', this.scatter.authorization);
                 try {
-                    const transactionOptions = {
-                        authorization:[`${this.scatter.account.name}@${this.scatter.account.authority}`]
-                    };
                     contract.registernick({
                         owner:  this.data.owner,
                         nickstr: this.data.nick,
                         title: this.data.title
-                    }, transactionOptions).then((response => {
+                    }, this.scatter.authorization).then((response => {
                         console.log("response", response);
                         this.last_trx = response.transaction_id;
                         this.app.loading = false;
                     })).catch(err => {
-                        console.error("err", err);
+                        console.error(err);
                         this.app.loading = false;
                     });
                 } catch (e) {
@@ -64,7 +62,7 @@ export class NewAppPage implements OnInit {
                     this.app.loading = false;
                 }
             }).catch(err => {
-                console.error("err", err);
+                console.error(err);
                 this.app.loading = false;
             });
         } catch (e) {

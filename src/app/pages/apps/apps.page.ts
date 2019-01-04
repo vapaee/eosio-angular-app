@@ -32,6 +32,7 @@ export class AppsPage implements OnInit {
     }
     
     ngOnInit() {
+
     }
 
 

@@ -96,25 +96,22 @@ export class AccountPage implements OnInit {
         // this.scatter.transfer(this.scatter.account.name, this.data.to, this.data.amount, this.data.memo);        
         this.app.loading = true;
         try {
-            this.scatter.getContract("eosio.token").then(contract => {
-                const transactionOptions = {
-                    authorization:[`${this.scatter.account.name}@${this.scatter.account.authority}`]
-                };                
+            this.scatter.getContract("eosio.token").then(contract => {      
                 contract.transfer({
                     from:  this.scatter.account ? this.scatter.account.name : this.account.account_name,
                     memo: this.data.memo,
                     quantity: this.data.amount,
                     to: this.data.to
-                }, transactionOptions).then((response => {
+                }, this.scatter.authorization).then((response => {
                     console.log("response", response);
                     this.last_trx = response.transaction_id;
                     this.app.loading = false;
                 })).catch(err => {
-                    console.error("err", err);
+                    console.error(err);
                     this.app.loading = false;
                 });
             }).catch(err => {
-                console.error("err", err);
+                console.error(err);
                 this.app.loading = false;
             });
         } catch (e) {

@@ -2,6 +2,9 @@ import { Injectable, Component } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AnalyticsService } from './analytics.service';
 import { DomService } from './dom.service';
+import { Subject } from 'rxjs';
+import { Network } from '../scatter.service';
+
 
 @Injectable({
     providedIn: 'root'
@@ -74,9 +77,15 @@ export class AppService {
         console.log("isBlink", this.isBlink);
     }
 
+    private triggerOnInit: Function;
+    public onInit: Promise<any> = new Promise((resolve) => {
+        this.triggerOnInit = resolve;
+    });
+
     init() {
         this.detectBrowser();
         this.dom.appendComponentToBody(LoadingOverall);
+        this.triggerOnInit();
     }
 
     getDeepestChild(node:any):any {
