@@ -8,7 +8,6 @@ import { AppComponent } from './app.component';
 import { HomePage } from './pages/home/home.page';
 import { NotFoundPage } from './pages/not-found/not-found.page';
 import { RootPage } from './pages/root/root.page';
-import { ScatterService } from './services/scatter.service';
 import { AccountPage } from './pages/account/account.page';
 import { IdenticonComponent } from './components/identicon/identicon.component';
 import { EosioAccountComponent } from './components/eosio-account/eosio-account.component';
@@ -17,7 +16,14 @@ import { LoadingOverall } from './services/common/app.service';
 import { VideoPage } from './pages/video/video.page';
 import { BGBoxPage } from './pages/bgbox/bgbox.page';
 import { AppsPage } from './pages/apps/apps.page';
-import { NewAppPage } from './pages/newapp/newapp.page';
+import { RegisterPage } from './pages/register/register.page';
+
+
+import { ScatterService } from './services/scatter.service';
+import { BGBoxService } from './services/bgbox.service';
+import { VapaeeService } from './services/vapaee.service';
+
+
 
 @NgModule({
     declarations: [
@@ -27,7 +33,7 @@ import { NewAppPage } from './pages/newapp/newapp.page';
         BGBoxPage,
         NotFoundPage,
         AppsPage,
-        NewAppPage,
+        RegisterPage,
         RootPage,
         AccountPage,
         IdenticonComponent,
@@ -44,6 +50,8 @@ import { NewAppPage } from './pages/newapp/newapp.page';
     ],
     providers: [
         ScatterService,
+        BGBoxService,
+        VapaeeService,
         EosioTokenMathService
     ],
     bootstrap: [AppComponent]

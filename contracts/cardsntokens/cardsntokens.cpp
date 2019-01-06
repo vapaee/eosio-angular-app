@@ -4,4 +4,4 @@ namespace vapaee {
 
 };
 
-EOSIO_DISPATCH( vapaee::cardsntokens, )
+EOSIO_DISPATCH( vapaee::cardsntokens, (bgboxevent)(droptables))

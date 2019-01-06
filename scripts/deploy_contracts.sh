@@ -13,26 +13,26 @@ LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 
 TESTING_HOME=$HOME/contracts/testing
 
-# echo "-------- hello ---------"
-# cd $HELLO_HOME
-# if [[ hello.cpp -nt hello.wasm ]]; then
-#     eosio-cpp -o hello.wasm hello.cpp --abigen
-#     cleos set contract hello $PWD -p hello@active
-# fi
-# 
-# echo "-------- addressbook ---------"
-# cd $ADDRESSBOOK_HOME
-# if [[ addressbook.cpp -nt addressbook.wasm ]]; then
-#     eosio-cpp -o addressbook.wasm addressbook.cpp --abigen
-#     cleos set contract addressbook $PWD -p addressbook@active
-# fi
-# 
-# echo "-------- abcounter ---------"
-# cd $ABCOUNTER_HOME
-# if [[ abcounter.cpp -nt abcounter.wasm ]]; then
-#     eosio-cpp -o abcounter.wasm abcounter.cpp --abigen
-#     cleos set contract abcounter $PWD -p abcounter@active
-# fi
+echo "-------- hello ---------"
+cd $HELLO_HOME
+if [[ hello.cpp -nt hello.wasm ]]; then
+    eosio-cpp -o hello.wasm hello.cpp --abigen
+    cleos set contract hello $PWD -p hello@active
+fi
+
+echo "-------- addressbook ---------"
+cd $ADDRESSBOOK_HOME
+if [[ addressbook.cpp -nt addressbook.wasm ]]; then
+    eosio-cpp -o addressbook.wasm addressbook.cpp --abigen
+    cleos set contract addressbook $PWD -p addressbook@active
+fi
+
+echo "-------- abcounter ---------"
+cd $ABCOUNTER_HOME
+if [[ abcounter.cpp -nt abcounter.wasm ]]; then
+    eosio-cpp -o abcounter.wasm abcounter.cpp --abigen
+    cleos set contract abcounter $PWD -p abcounter@active
+fi
 
 # echo "-------- youvote ---------"
 # cd $YOUVOTE_HOME

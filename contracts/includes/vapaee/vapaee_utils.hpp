@@ -1,6 +1,6 @@
 #pragma once
 #include <eosiolib/eosio.hpp>
-#include <vapaee/vapaee_aux_functions.hpp>
+#include <vapaee/vapaee_utils.hpp>
 
 using namespace std;
 using namespace eosio;
@@ -44,14 +44,14 @@ namespace vapaee {
     static name get_author_owner(uint64_t author_id) {
         author_slugs authors("vapaeeauthor"_n, ("vapaeeauthor"_n).value);
         auto itr = authors.find(author_id);
-        eosio_assert(itr != authors.end(), "Author id does NOT exist");
+        eosio_assert(itr != authors.end(), (string("Author id does NOT exist: ") + std::to_string((int) author_id)).c_str()  );
         return itr->owner;
     }
 
-    static slug get_author_nick(uint64_t author_id) {
+    static const slug& get_author_nick(uint64_t author_id) {
         author_slugs authors("vapaeeauthor"_n, ("vapaeeauthor"_n).value);
         auto itr = authors.find(author_id);
-        eosio_assert(itr != authors.end(), "Author id does NOT exist");
+        eosio_assert(itr != authors.end(), (string("Author id does NOT exist: ") + std::to_string((int) author_id)).c_str()  );
         return itr->nick;
     }
 

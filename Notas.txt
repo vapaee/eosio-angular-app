@@ -3,6 +3,11 @@ https://get-scatter.com/docs/examples-interaction-flow
 https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
 
 
+cleos wallet unlock
+"PW5KG6YzAowdzRaNWEH1PterYoYUCPpBpMYxNN3EctcECw1Ke5vgS" (home)
+"PW5KVpRdxvAWfAYVD62sNWqyVN7R4fohFQC7VVgYpXKNrbRCTYRBv" (im)
+
+
 ---- TODO ----
 - box.action_new_app al final hay que ejecutar un evento dirigido al account de la app para verificar que es una app (y tiene handler para el evento)
 - transformar en javascript el datatype slug que viene como {top,low} en una string legible

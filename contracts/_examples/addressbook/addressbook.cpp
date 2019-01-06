@@ -11,6 +11,7 @@ public:
   addressbook(name receiver, name code,  datastream<const char*> ds): contract(receiver, code, ds) {}
   
   ACTION upsert(name user, std::string first_name, std::string last_name, uint64_t age, std::string street, std::string city, std::string state) {
+    print("\nACTION addressbook.upsert()\n");
     require_auth(user);
 
     address_index addresses(_code, _code.value);
@@ -74,8 +75,7 @@ public:
     }
   }
 
-  [[eosio::action]]
-  void erase(name user) {
+  ACTION erase(name user) {
     require_auth(user);
     address_index addresses(_code, _code.value);
     auto iterator = addresses.find(user.value);
@@ -85,9 +85,8 @@ public:
     increment_counter(user, "erase");
   }
 
-  [[eosio::action]]
-  void notify(name user, std::string msg) {
-    print("addressbook.notify() user: ", user, " msg: ", msg.c_str(), " | ");
+  ACTION notify(name user, std::string msg) {
+    print("\nACTION addressbook.notify() user: ", user, " msg: ", msg.c_str(), "\n");
     require_auth(get_self());
     require_recipient(user);
   }
@@ -108,18 +107,21 @@ private:
   };
 
   void send_summary(name user, std::string message) {
+    
     action(
       permission_level{get_self(),"active"_n},
       get_self(),
       "notify"_n,
       std::make_tuple(user, name{user}.to_string() + message)
     ).send();
+    
   };
   
   void increment_counter(name user, std::string type) {
     print("addressbook.increment_counter() user: ", user, " type: ", type.c_str(), " | ");
     action counter = action(
-      permission_level{get_self(),"active"_n},
+      permission_level{user,"active"_n},
+      // permission_level{get_self(),"active"_n},
       "abcounter"_n,
       "count"_n,
       std::make_tuple(user, type)
