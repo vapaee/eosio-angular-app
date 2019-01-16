@@ -67,10 +67,6 @@ export class BGBoxPage implements OnInit {
         // var top_array:string[] = nick.top.split(""); top_array.shift(); top_array.shift();
         // var low_array:string[] = nick.low.split(""); low_array.shift(); low_array.shift();
         var top = this.decodeUint64(nick.top);
-
-
-
-
         nick.str = nick.top + nick.low;
         return nick;
     }
@@ -83,7 +79,7 @@ export class BGBoxPage implements OnInit {
         var lower_bound = "0";
         var upper_bound = "-1";
         var limit = 10;
-        var key_type = "i64"
+        var key_type = "i64";
         var index_position = "1";
         this.scatter.getTableRows(contract, scope, table, table_key, lower_bound, upper_bound, limit, key_type, index_position).then((result) => {
             for( var j = 0; j < result.rows.length; j++) {
