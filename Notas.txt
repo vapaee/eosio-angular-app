@@ -107,3 +107,56 @@ sudo apt-get upgrade libstdc++6
 
 
 
+ ------------------------------------------------------------------------------
+
+ cleos push action appserver inside '["bob","hello from the inside"]' -p bob@active
+executed transaction: d6aaf87e59bbf5c98cf613d4f371eac957ef7255e1c7ec2185685c352561e510  128 bytes  1628 us
+#     appserver <= appserver::inside            {"signatory":"bob","message":"hello from the inside"}
+>> 
+#     appserver <= appserver::notify            {"signatory":"bob","message":"hello from the inside"}
+>> 
+#           bob <= appserver::notify            {"signatory":"bob","message":"hello from the inside"}
+warning: transaction executed locally, but may not be confirmed by the network yet   
+
+
+
+---------------
+
+debug 2019-01-16T03:31:09.064 thread-0  apply_context.cpp:28          print_debug          ] 
+[(appserver,inside)->appserver]: CONSOLE OUTPUT BEGIN =====================
+
+ACTION appserver.inside() signatory: bob msg: hello from the inside
+
+[(appserver,inside)->appserver]: CONSOLE OUTPUT END   =====================
+debug 2019-01-16T03:31:09.064 thread-0  apply_context.cpp:28          print_debug          ] 
+[(appserver,notify)->appserver]: CONSOLE OUTPUT BEGIN =====================
+
+ACTION appserver.notify() signatory: bob msg: hello from the inside
+
+[(appserver,notify)->appserver]: CONSOLE OUTPUT END   =====================
+
+
+--------------------------------------------------------------------------------
+cleos push action appserver outside '["bob","hello for the outside"]' -p bob@active
+Error 3090003: Provided keys, permissions, and delays do not satisfy declared authorizations
+Ensure that you have the related private keys inside your wallet and your wallet is unlocked.
+
+---------------
+
+error 2019-01-16T03:32:49.100 thread-0  http_plugin.cpp:580           handle_exception     ] FC Exception encountered while processing chain.push_transaction
+debug 2019-01-16T03:32:49.100 thread-0  http_plugin.cpp:581           handle_exception     ] Exception Details: 3090003 unsatisfied_authorization: Provided keys, permissions, and delays do not satisfy declared authorizations
+transaction declares authority '{"actor":"appserver","permission":"active"}', but does not have signatures for it under a provided delay of 0 ms, provided permissions [{"actor":"appserver","permission":"eosio.code"}], provided keys [], and a delay max limit of 3888000000 ms
+    {"auth":{"actor":"appserver","permission":"active"},"provided_delay":0,"provided_permissions":[{"actor":"appserver","permission":"eosio.code"}],"provided_keys":[],"delay_max_limit_ms":3888000000}
+    thread-0  authorization_manager.cpp:517 check_authorization
+pending console output: 
+ACTION appserver.outside() signatory: bob msg: hello for the outside
+
+    {"console":"\nACTION appserver.outside() signatory: bob msg: hello for the outside\n"}
+    thread-0  apply_context.cpp:72 exec_one
+
+
+--- solution ? ---------
+https://eosio.stackexchange.com/a/1711/2452
+dio erorr y deribó en esta pregunta (issue)
+https://github.com/EOSIO/eos/issues/6617
+

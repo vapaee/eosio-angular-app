@@ -4,6 +4,8 @@ HELLO_HOME=$HOME/contracts/_examples/hello
 ADDRESSBOOK_HOME=$HOME/contracts/_examples/addressbook
 ABCOUNTER_HOME=$HOME/contracts/_examples/abcounter
 YOUVOTE_HOME=$HOME/contracts/_examples/youvote
+APPSERVER_HOME=$HOME/contracts/_examples/appserver
+APPPLUGIN_HOME=$HOME/contracts/_examples/appplugin
 
 CARDSNTOKENS_HOME=$HOME/contracts/cardsntokens
 VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
@@ -13,27 +15,42 @@ LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 
 TESTING_HOME=$HOME/contracts/testing
 
-echo "-------- hello ---------"
-cd $HELLO_HOME
-if [[ hello.cpp -nt hello.wasm ]]; then
-    eosio-cpp -o hello.wasm hello.cpp --abigen
-    cleos set contract hello $PWD -p hello@active
+echo "-------- appserver ---------"
+cd $APPSERVER_HOME
+if [[ appserver.cpp -nt appserver.wasm ]]; then
+    eosio-cpp -o appserver.wasm appserver.cpp --abigen
+    cleos set contract appserver $PWD -p appserver@active
 fi
 
-echo "-------- addressbook ---------"
-cd $ADDRESSBOOK_HOME
-if [[ addressbook.cpp -nt addressbook.wasm ]]; then
-    eosio-cpp -o addressbook.wasm addressbook.cpp --abigen
-    cleos set contract addressbook $PWD -p addressbook@active
+echo "-------- appplugin ---------"
+cd $APPPLUGIN_HOME
+if [[ appplugin.cpp -nt appplugin.wasm ]]; then
+    eosio-cpp -o appplugin.wasm appplugin.cpp --abigen
+    cleos set contract appplugin $PWD -p appplugin@active
 fi
 
-echo "-------- abcounter ---------"
-cd $ABCOUNTER_HOME
-if [[ abcounter.cpp -nt abcounter.wasm ]]; then
-    eosio-cpp -o abcounter.wasm abcounter.cpp --abigen
-    cleos set contract abcounter $PWD -p abcounter@active
-fi
 
+# echo "-------- hello ---------"
+# cd $HELLO_HOME
+# if [[ hello.cpp -nt hello.wasm ]]; then
+#     eosio-cpp -o hello.wasm hello.cpp --abigen
+#     cleos set contract hello $PWD -p hello@active
+# fi
+# 
+# echo "-------- addressbook ---------"
+# cd $ADDRESSBOOK_HOME
+# if [[ addressbook.cpp -nt addressbook.wasm ]]; then
+#     eosio-cpp -o addressbook.wasm addressbook.cpp --abigen
+#     cleos set contract addressbook $PWD -p addressbook@active
+# fi
+# 
+# echo "-------- abcounter ---------"
+# cd $ABCOUNTER_HOME
+# if [[ abcounter.cpp -nt abcounter.wasm ]]; then
+#     eosio-cpp -o abcounter.wasm abcounter.cpp --abigen
+#     cleos set contract abcounter $PWD -p abcounter@active
+# fi
+# 
 # echo "-------- youvote ---------"
 # cd $YOUVOTE_HOME
 # if [[ youvote.cpp -nt youvote.wasm ]]; then
