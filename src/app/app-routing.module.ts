@@ -6,8 +6,7 @@ import { NotFoundPage } from './pages/not-found/not-found.page';
 import { AccountPage } from './pages/account/account.page';
 import { VideoPage } from './pages/video/video.page';
 import { BGBoxPage } from './pages/bgbox/bgbox.page';
-import { AppsPage } from './pages/apps/apps.page';
-import { NewAppPage } from './pages/newapp/newapp.page';
+import { RegisterPage } from './pages/register/register.page';
 
 const routes: Routes = [
   { path: '',                     data: { state: "root" }, redirectTo: '/eos/home', pathMatch: 'full' },
@@ -16,7 +15,7 @@ const routes: Routes = [
       { path: 'home',             data: { state: "home" }, component: HomePage },
       { path: 'video',            data: { state: "video" }, component: VideoPage },
       { path: 'bgbox',            data: { state: "bgbox" }, component: BGBoxPage, children: [
-          { path: 'newapp',         data: { state: "newapp" }, component: NewAppPage },
+          { path: 'register',         data: { state: "register" }, component: RegisterPage },
       ] },
       { path: 'account',          data: { state: "account" }, component: AccountPage},
       { path: 'account/:name',    data: { state: "account_name" }, component: AccountPage }      

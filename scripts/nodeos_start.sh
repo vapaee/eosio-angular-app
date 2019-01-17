@@ -13,5 +13,7 @@ nodeos -e -p eosio \
 --contracts-console \
 --http-validate-host=false \
 —filter-on=‘*’ >> /var/www/blockchain/eosio/nodeos.log 2>&1 &
-echo "tail -f /var/www/blockchain/eosio/nodeos.log"
+
+
+tail -f /var/www/blockchain/eosio/nodeos.log
 

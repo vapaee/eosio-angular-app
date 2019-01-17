@@ -4,6 +4,8 @@ HELLO_HOME=$HOME/contracts/_examples/hello
 ADDRESSBOOK_HOME=$HOME/contracts/_examples/addressbook
 ABCOUNTER_HOME=$HOME/contracts/_examples/abcounter
 YOUVOTE_HOME=$HOME/contracts/_examples/youvote
+APPSERVER_HOME=$HOME/contracts/_examples/appserver
+APPPLUGIN_HOME=$HOME/contracts/_examples/appplugin
 
 CARDSNTOKENS_HOME=$HOME/contracts/cardsntokens
 VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
@@ -12,6 +14,21 @@ VAPAEEAUTHOR_HOME=$HOME/contracts/vapaeeauthor
 LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 
 TESTING_HOME=$HOME/contracts/testing
+
+echo "-------- appserver ---------"
+cd $APPSERVER_HOME
+if [[ appserver.cpp -nt appserver.wasm ]]; then
+    eosio-cpp -o appserver.wasm appserver.cpp --abigen
+    cleos set contract appserver $PWD -p appserver@active
+fi
+
+echo "-------- appplugin ---------"
+cd $APPPLUGIN_HOME
+if [[ appplugin.cpp -nt appplugin.wasm ]]; then
+    eosio-cpp -o appplugin.wasm appplugin.cpp --abigen
+    cleos set contract appplugin $PWD -p appplugin@active
+fi
+
 
 # echo "-------- hello ---------"
 # cd $HELLO_HOME
@@ -33,7 +50,7 @@ TESTING_HOME=$HOME/contracts/testing
 #     eosio-cpp -o abcounter.wasm abcounter.cpp --abigen
 #     cleos set contract abcounter $PWD -p abcounter@active
 # fi
-
+# 
 # echo "-------- youvote ---------"
 # cd $YOUVOTE_HOME
 # if [[ youvote.cpp -nt youvote.wasm ]]; then

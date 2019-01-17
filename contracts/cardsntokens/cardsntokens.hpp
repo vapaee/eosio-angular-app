@@ -90,6 +90,12 @@ CONTRACT cardsntokens : public eosio::contract {
         ACTION droptables(name owner) {
             // para poder desarrollar más fácil
         };
+
+        ACTION bgboxevent(name event, name owner, uint64_t itemunit) {
+            print(string("cardsntokens.bgboxevent() ") + event.to_string() + ": " + owner.to_string() + ", " + std::to_string((int)itemunit));
+        };
+
+        
 };
 
 

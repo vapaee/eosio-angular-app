@@ -2,7 +2,7 @@
 #include <eosiolib/print.hpp>
 #include <vapaee/slug_asset.hpp>
 #include <vapaee/datatypes.hpp>
-#include <vapaee/vapaee_aux_functions.hpp>
+#include <vapaee/vapaee_utils.hpp>
 
 #define inventary_default_space 8
 #define NULL_MASTERY 0xFFFFFFFFFFFFFFFF
@@ -25,9 +25,10 @@ CONTRACT boardgamebox : public eosio::contract {
         using contract::contract;
 
         // --------------------- Apps ------------------
-        ACTION newapp(name owner, uint64_t app, int invespace) {
+        ACTION newapp(name owner, name contract, uint64_t app, int invespace) {
+            print("\nACTION newapp()\n");
             bgbox::core box;
-            box.action_new_app(owner, app, invespace);
+            box.action_new_app(owner, contract, app, invespace);
         }
 
         ACTION newitem(name author_owner, uint64_t author_app, name nickname, int maxgroup) {
@@ -36,6 +37,7 @@ CONTRACT boardgamebox : public eosio::contract {
         };
 
         ACTION newcontainer(name author_owner, uint64_t author_app, name nickname, int space) {
+            print("\nACTION newcontainer()\n");
             bgbox::core box;
             box.action_new_container_spec(author_owner, author_app, nickname, space);          
         };
@@ -47,6 +49,7 @@ CONTRACT boardgamebox : public eosio::contract {
         };
 
         ACTION newinventory(name author_owner, uint64_t author_publisher, slug container_slug, int space, uint64_t spec) {
+            print("\nACTION newinventory()\n");
             bgbox::core box;
             box.action_new_container_asset(author_owner, author_publisher, container_slug, space, spec);
         };

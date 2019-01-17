@@ -2,7 +2,7 @@
 #include <eosiolib/print.hpp>
 #include <vapaee/slug_asset.hpp>
 #include <vapaee/datatypes.hpp>
-#include <vapaee/vapaee_aux_functions.hpp>
+#include <vapaee/vapaee_utils.hpp>
 
 #define inventary_default_space 8
 #define NULL_MASTERY 0xFFFFFFFFFFFFFFFF

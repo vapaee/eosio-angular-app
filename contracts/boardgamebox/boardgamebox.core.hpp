@@ -3,7 +3,7 @@
 #include <eosiolib/print.hpp>
 #include <vapaee/slug_asset.hpp>
 #include <vapaee/datatypes.hpp>
-#include <vapaee/vapaee_aux_functions.hpp>
+#include <vapaee/vapaee_utils.hpp>
 
 
 #include "boardgamebox.tables.hpp"
@@ -24,7 +24,8 @@ namespace vapaee {
         // APPS ---------------------------
 
         // -- INCOMPLETO --
-        void action_new_app(name author_owner, uint64_t author_app, int invespace) {
+        void action_new_app(name author_owner, name app_contract, uint64_t author_app, int invespace) {
+            /*
             action(
                 permission_level{author_owner,"active"_n},
                 get_self(),
@@ -60,15 +61,23 @@ namespace vapaee {
                 get_self(),
                 "newinventory"_n,
                 std::make_tuple(author_owner, author_app, dep_slug, invespace, dep_itr->id)
-            ).send();            
-
+            ).send();
+            
+            // veryfy app does have a handler for bgboxevent on given contract account name
+            action(
+                permission_level{author_owner,"active"_n},
+                app_contract,
+                "bgboxevent"_n,
+                std::make_tuple("newapp", author_owner, author_app)
+            ).send();
+            */
         }
 
         void action_new_item_spec(name author_owner, uint64_t author_app, name nickname, int maxgroup) {
             // exigir al firma de author_owner y que sea el owner del author
-            name app_contract = vapaee::get_owner_for_author(author_app);
-            require_auth(app_contract);
-            eosio_assert(app_contract == author_owner, "given author_owner is not the current owner of author");
+            name app_owner = vapaee::get_owner_for_author(author_app);
+            require_auth(app_owner);
+            eosio_assert(app_owner == author_owner, "given author_owner is not the current owner of author");
             
             // verifica que no exista un nickname para el author_app
             item_specs item_table(get_self(), get_self().value);
@@ -86,9 +95,10 @@ namespace vapaee {
 
         void action_new_container_spec(name author_owner, uint64_t author_app, name nickname, int space) {
             // exigir al firma de author_owner y que sea el owner del author
-            name app_contract = vapaee::get_owner_for_author(author_app);
-            require_auth(app_contract);
-            eosio_assert(app_contract == author_owner, "given author_owner is not the current owner of author");
+            name app_owner = vapaee::get_owner_for_author(author_app);
+            require_auth(app_owner);
+            eosio_assert(app_owner == author_owner, "given author_owner is not the current owner of author");
+            eosio_assert(space >= 0, "inventory space can't be negative");
 
             // se fija que no exista en container_spec un nickname para author_app 
             container_specs container_table(get_self(), get_self().value);
