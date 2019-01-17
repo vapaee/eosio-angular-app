@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { CommonServicesModule } from './services/common/common.module';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
@@ -46,11 +47,13 @@ import { VapaeeService } from './services/vapaee.service';
     imports: [
         BrowserModule,
         AppRoutingModule,
+        HttpClientModule,
         CommonServicesModule
     ],
     providers: [
         ScatterService,
         BGBoxService,
+        HttpClient,
         VapaeeService,
         EosioTokenMathService
     ],

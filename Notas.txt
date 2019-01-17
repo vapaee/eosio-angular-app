@@ -8,6 +8,18 @@ cleos wallet unlock
 "PW5KVpRdxvAWfAYVD62sNWqyVN7R4fohFQC7VVgYpXKNrbRCTYRBv" (im)
 
 
+-- grupo de developers EOSIO --
+https://t.me/HelloTelos/45546
+
+
+
+time: 7:57 - block: 5982670
+time: 7:33 - block: 5979775
+time: 9:23 - block: 5992938
+
+6855 / 119.395348837
+
+
 ---- TODO ----
 - box.action_new_app al final hay que ejecutar un evento dirigido al account de la app para verificar que es una app (y tiene handler para el evento)
 - transformar en javascript el datatype slug que viene como {top,low} en una string legible
@@ -106,7 +118,7 @@ sudo apt-get upgrade libstdc++6
 
 
 
-
+-- problema del plugin antes de solucionarlo --
  ------------------------------------------------------------------------------
 
  cleos push action appserver inside '["bob","hello from the inside"]' -p bob@active
@@ -155,8 +167,6 @@ ACTION appserver.outside() signatory: bob msg: hello for the outside
     thread-0  apply_context.cpp:72 exec_one
 
 
---- solution ? ---------
+--- solution ---------
 https://eosio.stackexchange.com/a/1711/2452
 dio erorr y deribó en esta pregunta (issue)
-https://github.com/EOSIO/eos/issues/6617
-
