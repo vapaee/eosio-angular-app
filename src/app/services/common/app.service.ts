@@ -11,6 +11,7 @@ import { Network } from '../scatter.service';
 })
 export class AppService {
     public path: string;
+    public onStateChange:Subject<string> = new Subject();
     // router : Router;
     // route : ActivatedRoute;
     state : string;
@@ -31,7 +32,8 @@ export class AppService {
                 this.path = this.router.url;
                 this.state = this.getDeepestChild(this.route.root).snapshot.data.state;
                 console.log("AppService. onRoute()", [this]);
-                this.analytics.sendPageView(window.location.href); 
+                this.analytics.sendPageView(window.location.href);
+                this.onStateChange.next(this.state);
             }
         });
         window.document.body.removeAttribute("loading");

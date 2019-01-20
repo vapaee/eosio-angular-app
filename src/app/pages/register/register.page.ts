@@ -8,7 +8,7 @@ import { EosioAccountComponent } from 'src/app/components/eosio-account/eosio-ac
 import { IdenticonComponent } from 'src/app/components/identicon/identicon.component';
 import { EosioTokenMathService } from 'src/app/services/eosio.token-math.service';
 import { Observable, Subject } from 'rxjs';
-import { VapaeeService } from 'src/app/services/vapaee.service';
+import { BGBoxService } from 'src/app/services/bgbox.service';
 
 @Component({
     selector: 'register-page',
@@ -26,7 +26,7 @@ export class RegisterPage implements OnInit {
         public scatter: ScatterService,
         private route: ActivatedRoute,
         public tokenMath: EosioTokenMathService,
-        private vapaee: VapaeeService
+        private bgbox: BGBoxService
     ) {
         this.data = {};
         this.data.owner = "unknown";
@@ -42,7 +42,7 @@ export class RegisterPage implements OnInit {
                 isapp: false,
                 nick: owner,
                 title: this.scatter.username,
-                contract: this.vapaee.contract,
+                contract: this.bgbox.contract,
                 inventory: -1,
             };
             // ---------------------------------------
@@ -60,26 +60,26 @@ export class RegisterPage implements OnInit {
 
     setPublisher() {
         this.data.isapp = false;
-        this.data.contract = this.vapaee.contract;
+        this.data.contract = this.bgbox.contract;
         this.data.inventory =  -1;
     }
 
     setApp() {
         this.data.isapp = true;
-        this.data.contract = (this.data.contract == this.vapaee.contract) ? "" : this.data.contract;        
+        this.data.contract = (this.data.contract == this.bgbox.contract) ? "" : this.data.contract;        
         this.data.inventory = this.data.inventory < 0 ? 8 : this.data.inventory;
     }
 
     register() {
         if (this.data.isapp) {
-            this.vapaee.registerApp(this.data.owner, this.data.contract, this.data.nick, this.data.title, this.data.inventory).then(() => {
+            this.bgbox.registerApp(this.data.owner, this.data.contract, this.data.nick, this.data.title, this.data.inventory).then(() => {
                 this.app.loading = false;
                 console.log("OK !!");
             }).catch(() => {
                 this.app.loading = false;
             });
         } else {
-            this.vapaee.registerPublisher(this.data.owner, this.data.nick, this.data.title).then(() => {
+            this.bgbox.registerPublisher(this.data.owner, this.data.nick, this.data.title).then(() => {
                 this.app.loading = false;
                 console.log("OK !!");
             }).catch(() => {

@@ -1,3 +1,46 @@
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+
+- tengo que eliminar el contrato vapaeeauthor del código de la web.
+- tengo que poder leer bien de las nuevas tablas de boardgamebox
+  - va a implicar leer tres tablas en vez de una
+- tengo que probar dar de alta un publisher simple
+- tengo que poder dar de alta un app
+  - seguir iterando
+
+
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 https://get-scatter.com/docs/setting-up-for-web-apps
 https://get-scatter.com/docs/examples-interaction-flow
 https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
@@ -11,13 +54,6 @@ cleos wallet unlock
 -- grupo de developers EOSIO --
 https://t.me/HelloTelos/45546
 
-
-
-time: 7:57 - block: 5982670
-time: 7:33 - block: 5979775
-time: 9:23 - block: 5992938
-
-6855 / 119.395348837
 
 
 ---- TODO ----
@@ -169,4 +205,5 @@ ACTION appserver.outside() signatory: bob msg: hello for the outside
 
 --- solution ---------
 https://eosio.stackexchange.com/a/1711/2452
-dio erorr y deribó en esta pregunta (issue)
+
+cleos set account permission boardgamebox active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"boardgamebox","permission":"eosio.code"},"weight":1}]}' owner -p boardgamebox

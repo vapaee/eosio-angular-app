@@ -22,9 +22,6 @@ import { RegisterPage } from './pages/register/register.page';
 
 import { ScatterService } from './services/scatter.service';
 import { BGBoxService } from './services/bgbox.service';
-import { VapaeeService } from './services/vapaee.service';
-
-
 
 @NgModule({
     declarations: [
@@ -54,7 +51,6 @@ import { VapaeeService } from './services/vapaee.service';
         ScatterService,
         BGBoxService,
         HttpClient,
-        VapaeeService,
         EosioTokenMathService
     ],
     bootstrap: [AppComponent]

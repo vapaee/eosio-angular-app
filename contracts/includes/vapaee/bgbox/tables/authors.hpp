@@ -1,0 +1,21 @@
+#include <vapaee/bgbox/tables/_aux.hpp>
+
+        // TABLE authors -----------
+            // scope: contract
+            TABLE author_slug {
+                uint64_t        id;
+                name         owner;
+                slug          nick;
+                uint64_t primary_key() const { return id;  }
+                uint64_t by_owner_key() const { return owner.value;  }
+                uint128_t by_nick_key() const { return nick.to128bits();  }
+                std::string to_string() const {
+                    return std::to_string((int) id) + " - " + owner.to_string() + " - " + nick.to_string();
+                };
+            };
+            
+            typedef eosio::multi_index<"authors"_n, author_slug,
+                indexed_by<"owner"_n, const_mem_fun<author_slug, uint64_t, &author_slug::by_owner_key>>,
+                indexed_by<"nick"_n, const_mem_fun<author_slug, uint128_t, &author_slug::by_nick_key>>
+            > authors;
+        // ------------------------------------

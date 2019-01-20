@@ -11,7 +11,7 @@ CONTRACT appplugin : public eosio::contract {
     
         ACTION notify(name user, std::string message) {
             print("appplugin.notify() user: ", user, "message: ", message.c_str(), "\n");
-            require_auth("appserver"_n);
+            // require_auth("appserver"_n);
         }
 };
 
