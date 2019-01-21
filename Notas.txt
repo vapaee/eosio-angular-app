@@ -3,12 +3,11 @@
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 
-- tengo que eliminar el contrato vapaeeauthor del código de la web.
-- tengo que poder leer bien de las nuevas tablas de boardgamebox
-  - va a implicar leer tres tablas en vez de una
-- tengo que probar dar de alta un publisher simple
-- tengo que poder dar de alta un app
-  - seguir iterando
+- tengo que hacer una nueva solapa que diga C&T
+- tengo que hacer una nueva CntPage
+  - se pide la lista de publishers para este owner (Viterbo, Yobi)
+  - se pide la lista de registros de usuarios para la aplicación de namespace "cards-and-token" para el owner
+  - 
 
 
 ---------------------------------------------------------------------
@@ -96,7 +95,11 @@ Por ejemplo, se pueden exigir comisiones por cada evento, cumplir con mínimos o
 -- market 
   -- order units                               // creates an order to buy or sell any amount of owning copies of the same card
   -- cancel order                              // cancel previously created order
-
+-- multiple authorship
+  - hacer otra tabla donde el scope sea el user y que ahi se diga cuanto tiene cada usuario de authorship de cada item.
+    por lo general vos podés hacer una carta y para esa carta va a decir que vos tenés el 100% y el resto del mundo 0%.
+    pero pueden haber varias partes productoras de un mismo contenido y se arregla de antemano dividir el authorship en partes A% B% y C% dependiendo de la participación de cada uno.
+  - cada vez que hay una compra o venta de un item con multimple authorship hay que dividir las ganancias respentado los porcentajes A% B% y C%
 
 
 

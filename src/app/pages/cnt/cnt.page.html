@@ -1,0 +1,84 @@
+<div class="container margin-top" [ngClass]="{'d-none': !app.stateStartsWith('bgbox')}">
+    <div class="card text-white bg-dark">
+        <div class="card-body">
+            <div class="pull-right">
+                <span class="btn btn-sm btn-danger margin-left" (click)="droptables()">Drop Tables</span>
+            </div>                      
+            <div class="row">
+                <div class="input-group col-sm-12">
+                    <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active cursor-pointer" [routerLink]="'/' + scatter.network.slug + '/bgbox/register'">Register</a>
+                        </li>
+                    </ul>
+                </div>              
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container margin-top" [ngClass]="{'d-none': !app.stateStartsWith('bgbox')}">
+    <div class="card text-white bg-dark">
+        <div class="card-body">
+
+            <div class="row">
+                <div class="input-group col-sm-12">
+                    <h2>DApps</h2>
+                </div>
+                <div class="input-group col-sm-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td>Title</td>
+                                <td>owner</td>
+                                <td>contract</td>
+                                <td>namespace</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let app of apps">
+                                <td>{{app.title}}</td>
+                                <td>{{app.owner}}</td>
+                                <td>{{app.contract}}</td>
+                                <td>{{app.nick.str}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container margin-top" [ngClass]="{'d-none': !app.stateStartsWith('bgbox')}">
+    <div class="card text-white bg-dark">
+        <div class="card-body">
+            <div class="row">
+                <div class="input-group col-sm-12">
+                    <h2>Publishers</h2>
+                </div>
+                <div class="input-group col-sm-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td>Name</td>
+                                <td>owner</td>
+                                <td>namespace</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let app of publishers">
+                                <td>{{app.username}}</td>
+                                <td>{{app.owner}}</td>
+                                <td>{{app.nick.str}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<router-outlet></router-outlet>

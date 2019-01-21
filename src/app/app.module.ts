@@ -16,6 +16,7 @@ import { EosioTokenMathService } from './services/eosio.token-math.service';
 import { LoadingOverall } from './services/common/app.service';
 import { VideoPage } from './pages/video/video.page';
 import { BGBoxPage } from './pages/bgbox/bgbox.page';
+import { CntPage } from './pages/cnt/cnt.page';
 import { AppsPage } from './pages/apps/apps.page';
 import { RegisterPage } from './pages/register/register.page';
 
@@ -29,6 +30,7 @@ import { BGBoxService } from './services/bgbox.service';
         HomePage,
         VideoPage,
         BGBoxPage,
+        CntPage,
         NotFoundPage,
         AppsPage,
         RegisterPage,

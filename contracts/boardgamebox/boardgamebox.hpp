@@ -4,9 +4,9 @@
 #define inventary_default_space 8
 #define NULL_MASTERY 0xFFFFFFFFFFFFFFFF
 
+#include "boardgamebox.utils.hpp"
 #include "boardgamebox.core.hpp"
 #include "boardgamebox.author.hpp"
-
 
 using namespace eosio;
 
