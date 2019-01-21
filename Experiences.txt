@@ -1,0 +1,10 @@
+-- Contar sonre el problema que tuve de permisos con inline actions a otros contratos --
+    - los inline actions de un contrato al mismo contrato funcan bien de una
+    - ara los inline actions entre dos contratos el contrato emisor debe tener el permiso "eosio.code"
+-- los inline actions no se ejecutan "inline" sino que se ejecutan al terminar la ejecusión de la acción actual
+    - es un error mandar una inline action (desde A a B) y querer ver los resultados de dicha invocación (a B) dentro del mismo código (de A) porque B no ejecutó aun.
+-- Dos acciones consecutivas se ejecutan e el orden que fueron llamadas (era esperable)
+-- alargar el ktimeout de la wallet de keosd para trabajar más cómodo
+-- es cómodo crear algunos scripts para automaticar ciertas ineracciones con la blockchain que de otro sería muy tedioso como:
+    - visualizar tablas
+    - resetear el estado de la blockchain

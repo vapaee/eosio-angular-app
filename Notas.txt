@@ -1,3 +1,62 @@
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+
+/cnt
+/cnt/cards
+/cnt/inventory/:publisher-namespace
+/cnt/albums
+/cnt/profile/:publisher-namespace
+/cnt/deploy/card/:card_id
+/cnt/deploy/album/:album_id/:publisher-namespace
+
+---- TODO ----
+- hacer la estructura de páginas vacía poniendo todas las páginas en la carpeta cnt-pages
+- implementar de alguna forma un current user
+  - o bien es el usuario logueado
+  - o bien es el metaususario "guest"
+- en la parte de profile implementar los diferentes estados:
+  - Scatter no detectado
+  - Scatter detectado pero no estás logueado
+  - Logueado pero no tenés publishers creados
+    - aparece un sólo botón que te habilita un formulario para crear el publisher y ya registrar ese públisher con C&T
+  - Tenés un (o más de 1) publisher pero no seleccionaste ninguno
+  - Tenés un publisher seleccionado pero no está registrado a C&T
+  - Finalmente tenés un publisher seleccionado y está registrado en C&T
+
+
+
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 https://get-scatter.com/docs/setting-up-for-web-apps
 https://get-scatter.com/docs/examples-interaction-flow
 https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
@@ -11,13 +70,6 @@ cleos wallet unlock
 -- grupo de developers EOSIO --
 https://t.me/HelloTelos/45546
 
-
-
-time: 7:57 - block: 5982670
-time: 7:33 - block: 5979775
-time: 9:23 - block: 5992938
-
-6855 / 119.395348837
 
 
 ---- TODO ----
@@ -60,7 +112,11 @@ Por ejemplo, se pueden exigir comisiones por cada evento, cumplir con mínimos o
 -- market 
   -- order units                               // creates an order to buy or sell any amount of owning copies of the same card
   -- cancel order                              // cancel previously created order
-
+-- multiple authorship
+  - hacer otra tabla donde el scope sea el user y que ahi se diga cuanto tiene cada usuario de authorship de cada item.
+    por lo general vos podés hacer una carta y para esa carta va a decir que vos tenés el 100% y el resto del mundo 0%.
+    pero pueden haber varias partes productoras de un mismo contenido y se arregla de antemano dividir el authorship en partes A% B% y C% dependiendo de la participación de cada uno.
+  - cada vez que hay una compra o venta de un item con multimple authorship hay que dividir las ganancias respentado los porcentajes A% B% y C%
 
 
 
@@ -169,4 +225,5 @@ ACTION appserver.outside() signatory: bob msg: hello for the outside
 
 --- solution ---------
 https://eosio.stackexchange.com/a/1711/2452
-dio erorr y deribó en esta pregunta (issue)
+
+cleos set account permission boardgamebox active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"boardgamebox","permission":"eosio.code"},"weight":1}]}' owner -p boardgamebox

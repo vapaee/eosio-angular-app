@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# checking 'force' param
+force=false
+if [ "$1" == "force" ]; then
+   force=true
+fi
+
 HOME=/var/www/eosio-angular-app
 HELLO_HOME=$HOME/contracts/_examples/hello
 ADDRESSBOOK_HOME=$HOME/contracts/_examples/addressbook
@@ -10,24 +17,24 @@ APPPLUGIN_HOME=$HOME/contracts/_examples/appplugin
 CARDSNTOKENS_HOME=$HOME/contracts/cardsntokens
 VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
 BOARDGAMEBOX_HOME=$HOME/contracts/boardgamebox
-VAPAEEAUTHOR_HOME=$HOME/contracts/vapaeeauthor
+# VAPAEEAUTHOR_HOME=$HOME/contracts/vapaeeauthor
 LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 
 TESTING_HOME=$HOME/contracts/testing
 
-echo "-------- appserver ---------"
-cd $APPSERVER_HOME
-if [[ appserver.cpp -nt appserver.wasm ]]; then
-    eosio-cpp -o appserver.wasm appserver.cpp --abigen
-    cleos set contract appserver $PWD -p appserver@active
-fi
-
-echo "-------- appplugin ---------"
-cd $APPPLUGIN_HOME
-if [[ appplugin.cpp -nt appplugin.wasm ]]; then
-    eosio-cpp -o appplugin.wasm appplugin.cpp --abigen
-    cleos set contract appplugin $PWD -p appplugin@active
-fi
+# echo "-------- appserver ---------"
+# cd $APPSERVER_HOME
+# if [[ appserver.cpp -nt appserver.wasm ]]; then
+#     eosio-cpp -o appserver.wasm appserver.cpp --abigen
+#     cleos set contract appserver $PWD -p appserver@active
+# fi
+# 
+# echo "-------- appplugin ---------"
+# cd $APPPLUGIN_HOME
+# if [[ appplugin.cpp -nt appplugin.wasm ]]; then
+#     eosio-cpp -o appplugin.wasm appplugin.cpp --abigen
+#     cleos set contract appplugin $PWD -p appplugin@active
+# fi
 
 
 # echo "-------- hello ---------"
@@ -63,30 +70,32 @@ fi
 echo "-------- boardgamebox ---------"
 cd $BOARDGAMEBOX_HOME
 if [[ boardgamebox.core.hpp -nt boardgamebox.wasm || 
-      boardgamebox.tables.hpp -nt boardgamebox.wasm ||
+      boardgamebox.author.hpp -nt boardgamebox.wasm ||
+      boardgamebox.utils.hpp -nt boardgamebox.wasm ||
       boardgamebox.cpp -nt boardgamebox.wasm ||
-      boardgamebox.hpp -nt boardgamebox.wasm ]]; then
+      boardgamebox.hpp -nt boardgamebox.wasm || 
+      $force == true ]]; then
     eosio-cpp -o boardgamebox.wasm boardgamebox.cpp --abigen -I ../includes
     cleos set contract boardgamebox $PWD -p boardgamebox@active
 fi
 
-echo "-------- vapaeeauthor ---------"
-cd $VAPAEEAUTHOR_HOME
-if [[ vapaeeauthor.cpp -nt vapaeeauthor.wasm || vapaeeauthor.hpp -nt vapaeeauthor.wasm ]]; then
-    eosio-cpp -o vapaeeauthor.wasm vapaeeauthor.cpp --abigen -I ../includes
-    cleos set contract vapaeeauthor $PWD -p vapaeeauthor@active
-fi
+# echo "-------- vapaeeauthor ---------"
+# cd $VAPAEEAUTHOR_HOME
+# if [[ vapaeeauthor.cpp -nt vapaeeauthor.wasm || vapaeeauthor.hpp -nt vapaeeauthor.wasm || $force == true ]]; then
+#     eosio-cpp -o vapaeeauthor.wasm vapaeeauthor.cpp --abigen -I ../includes
+#     cleos set contract vapaeeauthor $PWD -p vapaeeauthor@active
+# fi
 
 echo "-------- vapaeetokens ---------"
 cd $VAPAEETOKENS_HOME
-if [[ vapaeetokens.cpp -nt vapaeetokens.wasm || vapaeetokens.hpp -nt vapaeetokens.wasm ]]; then
+if [[ vapaeetokens.cpp -nt vapaeetokens.wasm || vapaeetokens.hpp -nt vapaeetokens.wasm || $force == true ]]; then
     eosio-cpp -o vapaeetokens.wasm vapaeetokens.cpp --abigen -I ../includes
     cleos set contract vapaeetokens $PWD -p vapaeetokens@active
 fi
 
 echo "-------- cardsntokens ---------"
 cd $CARDSNTOKENS_HOME
-if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntokens.wasm ]]; then
+if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntokens.wasm || $force == true ]]; then
     # echo "skipping..."
     eosio-cpp -o cardsntokens.wasm cardsntokens.cpp --abigen -I ../includes
     cleos set contract cardsntokens $PWD -p cardsntokens@active
@@ -95,7 +104,7 @@ fi
 
 echo "-------- localstrings ---------"
 cd $LOCALSTRINGS_HOME
-if [[ localstrings.cpp -nt localstrings.wasm || localstrings.hpp -nt localstrings.wasm ]]; then
+if [[ localstrings.cpp -nt localstrings.wasm || localstrings.hpp -nt localstrings.wasm || $force == true ]]; then
     # echo "skipping..."
     eosio-cpp -o localstrings.wasm localstrings.cpp --abigen -I ../includes
     cleos set contract localstrings $PWD -p localstrings@active

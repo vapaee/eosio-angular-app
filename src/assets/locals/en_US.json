@@ -1,5 +1,9 @@
 {
     "code404":"404 Page Not Found !!",
+    "Cards": "Cards",
+    "Inventory": "Inventory",
+    "Albums": "Albums",
+    "Profile": "Profile",
     "video": "video",
     "read_more": "read more",
     "Blockchain": "Blockchain",

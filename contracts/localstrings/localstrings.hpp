@@ -1,8 +1,5 @@
-#include <eosiolib/eosio.hpp>
-#include <eosiolib/print.hpp>
-#include <vapaee/slug_asset.hpp>
-#include <vapaee/datatypes.hpp>
-#include <vapaee/vapaee_utils.hpp>
+#pragma once
+#include <vapaee/bgbox/common.hpp>
 
 #define inventary_default_space 8
 
@@ -20,7 +17,7 @@ CONTRACT localstrings : public eosio::contract {
             eosio_assert(itr == table.end(), "key already registered");
 
             // verify author and owner signature
-            name owner = vapaee::get_author_owner(registerer);
+            name owner = vapaee::bgbox::get_author_owner(registerer);
             require_auth(owner);
 
             // insert entry
@@ -40,7 +37,7 @@ CONTRACT localstrings : public eosio::contract {
         ACTION newlocal(uint64_t registerer, string text, name stringkey, name local, name version) {
 
             // verify author and owner signature
-            name owner = vapaee::get_author_owner(registerer);
+            name owner = vapaee::bgbox::get_author_owner(registerer);
             require_auth(owner);
 
             strings str_table(get_self(), get_self().value);
@@ -89,7 +86,7 @@ CONTRACT localstrings : public eosio::contract {
             uint64_t   registerer; // vapaeeauthor.authors.id
             uint64_t primary_key() const { return id; }
             uint64_t version_key() const { return local.value; }
-            uint128_t secondary_key() const { return vapaee::combine(local, version); }
+            uint128_t secondary_key() const { return vapaee::bgbox::combine(local, version); }
         };
         typedef eosio::multi_index<"locals"_n, local_entry, 
             indexed_by<"second"_n, const_mem_fun<local_entry, uint128_t, &local_entry::secondary_key>>,

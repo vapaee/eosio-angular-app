@@ -17,11 +17,9 @@ export class RootPage implements OnInit {
         public app: AppService,
         public local: LocalStringsService,
         public elRef: ElementRef,
-        // this is to resolve the /:network part of the url path -------
         public scatter: ScatterService,
         private route: ActivatedRoute
     ) {
-        console.log("CONSTRUCTOR ROOT");
     }
     
     ngOnInit() {

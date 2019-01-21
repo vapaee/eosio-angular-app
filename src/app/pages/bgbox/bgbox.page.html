@@ -2,8 +2,7 @@
     <div class="card text-white bg-dark">
         <div class="card-body">
             <div class="pull-right">
-                <span class="btn btn-sm btn-danger margin-left" (click)="droptablesAuthors()">Drop Vapaee</span>
-                <span class="btn btn-sm btn-danger margin-left" (click)="droptablesBgbox()">Drop BG-Box</span>
+                <span class="btn btn-sm btn-danger margin-left" (click)="droptables()">Drop Tables</span>
             </div>                      
             <div class="row">
                 <div class="input-group col-sm-12">
@@ -23,6 +22,9 @@
         <div class="card-body">
 
             <div class="row">
+                <div class="input-group col-sm-12">
+                    <h2>DApps</h2>
+                </div>
                 <div class="input-group col-sm-12">
                     <table class="table">
                         <thead>
@@ -53,6 +55,9 @@
         <div class="card-body">
             <div class="row">
                 <div class="input-group col-sm-12">
+                    <h2>Publishers</h2>
+                </div>
+                <div class="input-group col-sm-12">
                     <table class="table">
                         <thead>
                             <tr>
@@ -63,7 +68,7 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let app of publishers">
-                                <td>{{app.title}}</td>
+                                <td>{{app.username}}</td>
                                 <td>{{app.owner}}</td>
                                 <td>{{app.nick.str}}</td>
                             </tr>

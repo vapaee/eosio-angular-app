@@ -22,9 +22,13 @@ import { RegisterPage } from './pages/register/register.page';
 
 import { ScatterService } from './services/scatter.service';
 import { BGBoxService } from './services/bgbox.service';
-import { VapaeeService } from './services/vapaee.service';
+import { CntService } from './services/cnt.service';
 
-
+import { CntRootPage } from './pages-cnt/root/cntroot.page';
+import { ProfilePage } from './pages-cnt/profile/profile.page';
+import { InventoryPage } from './pages-cnt/inventory/inventory.page';
+import { CardsPage } from './pages-cnt/cards/cards.page';
+import { AlbumsPage } from './pages-cnt/albums/albums.page';
 
 @NgModule({
     declarations: [
@@ -39,7 +43,12 @@ import { VapaeeService } from './services/vapaee.service';
         AccountPage,
         IdenticonComponent,
         EosioAccountComponent,
-        LoadingOverall
+        LoadingOverall,
+        CntRootPage,
+        ProfilePage,
+        InventoryPage,
+        CardsPage,
+        AlbumsPage
     ],
     entryComponents: [
         LoadingOverall
@@ -53,8 +62,8 @@ import { VapaeeService } from './services/vapaee.service';
     providers: [
         ScatterService,
         BGBoxService,
+        CntService,
         HttpClient,
-        VapaeeService,
         EosioTokenMathService
     ],
     bootstrap: [AppComponent]

@@ -18,25 +18,12 @@ export class HomePage implements OnInit {
         public app: AppService,
         public local: LocalStringsService,
         public scatter: ScatterService,
-        public http: HttpClient,
-        private titleService: Title
+        public http: HttpClient
         ) {
     }
 
     ngOnInit() {
         console.log("HomePage.this.scatter.network: ---> ", this.scatter.network);
-        
-        setInterval(() => {
-            this.update();
-        }, 5000);
-        this.update();
-    }
-
-    update() {
-        this.http.get("https://telos.eos.barcelona/v1/chain/get_info").toPromise().then(data => {
-            this.numblock = (<any>data).head_block_num;
-            this.titleService.setTitle("" + this.numblock);
-        });        
     }
 
     login() {

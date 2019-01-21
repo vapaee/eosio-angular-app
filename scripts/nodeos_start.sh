@@ -2,6 +2,16 @@
 mkdir -p /var/www/blockchain/eosio
 echo "-------------------------------------------------------------------------" >> /var/www/blockchain/eosio/nodeos.log
 
+#making sure koesd is running will 'infinity' autolock timeout;
+cleos wallet stop
+keosd --unlock-timeout=9999999 &
+sleep 1
+echo "PW5KG6YzAowdzRaNWEH1PterYoYUCPpBpMYxNN3EctcECw1Ke5vgS (home)"
+echo "PW5KVpRdxvAWfAYVD62sNWqyVN7R4fohFQC7VVgYpXKNrbRCTYRBv (im)"
+cleos wallet unlock
+
+sleep 2
+
 nodeos -e -p eosio \
 --plugin eosio::producer_plugin \
 --plugin eosio::chain_api_plugin \
