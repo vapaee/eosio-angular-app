@@ -5,17 +5,18 @@
 
 /cnt
 /cnt/cards
-/cnt/inventory/:publisher-namespace
+/cnt/inventory/:publisher
 /cnt/albums
-/cnt/profile/:publisher-namespace
+/cnt/profile/:publisher
 /cnt/deploy/card/:card_id
-/cnt/deploy/album/:album_id/:publisher-namespace
+/cnt/deploy/album/:album_id/:publisher
 
 ---- TODO ----
 - hacer la estructura de páginas vacía poniendo todas las páginas en la carpeta cnt-pages
 - implementar de alguna forma un current user
   - o bien es el usuario logueado
   - o bien es el metaususario "guest"
+  - o es un tercero (que existe pero no es el que está logueado)
 - en la parte de profile implementar los diferentes estados:
   - Scatter no detectado
   - Scatter detectado pero no estás logueado
@@ -33,24 +34,57 @@
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 
+// los datos del usuario vienen en crudo. Esta función procesa esos datos y sustituye referencias por ID con instancias reales
+proccessData()
 
+// los datos (cartas, albums) que pertenecen exclusivamente al usuario, esta función los deja globalmente disponibles por slug
+userdata_to_global(table)
 
+// dado un id retorna el copy y le adjunta su colectible y edition (objetos que la complementan en info)
+getCopyById(id:number)
 
+// función auxiliar privada que dados dos slots determina si lo que debe hacerse es un (replace, putin, putout, swap o move)
+determineAction(from:number, fromi:number, to:number, toi:number)
 
+// intercambia el contenido de dos slots localmente en lainterface web (no en backend)
+swapLocaly(from, fromi, to, toi)
 
+// manda hacer el swap a backend y dependiendo de si es exitoso mantienen o revierte los cambios locales previamente hechos
+swapSlots(from_slug, fromi, to_slug, toi, action)
 
+// segunda parte del claim dailyprice (cosa que coloca una carta que anda flotando de vuelta a un slot)
+claimDailyPrizePart2(r:any, targetimg: Element)
 
+// inicia una animación donde deja una carta flotando en el aire mientras ejecuta en backend un random select
+claimDailyPrize(img:HTMLElement)
 
+// obtiene desde el backend la cantidad de tiempo que el usuario logueado debe esperar para poder ejecutar el daily price
+getDailyPrizeCountdown()
 
-
-
-
-
-
-
-
-
-
+// 
+fetchCard(slug:string)
+updateCollectibleVotes(slug:string, votes:number)
+fetchAlbum(slug:string)
+getUserInventory(slug)
+getAllInstances(table, name, params?)
+getAllCards()
+getAllSpecs()
+getAllAlbums()
+getCardBySlug(slug)
+getAlbumCollectionBySlug(slug)
+updateCollectionSteemPoints(coll_id)
+calculateCollectionPoints(coll_id)
+getCollectionStats(coll_id)
+getAlbumCompleteBySlug(slug)
+getJSON(file)
+getCornerCardSize()
+getCenterCardSize()
+deployCard(card, img:HTMLElement)
+deployToCenter(data, img:HTMLElement)
+deployFromCenterToSlot(data, img:HTMLElement)
+deployAlbum(card, img:HTMLElement)
+closeCard()
+createCard(model:any, deploy:any, preview:any)
 
 
 
