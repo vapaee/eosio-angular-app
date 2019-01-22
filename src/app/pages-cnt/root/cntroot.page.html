@@ -17,6 +17,9 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav ml-auto">
                 
+                <li class="nav-item">
+                    <a class="nav-link" [routerLink]="'/eos/account'" >EOS.IO</a>
+                </li>
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('cards')}">
                     <a class="nav-link" routerLink="{{'/cnt/cards'}}" >{{local.string.Cards}}</a>
                 </li>
