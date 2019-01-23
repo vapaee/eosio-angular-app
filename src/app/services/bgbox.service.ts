@@ -128,6 +128,7 @@ export class BGBoxService {
                 this.scatter.getContract(this.boardgamebox).then(contract => {
                     try {
                         contract[action](params, this.scatter.authorization).then((response => {
+                            console.log("BGBoxService.excecute() ---> ", [response]);
                             resolve(response);
                         })).catch(err => { reject(err); });
                     } catch (err) { reject(err); }
@@ -172,6 +173,7 @@ export class BGBoxService {
     // --------------------------------------------------------------
     // API
     getAuthors() {
+        console.log("BGBoxService.getAuthors()");
         var table = "authors";
 
         return Promise.all<any>([
@@ -188,7 +190,7 @@ export class BGBoxService {
             };
 
             for (var i in data.authors) {
-                data.authors[i].nick = this.decodeSlug(data.authors[i].nick);
+                data.authors[i].slugid = this.decodeSlug(data.authors[i].slugid);
                 data.map["id-" + data.authors[i].id] = Object.assign({}, data.authors[i]);
                 data.authors[i] = data.map["id-" + data.authors[i].id];
             }
@@ -212,7 +214,7 @@ export class BGBoxService {
             this.publishers = [];
             for( var j = 0, row = null; j < result.rows.length; j++) {
                 row = result.rows[j];
-                row.nick = this.bgbox.decodeSlug(row.nick);
+                row.slugid = this.bgbox.decodeSlug(row.slugid);
                 if (row.contract) {
                     console.log("row.contract: ", row.contract);
                     this.apps.push(row);
@@ -225,17 +227,17 @@ export class BGBoxService {
 */        
     }
 
-    registerPublisher(owner:string, nick:string, name:string) {
-        console.log("BGBoxService.registerPublisher()", owner, nick, name);
-        return this.excecute("newpublisher", {owner:owner, nickstr:nick, name:name})
+    registerPublisher(owner:string, slugid:string, name:string) {
+        console.log("BGBoxService.registerPublisher()", owner, slugid, name);
+        return this.excecute("newpublisher", {owner:owner, slugidstr:slugid, name:name})
     }
 
-    registerApp(owner:string, contract:string, nick:string, title:string, inventory:number) {
-        console.log("BGBoxService.registerApp()", owner, contract, nick, title, inventory);
+    registerApp(owner:string, contract:string, slugid:string, title:string, inventory:number) {
+        console.log("BGBoxService.registerApp()", owner, contract, slugid, title, inventory);
         return this.excecute("newapp", {
             owner:  owner,
             contract: contract,
-            nickstr: nick,
+            slugidstr: slugid,
             title: title,
             inventory: inventory
         });

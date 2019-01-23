@@ -37,6 +37,7 @@ export class CntService {
         this.contract = this.cardsntokens;
         this.publisher = {slugid:"guest", account:this.contract};
         this.updateScatterState();
+        this.scatter.waitLogged.then(this.updateScatterState.bind(this));
     }
 
     updateScatterState() {
@@ -46,7 +47,6 @@ export class CntService {
             console.log("this.scatter", this.scatter);
             if (this.scatter.logged) {
                 this.loginState = "no-publishers";
-                this.scatter.waitLogged.then(this.updateScatterState.bind(this));
             }
         })
     }

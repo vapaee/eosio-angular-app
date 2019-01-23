@@ -72,16 +72,16 @@ export class RegisterPage implements OnInit {
 
     register() {
         if (this.data.isapp) {
-            this.bgbox.registerApp(this.data.owner, this.data.contract, this.data.nick, this.data.title, this.data.inventory).then(() => {
+            this.bgbox.registerApp(this.data.owner, this.data.contract, this.data.nick, this.data.title, this.data.inventory).then((result) => {
                 this.app.loading = false;
-                console.log("OK !!");
+                console.log("OK ??", [result]);
             }).catch(() => {
                 this.app.loading = false;
             });
         } else {
-            this.bgbox.registerPublisher(this.data.owner, this.data.nick, this.data.title).then(() => {
+            this.bgbox.registerPublisher(this.data.owner, this.data.nick, this.data.title).then((result) => {
                 this.app.loading = false;
-                console.log("OK !!");
+                console.log("OK ??", [result]);
             }).catch(() => {
                 this.app.loading = false;
             });

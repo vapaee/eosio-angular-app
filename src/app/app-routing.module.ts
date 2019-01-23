@@ -43,13 +43,3 @@ const routes: Routes = [
     exports: [RouterModule]
 })
 export class AppRoutingModule { }
-
-/*
-/cnt
-/cnt/cards
-/cnt/inventory/:publisher-namespace
-/cnt/albums
-/cnt/profile/:publisher-namespace
-/cnt/deploy/card/:card_id
-/cnt/deploy/album/:album_id/:publisher-namespace
-*/
