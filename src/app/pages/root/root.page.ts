@@ -3,6 +3,7 @@ import { AppService } from 'src/app/services/common/app.service';
 import { LocalStringsService } from 'src/app/services/common/common.services';
 import { ScatterService } from 'src/app/services/scatter.service';
 import { ActivatedRoute } from '@angular/router';
+import { CntService } from 'src/app/services/cnt.service';
 
 declare var $:any;
 
@@ -18,6 +19,7 @@ export class RootPage implements OnInit {
         public local: LocalStringsService,
         public elRef: ElementRef,
         public scatter: ScatterService,
+        public cnt: CntService,
         private route: ActivatedRoute
     ) {
     }

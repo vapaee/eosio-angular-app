@@ -30,8 +30,8 @@ namespace vapaee {
             return itr->owner;
         }
 
-        static const slug& get_author_nick(uint64_t author_id) {
-            print("get_author_nick()\n");
+        static const slug& get_author_slug(uint64_t author_id) {
+            print("get_author_slugid()\n");
             authors authors_table(_self, _self.value);
             // debugin ----------------------
             for (auto itr = authors_table.begin(); itr != authors_table.end(); ) {
@@ -41,7 +41,7 @@ namespace vapaee {
             // ------------------------------
             auto itr = authors_table.find(author_id);
             eosio_assert(itr != authors_table.end(), (string("ERR_GAN1: Author id does NOT exist: ") + std::to_string((int) author_id)).c_str()  );
-            return itr->nick;
+            return itr->slugid;
         }
 
         static void get_authors_for_owner(name owner, std::vector<uint64_t> &author_list) {

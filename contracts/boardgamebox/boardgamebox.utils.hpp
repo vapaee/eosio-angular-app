@@ -268,14 +268,14 @@ namespace vapaee {
 
         void find_app_deposit(name user, uint64_t app, container_asset &asset, container_instance &container) {
             // find container_spec for app|deposit
-            slug appnick = vapaee::bgbox::get_author_nick(app);
+            slug appnick = vapaee::bgbox::get_author_slug(app);
             slug asset_slug = slug(appnick.to_string() + ".deposit");
             vapaee::bgbox::get_container_for_slug(user, asset_slug, asset, container);
         }
 
         void find_app_inventory(name user, uint64_t app, container_asset &asset, container_instance &container) {
             // find container_spec for app|inventory
-            slug appnick = vapaee::bgbox::get_author_nick(app);
+            slug appnick = vapaee::bgbox::get_author_slug(app);
             slug asset_slug = slug(appnick.to_string() + ".inventory");
             vapaee::bgbox::get_container_for_slug(user, asset_slug, asset, container);
         }

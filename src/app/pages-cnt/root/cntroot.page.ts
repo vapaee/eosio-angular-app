@@ -24,7 +24,7 @@ export class CntRootPage implements OnInit {
     }
     
     ngOnInit() {
-        this.scatter.setNetwork("eos");
+        this.scatter.setNetwork("local");
         this.scatter.connectApp("Cards & Tokens").catch(err => console.error(err));
     }
 

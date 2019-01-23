@@ -4,4 +4,46 @@
             <h1>Profile</h1>
         </div>
     </div>
+    <div class="card text-white bg-dark margin-top">
+        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-scatter'}">
+            <div class="pull-right">
+                <span class="btn btn-sm btn-secondary" (click)="scatter.connectApp()">retry</span>
+            </div>
+            <span>Scatter not detected</span>
+        </div>
+        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-logged'}">
+            <div class="pull-right">
+                <span class="btn btn-sm btn-secondary" (click)="scatter.login()">
+                    {{local.string.LoginWScatter}}
+                </span>
+            </div>
+            <span>You are not logged in</span>
+        </div>
+        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-publishers'}">
+            <div class="pull-right">
+                <span class="btn btn-sm btn-secondary">Create a Publisher</span>
+            </div>
+            <span>You have no publishers on BG-Box</span>
+        </div>
+        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-selected'}">
+            <div class="pull-right">
+                <span class="btn btn-sm btn-secondary">Select a Publisher</span>
+                <span class="btn btn-sm btn-secondary margin-left">Create another Publisher</span>
+            </div>
+            <span>Please select a publisher</span>
+        </div>
+        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-registered'}">
+            <div class="pull-right">
+                <span class="btn btn-sm btn-secondary">Register Publisher in C&T</span>
+            </div>
+            <span>In irder to use C&T you must first register your publisher</span>
+        </div>
+        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'publisher-ok'}">
+            <div class="pull-right">
+                <span class="btn btn-sm btn-secondary">Logout from C&T</span>
+                <span class="btn btn-sm btn-secondary margin-left">Logout from Scatter</span>
+            </div>
+            <span>In irder to use C&T you must first register your publisher</span>
+        </div>        
+    </div>
 </div>

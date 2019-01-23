@@ -35,7 +35,9 @@ export class AccountPage implements OnInit {
         console.log("AccountPage.onNetworkChange()");
         this.app.loading = true;
         this.scatter.queryAccountData(this.account.account_name).then((account) => {
-            this.account = account;
+            if (account) {
+                this.account = account;
+            }
             this.app.loading = false;
         }).catch((err) => {
             this.app.loading = false;
@@ -59,7 +61,9 @@ export class AccountPage implements OnInit {
         if (name) {
             this.account.account_name = name;
             if (this.scatter.account && this.scatter.account.name == name) {
-                this.account = this.scatter.account.data;
+                if (this.scatter.account.data) {
+                    this.account = this.scatter.account.data;
+                }
             }
             this.scatter.onNetworkChange.subscribe(this.onNetworkChange.bind(this));
             setTimeout(() => {

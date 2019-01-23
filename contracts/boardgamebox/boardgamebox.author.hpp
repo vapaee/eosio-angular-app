@@ -15,10 +15,10 @@ namespace vapaee {
         inline name get_self()const { return _self; }
   
         // APPS ---------------------------
-        void action_new_app(name owner, name contract, string nickstr, string title, int inventory) {
+        void action_new_app(name owner, name contract, string slugidstr, string title, int inventory) {
             print("action_new_app()\n");
             print("owner: ", owner.to_string(), "\n");
-            print("nickstr: ", nickstr.c_str(), "\n");
+            print("slugidstr: ", slugidstr.c_str(), "\n");
             print("title: ", title.c_str(), "\n");
             print("inventory: ", inventory, "\n");
             print("contract: ", contract.to_string(), "\n");
@@ -41,8 +41,8 @@ namespace vapaee {
             action(
                 permission_level{owner,"active"_n},
                 get_self(),
-                "registernick"_n,
-                std::make_tuple(owner, nickstr)
+                "registerslug"_n,
+                std::make_tuple(owner, slugidstr)
             ).send();
             
             // call BG-box for app registration
@@ -65,7 +65,7 @@ namespace vapaee {
 
             authors author_table(get_self(), get_self().value);
             auto author_itr = author_table.find(author_app);
-            slug app_slug =  author_itr->nick;
+            slug app_slug =  author_itr->slugid;
             eosio_assert(author_itr != author_table.end(), (string("author not found. id: ") + std::to_string((int) author_app)).c_str());
             
             // verifica que no exista un registro para el author_app
@@ -132,7 +132,7 @@ namespace vapaee {
         }
 
         // PUBLISHERS ---------------------------
-        void action_new_publisher(name owner, string nickstr, string name) {
+        void action_new_publisher(name owner, string slugidstr, string name) {
             print("action_new_publisher()\n");
             authors authors_table(get_self(), get_self().value);
             // recover created author's id
@@ -141,8 +141,8 @@ namespace vapaee {
             action(
                 permission_level{owner,"active"_n},
                 get_self(),
-                "registernick"_n,
-                std::make_tuple(owner, nickstr)
+                "registerslug"_n,
+                std::make_tuple(owner, slugidstr)
             ).send();
 
             // call BG-box for app registration
@@ -183,43 +183,43 @@ namespace vapaee {
             print("author::action_register_user() ends...\n");
         }        
 
-        void action_register_nick(name owner, string nickstr) {
+        void action_register_slug(name owner, string slugidstr) {
             print("author::action_register_nick()\n");
             
             print(" owner: ", owner.to_string(), "\n");
-            print(" nickstr: ", nickstr.c_str(), "\n");
+            print(" slugidstr: ", slugidstr.c_str(), "\n");
             authors authors_table(get_self(), get_self().value);
 
             require_auth( owner );
-            slug nick(nickstr);
+            slug slugid(slugidstr);
             
-            auto index = authors_table.template get_index<"nick"_n>();
-            auto itr = index.find( nick.to128bits() );
+            auto index = authors_table.template get_index<"slugid"_n>();
+            auto itr = index.find( slugid.to128bits() );
 
-            while (itr != index.end() && itr->nick != nick) {
+            while (itr != index.end() && itr->slugid != slugid) {
                 itr++;
             }
 
-            eosio_assert(itr == index.end(), (string("nick: '") + nick.to_string() + "' already registered by " + itr->owner.to_string()).c_str() );
+            eosio_assert(itr == index.end(), (string("slugid: '") + slugid.to_string() + "' already registered by " + itr->owner.to_string()).c_str() );
             uint64_t author_id = authors_table.available_primary_key();
             authors_table.emplace( owner, [&]( auto& s ) {
                 s.id            = author_id;
                 s.owner         = owner;
-                s.nick          = nick;
+                s.slugid          = slugid;
             });
 
             // recorremos por id
             for (auto itr = authors_table.begin(); itr != authors_table.end(); ) {
-                print("registernick() id: ", itr->to_string(), "\n");
+                print("registerslugid() id: ", itr->to_string(), "\n");
                 itr++;
             }
 
-            vapaee::bgbox::get_author_nick(author_id);
+            vapaee::bgbox::get_author_slug(author_id);
 
-            print("author::action_register_nick() ends...\n");
+            print("author::action_register_slugid() ends...\n");
         }
 
-        void action_transfer_by_nick(name owner, name newowner, slug nick) {
+        void action_transfer_by_slug(name owner, name newowner, slug nick) {
             print("author::action_transfer_by_nick()\n");
         }
 

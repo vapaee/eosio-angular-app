@@ -221,6 +221,10 @@ export class ScatterService {
     public waitReady: Promise<any> = new Promise((resolve) => {
         this.setReady = resolve;
     });
+    private setLogged: Function;
+    public waitLogged: Promise<any> = new Promise((resolve) => {
+        this.setLogged = resolve;
+    });
     private setConnected: Function;
     public waitConnected: Promise<any> = new Promise((resolve) => {
         this.setConnected = resolve;
@@ -346,6 +350,15 @@ export class ScatterService {
                 this.setReady = resolve;
                 this.resetPromises();
                 //this.waitReady.then(() => console.log("ScatterService.setReady()"));                
+            });
+        });
+        this.waitLogged.then(r => {
+            this.waitLogged = null;
+            var p = new Promise((resolve) => {
+                if (this.waitLogged) return;
+                this.waitLogged = p;
+                this.setLogged = resolve;
+                this.resetPromises();
             });
         });
     }
@@ -511,6 +524,7 @@ export class ScatterService {
                     this.lib.getIdentity({"accounts":[this.network.eosconf]})
                         .then( (identity)  => {
                             this.setIdentity(identity);
+                            this.setLogged();
                             resolve(identity);
                         })
                         .catch(reject);

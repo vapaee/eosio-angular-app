@@ -46,16 +46,16 @@ CONTRACT boardgamebox : public eosio::contract {
             auth.action_register_user(owner, app, username);
         }        
 
-        ACTION registernick(name owner, string nickstr) {
-            print("\nACTION boardgamebox.registernick()\n");
+        ACTION registerslug(name owner, string slugstr) {
+            print("\nACTION boardgamebox.registerslug()\n");
             bgbox::author auth;
-            auth.action_register_nick(owner, nickstr);            
+            auth.action_register_slug(owner, slugstr);            
         }
 
-        ACTION transfernick(name owner, name newowner, slug nick) {
-            print("\nACTION boardgamebox.transfernick()\n");
+        ACTION transferslug(name owner, name newowner, slug slugid) {
+            print("\nACTION boardgamebox.transferslug()\n");
             bgbox::author auth;
-            auth.action_transfer_by_nick(owner, newowner, nick);            
+            auth.action_transfer_by_slug(owner, newowner, slugid);            
         }
 
         ACTION transferid(name owner, name newowner, uint64_t id) {
