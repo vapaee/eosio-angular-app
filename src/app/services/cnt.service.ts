@@ -36,17 +36,22 @@ export class CntService {
         ) {
         this.contract = this.cardsntokens;
         this.publisher = {slugid:"guest", account:this.contract};
-        this.updateScatterState();
-        this.scatter.waitLogged.then(this.updateScatterState.bind(this));
+        this.updateLogState();
+        this.scatter.waitLogged.then(this.updateLogState.bind(this));
     }
 
-    updateScatterState() {
+    updateLogState() {
+        console.log("CntService.updateLogState()");
         this.loginState = "no-scatter";
         this.scatter.waitConnected.then(() => {
             this.loginState = "no-logged";
             console.log("this.scatter", this.scatter);
             if (this.scatter.logged) {
                 this.loginState = "no-publishers";
+                console.log("CntService.updateLogState() ----> this.bgbox.getAuthorsFor...");
+                this.bgbox.getAuthorsFor(this.scatter.account.name).then(authors => {
+                    console.log("updateLogState() --> this.bgbox.getAuthorsFor(",this.scatter.account.name,") --> ", [authors]);
+                })
             }
         })
     }

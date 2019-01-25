@@ -71,21 +71,39 @@ export class RegisterPage implements OnInit {
     }
 
     register() {
-        if (this.data.isapp) {
-            this.bgbox.registerApp(this.data.owner, this.data.contract, this.data.nick, this.data.title, this.data.inventory).then((result) => {
-                this.app.loading = false;
-                console.log("OK ??", [result]);
-            }).catch(() => {
-                this.app.loading = false;
-            });
-        } else {
-            this.bgbox.registerPublisher(this.data.owner, this.data.nick, this.data.title).then((result) => {
-                this.app.loading = false;
-                console.log("OK ??", [result]);
-            }).catch(() => {
-                this.app.loading = false;
-            });
-        }
+        return new Promise<any>((resolve, reject) => {
+            if (this.data.isapp) {
+                this.bgbox.registerApp(this.data.owner, this.data.contract, this.data.nick, this.data.title, this.data.inventory).then((result) => {
+                    this.app.loading = false;
+                    if (result.transaction_id) {
+                        console.log("OK ??", [result]);
+                        resolve(result.transaction_id);
+                    } else {
+                        console.log("NOT OK ??", [result]);
+                        reject(result);
+                    }
+                }).catch((err) => {
+                    console.log("NOT OK", [err]);
+                    reject(err);
+                    this.app.loading = false;
+                });
+            } else {
+                this.bgbox.registerPublisher(this.data.owner, this.data.nick, this.data.title).then((result) => {
+                    this.app.loading = false;
+                    if (result.transaction_id) {
+                        console.log("OK ??", [result]);
+                        resolve(result.transaction_id);
+                    } else {
+                        console.log("NOT OK ??", [result]);
+                        reject(result);
+                    }
+                }).catch((err) => {
+                    console.log("NOT OK", [err]);
+                    reject(err);
+                    this.app.loading = false;
+                });
+            }                
+        });
     }
 
 

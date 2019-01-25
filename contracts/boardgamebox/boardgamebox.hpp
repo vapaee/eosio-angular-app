@@ -22,10 +22,10 @@ CONTRACT boardgamebox : public eosio::contract {
     public:
         using contract::contract;
         // ********************************** Authors *********************************
-        ACTION newapp(name owner, name contract, string nickstr, string title, int inventory) {
+        ACTION newapp(name owner, name contract, string slugid, string title, int inventory) {
             print("\nACTION boardgamebox.newapp()\n");
             bgbox::author auth;
-            auth.action_new_app(owner, contract, nickstr, title, inventory);
+            auth.action_new_app(owner, contract, slugid, title, inventory);
         }
 
         ACTION registerapp(name owner, name contract, uint64_t app, int invespace, string title) {
@@ -34,10 +34,10 @@ CONTRACT boardgamebox : public eosio::contract {
             auth.action_register_app(owner, contract, app, invespace, title);
         }        
 
-        ACTION newpublisher(name owner, string nickstr, string name) {
+        ACTION newpublisher(name owner, string slugid, string name) {
             print("\nACTION boardgamebox.newpublisher()\n");
             bgbox::author auth;
-            auth.action_new_publisher(owner, nickstr, name);
+            auth.action_new_publisher(owner, slugid, name);
         }
 
         ACTION registeruser(name owner, uint64_t app, string username) {

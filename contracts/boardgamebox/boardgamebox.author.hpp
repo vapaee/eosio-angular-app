@@ -15,10 +15,10 @@ namespace vapaee {
         inline name get_self()const { return _self; }
   
         // APPS ---------------------------
-        void action_new_app(name owner, name contract, string slugidstr, string title, int inventory) {
+        void action_new_app(name owner, name contract, string slugid, string title, int inventory) {
             print("action_new_app()\n");
             print("owner: ", owner.to_string(), "\n");
-            print("slugidstr: ", slugidstr.c_str(), "\n");
+            print("slugid: ", slugid.c_str(), "\n");
             print("title: ", title.c_str(), "\n");
             print("inventory: ", inventory, "\n");
             print("contract: ", contract.to_string(), "\n");
@@ -42,7 +42,7 @@ namespace vapaee {
                 permission_level{owner,"active"_n},
                 get_self(),
                 "registerslug"_n,
-                std::make_tuple(owner, slugidstr)
+                std::make_tuple(owner, slugid)
             ).send();
             
             // call BG-box for app registration
@@ -132,7 +132,7 @@ namespace vapaee {
         }
 
         // PUBLISHERS ---------------------------
-        void action_new_publisher(name owner, string slugidstr, string name) {
+        void action_new_publisher(name owner, string slugid, string name) {
             print("action_new_publisher()\n");
             authors authors_table(get_self(), get_self().value);
             // recover created author's id
@@ -142,7 +142,7 @@ namespace vapaee {
                 permission_level{owner,"active"_n},
                 get_self(),
                 "registerslug"_n,
-                std::make_tuple(owner, slugidstr)
+                std::make_tuple(owner, slugid)
             ).send();
 
             // call BG-box for app registration
@@ -187,7 +187,7 @@ namespace vapaee {
             print("author::action_register_nick()\n");
             
             print(" owner: ", owner.to_string(), "\n");
-            print(" slugidstr: ", slugidstr.c_str(), "\n");
+            print(" slugid: ", slugidstr.c_str(), "\n");
             authors authors_table(get_self(), get_self().value);
 
             require_auth( owner );

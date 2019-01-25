@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ScatterService } from './scatter.service';
-
+import BigNumber from "bignumber.js";
+import Eos from 'eosjs';
 
 export class SlugUtils {
     code_0:number;
@@ -143,7 +144,7 @@ export class BGBoxService {
             table_key?:string, 
             lower_bound?:string, 
             upper_bound?:string, 
-            limit?:string, 
+            limit?:number, 
             key_type?:string, 
             index_position?:string
         } = {}) {
@@ -174,7 +175,6 @@ export class BGBoxService {
     // API
     getAuthors() {
         console.log("BGBoxService.getAuthors()");
-        var table = "authors";
 
         return Promise.all<any>([
             this.getTable("authors"),
@@ -227,9 +227,65 @@ export class BGBoxService {
 */        
     }
 
+    getAuthorsFor(account: string) {
+        console.log("BGBoxService.getAuthorsFor()", account);
+        return new Promise<any>((resolve, reject) => {
+            // https://eosio.stackexchange.com/questions/813/eosjs-gettablerows-lower-and-upper-bound-on-account-name
+            var encodedName = new BigNumber(Eos.modules.format.encodeName(account, false))
+            var params = {
+                table_key: "1", 
+                lower_bound: encodedName.toString(), 
+                upper_bound: encodedName.plus(1).toString(), 
+                limit: 25, 
+                key_type: "i64",
+                index_position: "1"
+            }
+            console.log("BGBoxService.getAuthorsFor() params ", params);
+            this.getTable("authors", params).then(result => {
+                console.log("BGBoxService.getAuthorsFor() --> ", result.rows);
+                var data = {};
+                resolve(data);
+            });
+/*
+            return Promise.all<any>([
+                ,
+                this.getTable("users"),
+                this.getTable("apps"),
+            ]).then(result => {
+                
+                var data = {
+                    map:{},
+                    authors:result[0].rows,
+                    publishers:result[1].rows,
+                    apps:result[2].rows,
+                };
+    
+                for (var i in data.authors) {
+                    data.authors[i].slugid = this.decodeSlug(data.authors[i].slugid);
+                    data.map["id-" + data.authors[i].id] = Object.assign({}, data.authors[i]);
+                    data.authors[i] = data.map["id-" + data.authors[i].id];
+                }
+    
+                for (var i in data.publishers) {
+                    Object.assign(data.map["id-" + data.publishers[i].id], data.publishers[i]);
+                    data.publishers[i] = data.map["id-" + data.publishers[i].id];
+                }
+    
+                for (var i in data.apps) {
+                    Object.assign(data.map["id-" + data.apps[i].id], data.apps[i]);
+                    data.apps[i] = data.map["id-" + data.apps[i].id];
+                }
+    
+                console.log("getAuthors() ----------> ", result, data);
+                return data;
+            });     
+*/       
+        });
+    }
+
     registerPublisher(owner:string, slugid:string, name:string) {
         console.log("BGBoxService.registerPublisher()", owner, slugid, name);
-        return this.excecute("newpublisher", {owner:owner, slugidstr:slugid, name:name})
+        return this.excecute("newpublisher", {owner:owner, slugid:slugid, name:name})
     }
 
     registerApp(owner:string, contract:string, slugid:string, title:string, inventory:number) {
@@ -237,7 +293,7 @@ export class BGBoxService {
         return this.excecute("newapp", {
             owner:  owner,
             contract: contract,
-            slugidstr: slugid,
+            slugid: slugid,
             title: title,
             inventory: inventory
         });
