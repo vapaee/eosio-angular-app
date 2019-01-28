@@ -174,7 +174,7 @@ namespace vapaee {
 
         void get_container_spec_for_slug(const slug &asset_slug, container_asset &asset, container_spec &spec) {
             container_specs specs_table(get_self(), get_self().value);
-            vapaee::bgbbox::get_container_asset_for_slug(asset_slug, asset);
+            vapaee::bgbox::get_container_asset_for_slug(asset_slug, asset);
             auto itr = specs_table.find(asset.spec);
             eosio_assert(itr != specs_table.end(), "asset point to a null spec");
 

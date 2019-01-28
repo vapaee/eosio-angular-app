@@ -81,6 +81,7 @@ CONTRACT boardgamebox : public eosio::contract {
 
         // --------------------- Publishers ------------------
         ACTION newasset(name author_owner, uint64_t author_issuer, slug_asset maximum_supply, uint64_t spec) {
+            print("\nACTION boardgamebox.newasset()\n");
             bgbox::core box;
             box.action_new_item_asset(author_owner, author_issuer, maximum_supply, spec);
         };
@@ -92,34 +93,38 @@ CONTRACT boardgamebox : public eosio::contract {
         };
         
         ACTION issueunits(name to, slug_asset quantity, string memo) {
+            print("\nACTION boardgamebox.issueunits()\n");
             bgbox::core box;
             box.action_issue_item_units(to, quantity, memo);
         };
 
         // --------------------- Users ------------------
         ACTION transfer( name from, name to, slug_asset quantity, string memo) {
+            print("\nACTION boardgamebox.transfer()\n");
             bgbox::core box;
             box.action_transfer_item_unit_quantity(from, to, quantity, memo);
         };
 
         ACTION transfunits( name from, name to, slug_asset quantity, const vector<uint64_t> &items,const vector<int> &quantities, string memo ) {
+            print("\nACTION boardgamebox.transfunits()\n");
             bgbox::core box;
             box.action_transfer_item_unit_list(from, to, quantity, items, quantities, memo);
         };
 
-        ACTION newusercont (name user, slug container_asset, name ram_payer) {
+        ACTION newusercont (name owner, uint64_t publisher, slug container_asset, name ram_payer) {
             print("\nACTION boardgamebox.newusercont()\n");
             bgbox::core box;
-            box.action_new_container_instance(user, container_asset, ram_payer);            
+            box.action_new_container_instance(owner, publisher, container_asset, ram_payer);            
         }
 
-        ACTION newuser4app (name user, uint64_t app, name ram_payer) {
+        ACTION newuser4app (name user, uint64_t publisher, uint64_t app, name ram_payer) {
             print("\nACTION boardgamebox.newuser4app()\n");
             bgbox::core box;
-            box.action_create_containers_for_user(user, app, ram_payer);              
+            box.action_create_containers_for_user(user, publisher, app, ram_payer);              
         };
         
         ACTION swap( name from, uint64_t unit, uint64_t app, int quantity, name to, const slotinfo &target_slot, name ram_payer) {
+            print("\nACTION boardgamebox.swap()\n");
             bgbox::core box;
             box.action_swap_slots_of_item_unit(from, unit, app, quantity, to, target_slot, ram_payer);
         }

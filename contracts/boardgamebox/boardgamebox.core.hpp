@@ -252,7 +252,7 @@ namespace vapaee {
             print("core::action_transfer_item_unit_list() ends...\n");
         }
 
-        void action_new_container_instance (name user, slug container_slug, name ram_payer) {
+        void action_new_container_instance (name user, uint64_t publisher, slug container_slug, name ram_payer) {
             print("core::action_new_container_instance()\n");
             print(" user: ", user.to_string(), "\n");
             print(" container_slug: ", container_slug.to_string(), "\n");
@@ -263,7 +263,7 @@ namespace vapaee {
             container_spec spec;
             vapaee::bgbox::get_container_spec_for_slug(container_slug, asset, spec);
             
-            containers user_containers(get_self(), user.value);
+            containers user_containers(get_self(), publisher);
             auto reg_cont_index = user_containers.template get_index<"asset"_n>();
             auto user_cont_itr = reg_cont_index.find(asset.id);
             eosio_assert(user_cont_itr == reg_cont_index.end(), "container already exist for this user");
@@ -281,18 +281,23 @@ namespace vapaee {
             print("core::action_new_container_instance() ends...\n");
         }
 
-        void action_create_containers_for_user (name user, uint64_t app, name ram_payer) {
+        void action_create_containers_for_user (name user, uint64_t publisher, uint64_t app, name ram_payer) {
             print("core::action_create_containers_for_user()\n");
             print(" user: ", user.to_string(), "\n");
+            print(" publisher: ", std::to_string((int) publisher), "\n");
             print(" app: ", std::to_string((int) app), "\n");
             print(" ram_payer: ", ram_payer.to_string(), "\n");
             // El objetivo es crearle al usuario todas las instancias de containers y masteries registrados por esa app
             require_auth(user);
 
+            name owner = vapaee::bgbox::get_author_owner(publisher);
+            string error_str = string("ERROR: user '") + user.to_string() + "' is not the current owner of publisher " + std::to_string((int) publisher);
+            eosio_assert(owner == user, error_str.c_str());
+
             container_assets registered_cont(get_self(), get_self().value);
             auto reg_cont_index = registered_cont.template get_index<"publisher"_n>();
 
-            containers user_containers(get_self(), user.value);
+            containers user_containers(get_self(), publisher);
             auto cont_index = user_containers.template get_index<"asset"_n>();
             // auto user_cont_itr = cont_index.begin();
             // iterar sobre todos los container_spec registrados por esta app
@@ -310,7 +315,7 @@ namespace vapaee {
                         permission_level{user,"active"_n},
                         get_self(),
                         "newusercont"_n,
-                        std::make_tuple(user, reg_cont_itr->supply.symbol.code().raw(), ram_payer)
+                        std::make_tuple(user, publisher, reg_cont_itr->supply.symbol.code().raw(), ram_payer)
                     ).send();
                 }
             }
@@ -318,24 +323,28 @@ namespace vapaee {
         };
 
         void action_swap_slots_of_item_unit(
-            name from,
+            uint64_t from_publisher,
             uint64_t unit,
             uint64_t app,
             int quantity,
-            name to,
+            uint64_t to_publisher,
             const slotinfo &target_slot,
             name ram_payer) {
 
             print("core::action_swap_slots_of_item_unit()\n");
-            print(" from: ", from.to_string(), "\n");
+            print(" from_publisher: ", std::to_string((int) from_publisher), "\n");
             print(" unit: ", std::to_string((int) unit), "\n");
             print(" app: ", std::to_string((int) app), "\n");
             print(" quantity: ", std::to_string((int) quantity), "\n");
-            print(" to: ", to.to_string(), "\n");
+            print(" to_publisher: ", std::to_string((int) to_publisher), "\n");
             print(" target_slot: ", target_slot.to_string(), "\n");
             print(" ram_payer: ", ram_payer.to_string(), "\n");
 
-            
+            name from = vapaee::bgbox::get_author_owner(from_publisher);
+            name to = vapaee::bgbox::get_author_owner(to_publisher);
+            print(" from: ", from.to_string(), "\n");
+            print(" to: ", to.to_string(), "\n");
+
             // assert positive quantity
             eosio_assert(quantity > 0, "can't transfer 0 units");
 
@@ -365,12 +374,12 @@ namespace vapaee {
             eosio_assert(from_spec_itr != specs_table.end(), "item spec 'from' does no exist");
 
             // from container table
-            containers from_containers_table(get_self(), from.value);
+            containers from_containers_table(get_self(), from_publisher);
             auto from_cont_itr = from_containers_table.find(from_units_itr->slot.container);
             eosio_assert(from_cont_itr != from_containers_table.end(), "contaner instance for 'from' does no exist");
             
             // to container table
-            containers to_containers_table(get_self(), to.value);
+            containers to_containers_table(get_self(), to_publisher);
             auto to_cont_itr = to_containers_table.find(target_slot.container);
             eosio_assert(to_cont_itr != to_containers_table.end(), "contaner instance for 'to' does no exist");                
             // TODO: es posible que el destinatario desee que se le cree en ese momento el inventario
