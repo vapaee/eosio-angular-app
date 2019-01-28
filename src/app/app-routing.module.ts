@@ -13,7 +13,6 @@ import { InventoryPage } from './pages-cnt/inventory/inventory.page';
 import { AlbumsPage } from './pages-cnt/albums/albums.page';
 import { ProfilePage } from './pages-cnt/profile/profile.page';
 
-
 const routes: Routes = [
   { path: '',                            data: { state: "root" }, redirectTo: '/eos/home', pathMatch: 'full' },
   { path: 'cnt',                         data: { state: "root" }, component: CntRootPage,
@@ -29,7 +28,7 @@ const routes: Routes = [
       { path: 'home',                    data: { state: "home" }, component: HomePage },
       { path: 'video',                   data: { state: "video" }, component: VideoPage },
       { path: 'bgbox',                   data: { state: "bgbox" }, component: BGBoxPage, children: [
-        { path: 'register',              data: { state: "register" }, component: RegisterPage },
+        { path: 'register',              data: { state: "register" }, component: RegisterPage }
     ] },
     { path: 'account',                   data: { state: "account" }, component: AccountPage},
       { path: 'account/:name',           data: { state: "account_name" }, component: AccountPage }      

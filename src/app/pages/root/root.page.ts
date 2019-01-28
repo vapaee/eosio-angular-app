@@ -28,15 +28,19 @@ export class RootPage implements OnInit {
         var network = this.route.snapshot.paramMap.get('network');
         console.log("RootPage.network: ---> ", network);
         if (network) {
-            this.scatter.setNetwork(network).then(() => {
-                if (this.scatter.network.slug != network) {
-                    this.app.navigate("/eos/home");
-                }    
-            });
+            if ( this.scatter.network.slug != network || !this.scatter.connected ) {
+                this.scatter.setNetwork(network).then(() => {
+                    if (this.scatter.network.slug != network) {
+                        this.app.navigate("/eos/home");
+                    }    
+                });
+                this.scatter.connectApp("Cards & Tokens").catch(err => console.error(err));
+            }            
         } else {
             this.scatter.setNetwork("eos");
+            this.scatter.connectApp("Cards & Tokens").catch(err => console.error(err));
         }
-        this.scatter.connectApp("Cards & Tokens").catch(err => console.error(err));
+        
     }
 
     collapseMenu() {

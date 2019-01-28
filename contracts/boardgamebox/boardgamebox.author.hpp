@@ -205,7 +205,9 @@ namespace vapaee {
             authors_table.emplace( owner, [&]( auto& s ) {
                 s.id            = author_id;
                 s.owner         = owner;
-                s.slugid          = slugid;
+                s.ownervalue    = owner.value;
+                s.slugid        = slugid;
+                s.slugvalue     = slugid.to128bits();
             });
 
             // recorremos por id

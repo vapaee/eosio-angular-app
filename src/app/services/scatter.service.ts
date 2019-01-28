@@ -72,6 +72,7 @@ export interface EOS {
 
 export interface Scatter {
     eos?:Function,
+    forgotten?:boolean, // was forgetIdentity executed?
     eosHook:any,
     identity: any,
     isExtension: boolean,
@@ -216,6 +217,7 @@ export class ScatterService {
     private _account_queries: {[key:string]:Promise<AccountData>};
     private eos: EOS;
     public onNetworkChange:Subject<Network> = new Subject();
+    public onLogggedStateChange:Subject<boolean> = new Subject();
     public account: Account;
     private setReady: Function;
     public waitReady: Promise<any> = new Promise((resolve) => {
@@ -269,10 +271,12 @@ export class ScatterService {
         return this.waitEndpoints.then(() => {
             var n = this.getNetwork(name, index);
             if (n) {
-                this._network = n;
-                this.resetIdentity();
-                this.initScatter();
-                this.onNetworkChange.next(this.getNetwork(name));
+                if (this._network.name != n.name) {
+                    this._network = n;
+                    this.resetIdentity();
+                    this.initScatter();
+                    this.onNetworkChange.next(this.getNetwork(name));    
+                }
             } else {
                 console.error("ERROR: Scatter.setNetwork() unknown network name-index. Got ("
                     + name + ", " + index + "). Availables are:", this._networks);
@@ -317,9 +321,16 @@ export class ScatterService {
     }
 
     resetIdentity() {
+        console.log("ScatterService.resetIdentity()");
         this.error = "";
         // this.eos = null;
-        if (this.lib) this.lib.identity = null;
+        if (this.lib) {
+            this.lib.identity = null;
+            if (!this.lib.forgotten) {
+                this.lib.forgotten = true;
+                this.lib.forgetIdentity();
+            }
+        }
     }
 
     private resetPromises() {
@@ -418,10 +429,11 @@ export class ScatterService {
     }
 
     private setIdentity(identity:any) {
-        console.log("ScatterService.setIdentity()", identity);
+        console.log("ScatterService.setIdentity()", [identity]);
         console.assert(!!this.lib, "ERROR: no instance of scatter found");
         this.error = "";
         this.lib.identity = identity;
+        this.lib.forgotten = false;
         this.account = this.lib.identity.accounts.find(x => x.blockchain === 'eos');
         console.log("ScatterService.setIdentity() -> ScatterService.queryAccountData() : " , [this.account.name]);
         this.queryAccountData(this.account.name).then(account => {
@@ -445,11 +457,11 @@ export class ScatterService {
         */
         console.log("ScatterService.queryAccountData("+name+") ");
         this._account_queries[name] = this._account_queries[name] || new Promise<AccountData>((resolve, reject) => {
-            console.log("PASO 1 ------", [this._account_queries])
+            // console.log("PASO 1 ------", [this._account_queries])
             this.waitEosjs.then(() => {
-                console.log("PASO 2 (eosjs) ------");
+                // console.log("PASO 2 (eosjs) ------");
                 this.eos.getAccount({account_name: name}).then((response) => {
-                    console.log("PASO 3 (eosjs.getAccount) ------", response);
+                    // console.log("PASO 3 (eosjs.getAccount) ------", response);
                     resolve(response);
                 }).catch((err) => {
                     reject(err);
@@ -537,6 +549,7 @@ export class ScatterService {
         console.log("ScatterService.logout()");
         return new Promise<any>((resolve, reject) => {
             this.connectApp().then(() => {
+                this.lib.forgotten = true;
                 this.lib.forgetIdentity()
                     .then( (err)  => {
                         console.log("disconnect", err);

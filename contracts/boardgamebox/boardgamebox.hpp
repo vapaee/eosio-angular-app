@@ -108,11 +108,13 @@ CONTRACT boardgamebox : public eosio::contract {
         };
 
         ACTION newusercont (name user, slug container_asset, name ram_payer) {
+            print("\nACTION boardgamebox.newusercont()\n");
             bgbox::core box;
             box.action_new_container_instance(user, container_asset, ram_payer);            
         }
 
         ACTION newuser4app (name user, uint64_t app, name ram_payer) {
+            print("\nACTION boardgamebox.newuser4app()\n");
             bgbox::core box;
             box.action_create_containers_for_user(user, app, ram_payer);              
         };

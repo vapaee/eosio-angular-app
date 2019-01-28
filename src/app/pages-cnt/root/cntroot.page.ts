@@ -24,8 +24,10 @@ export class CntRootPage implements OnInit {
     }
     
     ngOnInit() {
-        this.scatter.setNetwork("local");
-        this.scatter.connectApp("Cards & Tokens").catch(err => console.error(err));
+        if ( this.scatter.network.slug != "local" || !this.scatter.connected ) {
+            this.scatter.setNetwork("local");
+            this.scatter.connectApp("Cards & Tokens").catch(err => console.error(err));    
+        }
     }
 
     collapseMenu() {

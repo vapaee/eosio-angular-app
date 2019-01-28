@@ -18,19 +18,19 @@
             <ul class="nav navbar-nav ml-auto">
                 
                 <li class="nav-item">
-                    <a class="nav-link" [routerLink]="'/local/account'" >EOS.IO</a>
+                    <a class="nav-link" [routerLink]="'/local/home'" >EOS.IO</a>
                 </li>
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('cards')}">
                     <a class="nav-link" routerLink="{{'/cnt/cards'}}" >{{local.string.Cards}}</a>
                 </li>
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('inventory')}">
-                    <a class="nav-link" [routerLink]="'/cnt/inventory/' + cnt.publisher.slugid" >{{local.string.Inventory}}</a>
+                    <a class="nav-link" [routerLink]="'/cnt/inventory/' + cnt.publisher.slugid.str" >{{local.string.Inventory}}</a>
                 </li>
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('albums')}">
                     <a class="nav-link" [routerLink]="'/cnt/albums'" >{{local.string.Albums}}</a>
                 </li>
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('profile')}">
-                    <a class="nav-link" [routerLink]="'/cnt/profile/' + cnt.publisher.slugid" >{{local.string.Profile}}</a>
+                    <a class="nav-link" [routerLink]="'/cnt/profile/' + cnt.publisher.slugid.str" >{{local.string.Profile}}</a>
                 </li>
 
                 <li class="nav-item dropdown" dropdown>

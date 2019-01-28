@@ -13,7 +13,7 @@
         </div>
         <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-logged'}">
             <div class="pull-right">
-                <span class="btn btn-sm btn-secondary" (click)="scatter.login()">
+                <span class="btn btn-sm btn-secondary" (click)="cnt.login()">
                     {{local.string.LoginWScatter}}
                 </span>
             </div>
@@ -21,29 +21,60 @@
         </div>
         <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-publishers'}">
             <div class="pull-right">
-                <span class="btn btn-sm btn-secondary">Create a Publisher</span>
+                <span class="btn btn-sm btn-secondary" [routerLink]="'/local/bgbox/register'" [queryParams]="{ type: 'publisher'}">Create a Publisher</span>
             </div>
             <span>You have no publishers on BG-Box</span>
         </div>
         <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-selected'}">
             <div class="pull-right">
-                <span class="btn btn-sm btn-secondary">Select a Publisher</span>
-                <span class="btn btn-sm btn-secondary margin-left">Create another Publisher</span>
+                <span class="btn btn-sm btn-secondary margin-left" [routerLink]="'/local/bgbox/register'"  [queryParams]="{ type: 'publisher', back: ''}">Create another Publisher</span>
             </div>
             <span>Please select a publisher</span>
         </div>
+
+        <div class="card text-white bg-dark" [ngClass]="{'d-none':cnt.loginState != 'no-selected'}">
+            <div class="card-body">
+                <div class="row">
+                    <div class="input-group col-sm-12">
+                        <h2>Publishers</h2>
+                    </div>
+                    <div class="input-group col-sm-12">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>owner</td>
+                                    <td>namespace</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let user of cnt.publishers" class="cursor-pointer" (click)="selectPublisher(user)">
+                                    <td>{{user.username}}</td>
+                                    <td>{{user.owner}}</td>
+                                    <td>{{user.slugid.str}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+            
+
         <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-registered'}">
             <div class="pull-right">
-                <span class="btn btn-sm btn-secondary">Register Publisher in C&T</span>
+                <span class="btn btn-sm btn-danger" (click)="cnt.resetPublishers()">Deselect Publisher</span>
+                <span class="btn btn-sm btn-success margin-left" (click)="cnt.registerPublisher()">Register Publisher in C&T</span>
             </div>
-            <span>In irder to use C&T you must first register your publisher</span>
+            <span>In order to use C&T you must first register your '{{cnt.publisher.username}}' publisher</span>
         </div>
         <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'publisher-ok'}">
             <div class="pull-right">
                 <span class="btn btn-sm btn-secondary">Logout from C&T</span>
                 <span class="btn btn-sm btn-secondary margin-left">Logout from Scatter</span>
             </div>
-            <span>In irder to use C&T you must first register your publisher</span>
+            <span>Logged as '{{cnt.publisher.username}}'</span>
         </div>        
     </div>
 </div>

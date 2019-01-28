@@ -46,9 +46,10 @@ export class RegisterPage implements OnInit {
                 inventory: -1,
             };
             // ---------------------------------------
+            var type = this.route.snapshot.paramMap.get('type');
             this.data = {
                 owner: owner,
-                isapp: true,
+                isapp: type == "app",
                 nick: "cards-and-tokens",
                 title: "Cards & Tokens",
                 contract: "cardsntokens",
