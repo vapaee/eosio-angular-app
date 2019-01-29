@@ -273,11 +273,11 @@ namespace vapaee {
             print("core::action_transfer_item_unit_list() ends...\n");
         }
 
-        void action_new_container_instance (name owner, uint64_t profile, string container_slug_str, name ram_payer) {
+        void action_new_container_instance (name owner, uint64_t profile, std::string container_slug_str, name ram_payer) {
             print("core::action_new_container_instance()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" profile: ", std::to_string((int)profile), "\n");
-            print(" container_slug_str: ", container_slug_str, "\n");
+            print(" container_slug_str: ", container_slug_str.c_str(), "\n");
             print(" ram_payer: ", ram_payer.to_string(), "\n");
             require_auth(owner);
 
@@ -310,7 +310,7 @@ namespace vapaee {
         }
 
         void action_create_containers_for_profile (name owner, uint64_t profile, uint64_t app, name ram_payer) {
-            print("core::action_create_containers_for_user()\n");
+            print("core::action_create_containers_for_profile()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" profile: ", std::to_string((int) profile), "\n");
             print(" app: ", std::to_string((int) app), "\n");
@@ -343,11 +343,11 @@ namespace vapaee {
                         permission_level{owner,"active"_n},
                         get_self(),
                         "cont4profile"_n,
-                        std::make_tuple(owner, profile, reg_cont_itr->supply.symbol.code().raw(), ram_payer)
+                        std::make_tuple(owner, profile, reg_cont_itr->supply.symbol.code().raw().to_string(), ram_payer)
                     ).send();
                 }
             }
-            print("core::action_create_containers_for_user() ends...\n");
+            print("core::action_create_containers_for_profile() ends...\n");
         };
 
         void action_swap_slots_of_item_unit(

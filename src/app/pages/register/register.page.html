@@ -3,7 +3,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="input-group col-sm-12">
-                    <span class="btn btn-sm margin-right" [ngClass]="{'btn-secondary': !data.isapp, 'btn-primary': data.isapp}" (click)="setPublisher()">New Publisher</span>
+                    <span class="btn btn-sm margin-right" [ngClass]="{'btn-secondary': !data.isapp, 'btn-primary': data.isapp}" (click)="setProfile()">New Profile</span>
                     <span class="btn btn-sm margin-right" [ngClass]="{'btn-secondary': data.isapp, 'btn-primary': !data.isapp}" (click)="setApp()">New App</span>
                     <span class="btn btn-sm margin-right btn-primary" (click)="prueba()">Prueba</span>
                     <span class="btn btn-sm margin-right btn-primary" (click)="consultar_tablas()">Tablas Prueba</span>
@@ -16,7 +16,7 @@
 <div class="container margin-top-xxl">
     <div class="card text-white bg-dark">
         <div class="card-header">
-            <span class="text-lg color-green">Register New {{data.isapp ? "App" : "Publisher"}}</span>
+            <span class="text-lg color-green">Register New {{data.isapp ? "App" : "Profile"}}</span>
         </div>        
         <div class="card-body">
             <div class="row">

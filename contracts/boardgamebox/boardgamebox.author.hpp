@@ -138,7 +138,7 @@ namespace vapaee {
             action(
                 permission_level{owner,"active"_n},
                 get_self(),
-                "registeruser"_n,
+                "registerprof"_n,
                 std::make_tuple(owner, author_id, name)
             ).send();
 

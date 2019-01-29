@@ -64,7 +64,6 @@ CONTRACT boardgamebox : public eosio::contract {
             auth.action_transfer_by_id(owner, newowner, id);            
         }
         
-
         // ********************************** Core *********************************
 
         // --------------------- Apps ------------------
@@ -138,9 +137,6 @@ CONTRACT boardgamebox : public eosio::contract {
 
         ACTION burn( name owner, const slug_asset& quantity, slotinfo & slot, int aaaaaaaaa) {
         };
-
-
-
 
         // -------------------- debugging porpuses ---------------------
         void dropprofile(name owner, uint64_t author) {

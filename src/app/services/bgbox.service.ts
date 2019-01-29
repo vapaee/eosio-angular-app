@@ -9,14 +9,14 @@ export interface SlugId {
     str?: string;
     top?: string;
 }
-export interface Publisher {
+export interface Profile {
     id?:string;
     slugid: SlugId;
     account: string;
 }
 
 export interface AuthorsCache {
-    [key:string]:Publisher;
+    [key:string]:Profile;
 }
 
 export class Utils {
@@ -298,14 +298,14 @@ export class BGBoxService {
 
         return Promise.all<any>([
             this.getTable("authors"),
-            this.getTable("users"),
+            this.getTable("profiles"),
             this.getTable("apps"),
         ]).then(result => {
             
             var data = {
                 map:{},
                 authors:result[0].rows,
-                publishers:result[1].rows,
+                profiles:result[1].rows,
                 apps:result[2].rows,
             };
 
@@ -316,9 +316,9 @@ export class BGBoxService {
                 data.authors[i] = data.map[key];
             }
 
-            for (var i in data.publishers) {
-                Object.assign(data.map["id-" + data.publishers[i].id], data.publishers[i]);
-                data.publishers[i] = data.map["id-" + data.publishers[i].id];
+            for (var i in data.profiles) {
+                Object.assign(data.map["id-" + data.profiles[i].id], data.profiles[i]);
+                data.profiles[i] = data.map["id-" + data.profiles[i].id];
             }
 
             for (var i in data.apps) {
@@ -354,7 +354,7 @@ export class BGBoxService {
 
             this.getTable("authors", params).then(result => {
                 // console.log("BGBoxService.getAuthorsFor() --> ", result.rows);
-                var data = {map:{},authors:result.rows,publishers:[]};
+                var data = {map:{},authors:result.rows,profiles:[]};
                 var promises:Promise<any>[] = [];
                 for (var i in result.rows) {
                     var author = result.rows[i];
@@ -363,16 +363,16 @@ export class BGBoxService {
                     data.map["id-"+author.id] = author;
                     var id_p1 = new BigNumber(author.id).plus(1);
                     var i_params = {lower_bound:author.id ,upper_bound: author.id};
-                    var promise = this.getTable("users", i_params).then(i_result => {
+                    var promise = this.getTable("profiles", i_params).then(i_result => {
                         // console.log("BGBoxService.getAuthorsFor() --> ", i_result.rows);
                         if (i_result.rows.length == 1) {
-                            var publisher = i_result.rows[0];
-                            var key = "id-"+publisher.id;
+                            var profile = i_result.rows[0];
+                            var key = "id-"+profile.id;
                             data.map[key] = Object.assign(
                                 data.map[key],
-                                publisher
+                                profile
                             );
-                            data.publishers.push(data.map[key]);
+                            data.profiles.push(data.map[key]);
                             this.authors[data.map[key].slugid.str] = data.map[key];
                         }
                     });
@@ -415,7 +415,7 @@ export class BGBoxService {
 
             this.getTable("authors", params).then(result => {
                 // console.log("BGBoxService.getAuthorsFor() --> ", result.rows);
-                var data = {map:{},authors:result.rows,publishers:[]};
+                var data = {map:{},authors:result.rows,profiles:[]};
                 
                 var promises:Promise<any>[] = [];
                 for (var i in result.rows) {
@@ -425,16 +425,16 @@ export class BGBoxService {
                     data.map["id-"+author.id] = author;
                     var id_p1 = new BigNumber(author.id).plus(1);
                     var i_params = {lower_bound:author.id ,upper_bound: author.id};
-                    var promise = this.getTable("users", i_params).then(i_result => {
+                    var promise = this.getTable("profiles", i_params).then(i_result => {
                         // console.log("BGBoxService.getAuthorsFor() --> ", i_result.rows);
                         
                         if (i_result.rows.length == 1) {
-                            var publisher = i_result.rows[0];
-                            data.map["id-"+publisher.id] = Object.assign(
-                                data.map["id-"+publisher.id],
-                                publisher
+                            var profile = i_result.rows[0];
+                            data.map["id-"+profile.id] = Object.assign(
+                                data.map["id-"+profile.id],
+                                profile
                             );
-                            data.publishers.push(data.map["id-"+publisher.id]);                                
+                            data.profiles.push(data.map["id-"+profile.id]);                                
                         }
                     });
                     promises.push(promise);
@@ -455,9 +455,9 @@ export class BGBoxService {
         });
     }    
 
-    registerPublisher(owner:string, slugid:string, name:string) {
-        console.log("BGBoxService.registerPublisher()", owner, slugid, name);
-        return this.excecute("newpublisher", {owner:owner, slugid:slugid, name:name})
+    registerProfile(owner:string, slugid:string, name:string) {
+        console.log("BGBoxService.registerProfile()", owner, slugid, name);
+        return this.excecute("newprofile", {owner:owner, slugid:slugid, name:name})
     }
 
     registerApp(owner:string, contract:string, slugid:string, title:string, inventory:number) {
@@ -471,10 +471,10 @@ export class BGBoxService {
         });
     }
 
-    signUpPublisherForApp(owner, appid, rampayer) {
-        console.log("BGBoxService.signUpPublisherForApp()", owner, appid, rampayer);
-        return this.excecute("newuser4app", {user:owner, app:appid, ram_payer:rampayer})
-    }    
+    signUpProfileForApp(owner, profileid, appid, rampayer) {
+        console.log("BGBoxService.signUpProfileForApp()", owner, profileid, appid, rampayer);
+        return this.excecute("profile4app", {owner:owner, profile: profileid, app:appid, ram_payer:rampayer})
+    }
 
     // -------------------------
     droptables() {

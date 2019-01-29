@@ -10,10 +10,10 @@ show_table() {
 
 show_table boardgamebox authors
 show_table boardgamebox apps
-show_table boardgamebox users
+show_table boardgamebox profiles
 
 show_table boardgamebox contspec
 show_table boardgamebox contasset
 
-show_table bob containers
-show_table alice containers
+show_table 1 containers
+show_table 2 containers

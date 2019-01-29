@@ -17,7 +17,7 @@ import { Subscriber } from 'rxjs';
 export class BGBoxPage implements OnInit, OnDestroy {
 
     apps: any[];
-    publishers: any[];
+    profiles: any[];
     loading: boolean;
     private subscriber: Subscriber<string>;
     
@@ -30,7 +30,7 @@ export class BGBoxPage implements OnInit, OnDestroy {
         public bgbox: BGBoxService
     ) {
         this.apps = [];
-        this.publishers = [];
+        this.profiles = [];
         this.subscriber = new Subscriber<string>(this.onStateChange.bind(this));
     }
 
@@ -55,10 +55,10 @@ export class BGBoxPage implements OnInit, OnDestroy {
         this.loading = true;
         this.bgbox.getAuthors().then(result => {
             console.log("this.bgbox.getAuthors() authors: ", result.authors);
-            console.log("this.bgbox.getAuthors() publishers: ", result.publishers);
+            console.log("this.bgbox.getAuthors() profiles: ", result.profiles);
             console.log("this.bgbox.getAuthors() apps: ", result.apps);
             this.apps = result.apps;
-            this.publishers = result.publishers;
+            this.profiles = result.profiles;
             this.loading = false;
         }).catch(err => {
             this.loading = false;

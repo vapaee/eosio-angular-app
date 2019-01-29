@@ -59,7 +59,7 @@ export class RegisterPage implements OnInit {
         });
     }
 
-    setPublisher() {
+    setProfile() {
         this.data.isapp = false;
         this.data.contract = this.bgbox.contract;
         this.data.inventory =  -1;
@@ -89,7 +89,7 @@ export class RegisterPage implements OnInit {
                     this.app.loading = false;
                 });
             } else {
-                this.bgbox.registerPublisher(this.data.owner, this.data.nick, this.data.title).then((result) => {
+                this.bgbox.registerProfile(this.data.owner, this.data.nick, this.data.title).then((result) => {
                     this.app.loading = false;
                     if (result.transaction_id) {
                         console.log("OK ??", [result]);

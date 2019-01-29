@@ -1,26 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ScatterService } from './scatter.service';
-import { BGBoxService, Publisher } from './bgbox.service';
+import { BGBoxService, Profile } from './bgbox.service';
 import BigNumber from 'bignumber.js';
 
 @Injectable()
 export class CntService {
 
-    public onPublisherChange:Subject<Publisher> = new Subject();
+    public onProfileChange:Subject<Profile> = new Subject();
     public loginState: string;
     /*
     public loginState: string;
     - 'no-scatter': Scatter no detected
     - 'no-logged': Scatter detected but user is not logged
-    - 'no-publishers': User logged but has no publishers in bg-box
-    - 'no-selected': usr has several publishers but none selected 
-    - 'no-registered': user has a selected publisher but is not registered in C&T
-    - 'publisher-ok': user has selected a registered publisher (has C&T inventories in BG-Box memory)
+    - 'no-profiles': User logged but has no profiles in bg-box
+    - 'no-selected': usr has several profiles but none selected 
+    - 'no-registered': user has a selected profile but is not registered in C&T
+    - 'profile-ok': user has selected a registered profile (has C&T inventories in BG-Box memory)
     */
 
-    public publisher: Publisher;
-    public publishers: Publisher[];
+    public profile: Profile;
+    public profiles: Profile[];
     public contract:string;
     cardsntokens:string = "cardsntokens";
     cntAuthorId: string;
@@ -33,10 +33,10 @@ export class CntService {
         private scatter: ScatterService,
         private bgbox: BGBoxService
         ) {
-        this.resetPublishers();
+        this.resetProfiles();
         this.contract = this.cardsntokens;
         this.scatter.onLogggedStateChange.subscribe(this.updateLogState.bind(this));
-        this.onPublisherChange.subscribe(this.updateLogState.bind(this));
+        this.onProfileChange.subscribe(this.updateLogState.bind(this));
 
         var encodedName = this.bgbox.utils.encodeName(this.cardsntokens);
 
@@ -54,49 +54,50 @@ export class CntService {
         });
     }
 
-    resetPublishers() {
-        this.publishers = [];
-        this.publisher = {slugid:{str:"guest"}, account:this.contract};
-        this.onPublisherChange.next(this.publisher);
+    resetProfiles() {
+        this.profiles = [];
+        this.profile = {slugid:{str:"guest"}, account:this.contract};
+        this.onProfileChange.next(this.profile);
     }
 
     login() {
-        this.resetPublishers();
+        this.resetProfiles();
         this.scatter.login().then(() => {
             this.updateLogState();
         })
     }
 
-    fetchPublisher(publisher:string) {
-        return this.bgbox.getAuthorBySlug(publisher);
+    fetchProfile(profile:string) {
+        return this.bgbox.getAuthorBySlug(profile);
     }
 
-    selectPublisher(publisher:any) {
-        if (typeof publisher  == "string") {
-            for (var i in this.publishers) {
-                if (this.publishers[i].slugid.str == publisher) {
-                    if (this.publisher != this.publishers[i]) {
-                        this.publisher = this.publishers[i];
-                        this.onPublisherChange.next(this.publisher);
+    selectProfile(profile:any) {
+        if (typeof profile  == "string") {
+            for (var i in this.profiles) {
+                if (this.profiles[i].slugid.str == profile) {
+                    if (this.profile != this.profiles[i]) {
+                        this.profile = this.profiles[i];
+                        this.onProfileChange.next(this.profile);
                     }
                 }
             }
         } else {
-            if (this.publisher != publisher) {
-                this.publisher = publisher;
-                this.publishers.push(publisher);
-                this.onPublisherChange.next(this.publisher);
+            if (this.profile != profile) {
+                this.profile = profile;
+                this.profiles.push(profile);
+                this.onProfileChange.next(this.profile);
             }            
 
         }
-        console.log("CntService.selectPublisher(",[publisher],")");
+        console.log("CntService.selectProfile(",[profile],")");
         this.updateLogState();
     }
 
-    registerPublisher() {
-        console.log("CntService.registerPublisher()");
-        return this.bgbox.signUpPublisherForApp(
+    registerProfile() {
+        console.log("CntService.registerProfile()");
+        return this.bgbox.signUpProfileForApp(
             this.scatter.account.name,
+            this.profile.id,
             this.cntAuthorId,
             this.bgbox.contract);
     }
@@ -108,19 +109,19 @@ export class CntService {
             this.loginState = "no-logged";
             console.log("this.scatter", [this.scatter]);
             if (this.scatter.logged) {
-                this.loginState = "no-publishers";
-                if (this.publishers.length == 0) {
+                this.loginState = "no-profiles";
+                if (this.profiles.length == 0) {
                     this.bgbox.getAuthorsFor(this.scatter.account.name).then(data => {
-                        if (data.publishers.length > 0) {
+                        if (data.profiles.length > 0) {
                             this.loginState = "no-selected";
-                            this.publishers = [];
+                            this.profiles = [];
                             for (var i in data.authors) {
-                                this.publishers.push(data.authors[i]);
+                                this.profiles.push(data.authors[i]);
                             }
                         }
                     });
                 } else {
-                    if (!this.publisher || this.publisher.slugid.str == "guest") {
+                    if (!this.profile || this.profile.slugid.str == "guest") {
                         this.loginState = "no-selected";
                     } else {
                         this.loginState = "no-registered";

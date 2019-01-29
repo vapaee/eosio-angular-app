@@ -18,9 +18,9 @@ const routes: Routes = [
   { path: 'cnt',                         data: { state: "root" }, component: CntRootPage,
     children: [
       { path: 'cards',                   data: { state: "cards" }, component: CardsPage },
-      { path: 'inventory/:publisher',    data: { state: "inventory" }, component: InventoryPage },
+      { path: 'inventory/:profile',      data: { state: "inventory" }, component: InventoryPage },
       { path: 'albums',                  data: { state: "albums" }, component: AlbumsPage },
-      { path: 'profile/:publisher',      data: { state: "profile" }, component: ProfilePage }
+      { path: 'profile/:profile',        data: { state: "profile" }, component: ProfilePage }
     ]
   },
   { path: ':network',                    data: { state: "root" }, component: RootPage,
