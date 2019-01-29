@@ -3,7 +3,7 @@
         // TABLE user_reg: lista de todos los publishers (authors que no son apps))
             // scope: contract
             // row: representa un usuario
-            TABLE user_reg {
+            TABLE profile {
                 uint64_t  id;
                 string username;
                 uint16_t primary_key() const { return id;  }
@@ -19,7 +19,7 @@
                     return std::to_string((int) id) + " - " + username ;
                 };
             };
-            typedef eosio::multi_index<"users"_n, user_reg,
-                indexed_by<"username"_n, const_mem_fun<user_reg, uint64_t, &user_reg::by_username_key>>
-            > users;            
+            typedef eosio::multi_index<"profiles"_n, profile,
+                indexed_by<"username"_n, const_mem_fun<profile, uint64_t, &profile::by_username_key>>
+            > profiles;            
         // ------------------------------------

@@ -11,13 +11,13 @@ namespace vapaee {
             return vapaee::bgbox::contract;
         }
         void get_item_spec_for_slug(const slug &asset_slug, item_asset &asset, item_spec &spec);
-        void find_app_deposit(name user, uint64_t app, container_asset &asset, container_instance &container);
-        void find_app_inventory(name user, uint64_t app, container_asset &asset, container_instance &container);
-        void get_container_for_slug(name user, slug asset_slug, container_asset &asset, container_instance &container);
+        void find_app_deposit(uint64_t user, uint64_t app, container_asset &asset, container_instance &container);
+        void find_app_inventory(uint64_t user, uint64_t app, container_asset &asset, container_instance &container);
+        void get_container_for_slug(uint64_t user, slug asset_slug, container_asset &asset, container_instance &container);
 
         // auxiliar functions ---------------------------------------------------------        
         void collect_units_for_asset(
-            name user,
+            uint64_t owner,
             const slug_asset &quantity,
             vector<uint64_t> &units,
             vector<int> &quantities) {
@@ -33,10 +33,11 @@ namespace vapaee {
             uint64_t asset_id = asset.id;
             item_units units_table(get_self(), spec.app);
             int plus_quantity, listed;
-            auto units_index = units_table.template get_index<"asset"_n>();
-            auto units_itr = units_index.lower_bound(asset_id);
+
+            auto units_index = units_table.template get_index<"owner"_n>();
+            auto units_itr = units_index.lower_bound(owner);
             for (listed=0; listed<quantity.amount && units_itr != units_index.end(); units_itr++) {
-                if (units_itr->asset == asset_id) {
+                if (units_itr->asset == asset_id && units_itr->owner == owner) {
                     units.push_back(units_itr->id);
                     plus_quantity = units_itr->quantity;
                     if (listed + plus_quantity > quantity.amount) {
@@ -51,16 +52,18 @@ namespace vapaee {
             eosio_assert(listed == quantity.amount, (string("Not enough items of asset ") + asset_slug.to_string()).c_str());
         }
 
-        void allocate_slot_in_deposit(name owner, const slug_symbol& symbol, const item_spec &spec, item_unit &units) {
+        void allocate_slot_in_deposit(uint64_t profile, const slug_symbol& symbol, const item_spec &spec, item_unit &units) {
             // exigimos que la cantidad sea positiva. de otra manera no debería allocarse el slot
             eosio_assert(units.quantity > 0, "quantity must be positive in deposit slot allocation");
 
             // primero obtengo la instancia de container para el usuario
             container_instance deposit;
             container_asset asset;
-            vapaee::bgbox::find_app_deposit(owner, spec.app, asset, deposit);
+            vapaee::bgbox::find_app_deposit(profile, spec.app, asset, deposit);
 
-            containers cont_table(get_self(), owner.value);
+            name owner = vapaee::bgbox::get_author_owner(profile);
+
+            containers cont_table(get_self(), profile);
             item_units units_table(get_self(), spec.app);
             auto unit_itr = units_table.begin();
 
@@ -84,7 +87,7 @@ namespace vapaee {
                 // instancio un nuevo item_unit y le copio todo la info de units
                 units_table.emplace( owner, [&](auto &a) {
                     a.id = units_table.available_primary_key();
-                    a.owner = owner;
+                    a.owner = profile;
                     a.asset = units.asset;
                     a.quantity = units.quantity;
                     a.slot.container = deposit.id;
@@ -93,13 +96,13 @@ namespace vapaee {
             }
         }        
 
-        void find_inventory_slot(name owner, const slug_symbol& symbol, const item_spec &spec, item_unit & unit) {
+        void find_inventory_slot(uint64_t profile, const slug_symbol& symbol, const item_spec &spec, item_unit & unit) {
             // finds an empty slot for the user's container instance of this app inventory. The slot remains empty
-
+            name owner = vapaee::bgbox::get_author_owner(profile);
             // tengo que saber dar con la instancia de container del usuario para este tipo de item
             container_instance inventory;
             container_asset asset;
-            vapaee::bgbox::find_app_inventory(owner, spec.app, asset, inventory);
+            vapaee::bgbox::find_app_inventory(profile, spec.app, asset, inventory);
             eosio_assert(inventory.empty > 0, "User does not have any space left in the app inventory");
 
             item_units units_table(get_self(), spec.app);
@@ -110,7 +113,7 @@ namespace vapaee {
                 unit_id = inventory.slots[inventory.slots.size()-1];
                 auto unit_itr = units_table.find(unit_id);
                 unit.id = unit_id;
-                unit.owner = owner;
+                unit.owner = profile;
                 unit.slot.container = inventory.id;
                 unit.slot.position = unit_itr->slot.position;
                 unit.quantity = 0;
@@ -135,14 +138,14 @@ namespace vapaee {
                 unit_id = units_table.available_primary_key();
                 units_table.emplace(owner, [&](auto &a){
                     a.id = unit_id;
-                    a.owner = owner;
+                    a.owner = profile;
                     a.slot.container = inventory.id;
                     a.slot.position = slot.position;
                     a.quantity = 0;
                 });
 
                 // tengo que agregar el item_unit.id a la lista de cointainer.slots porque sigue vacío
-                containers cont_table(get_self(), owner.value);
+                containers cont_table(get_self(), profile);
                 cont_table.modify(inventory, owner, [&](auto &a){
                     a.slots.push_back(unit_id);
                 });
@@ -218,8 +221,8 @@ namespace vapaee {
             spec.maxgroup = itr->maxgroup;
         }
 
-        void add_balance( name owner, slug_asset value, name ram_payer ) {
-            accounts account_table( get_self(), owner.value );
+        void add_balance( uint64_t profile, slug_asset value, name ram_payer ) {
+            accounts account_table( get_self(), profile );
             auto index = account_table.template get_index<"slug"_n>();
             auto itr = index.find( value.symbol.code().raw().to128bits());
             
@@ -239,8 +242,8 @@ namespace vapaee {
             }  
         }
     
-        void sub_balance( name owner, slug_asset value ) {
-            accounts account_table( get_self(), owner.value );
+        void sub_balance( uint64_t profile, slug_asset value ) {
+            accounts account_table( get_self(), profile );
             auto index = account_table.template get_index<"slug"_n>();
             auto itr = index.find( value.symbol.code().raw().to128bits());
             
@@ -257,6 +260,7 @@ namespace vapaee {
             });
             if (final_balance == 0) {
                 // we call close to release RAM
+                name owner = vapaee::bgbox::get_author_owner(profile);
                 action(
                     permission_level{owner,"active"_n},
                     get_self(),
@@ -267,25 +271,25 @@ namespace vapaee {
 
         }
 
-        void find_app_deposit(name user, uint64_t app, container_asset &asset, container_instance &container) {
+        void find_app_deposit(uint64_t profile, uint64_t app, container_asset &asset, container_instance &container) {
             // find container_spec for app|deposit
             slug appnick = vapaee::bgbox::get_author_slug(app);
             slug asset_slug = slug(appnick.to_string() + ".deposit");
-            vapaee::bgbox::get_container_for_slug(user, asset_slug, asset, container);
+            vapaee::bgbox::get_container_for_slug(profile, asset_slug, asset, container);
         }
 
-        void find_app_inventory(name user, uint64_t app, container_asset &asset, container_instance &container) {
+        void find_app_inventory(uint64_t profile, uint64_t app, container_asset &asset, container_instance &container) {
             // find container_spec for app|inventory
             slug appnick = vapaee::bgbox::get_author_slug(app);
             slug asset_slug = slug(appnick.to_string() + ".inventory");
-            vapaee::bgbox::get_container_for_slug(user, asset_slug, asset, container);
+            vapaee::bgbox::get_container_for_slug(profile, asset_slug, asset, container);
         }
 
-        void get_container_for_slug(name user, slug asset_slug, container_asset &asset, container_instance &container) {
+        void get_container_for_slug(uint64_t profile, slug asset_slug, container_asset &asset, container_instance &container) {
             get_container_asset_for_slug(asset_slug, asset);
             
             // find container_instance of the user for that spec
-            containers cont_table(get_self(), user.value);
+            containers cont_table(get_self(), profile);
             auto index_inv = cont_table.template get_index<"asset"_n>();
             auto itr_inv = index_inv.find( asset.id );
             eosio_assert(itr_inv != index_inv.end(), "no container registered for app");

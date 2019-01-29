@@ -34,16 +34,16 @@ CONTRACT boardgamebox : public eosio::contract {
             auth.action_register_app(owner, contract, app, invespace, title);
         }        
 
-        ACTION newpublisher(name owner, string slugid, string name) {
-            print("\nACTION boardgamebox.newpublisher()\n");
+        ACTION newprofile(name owner, string slugid, string name) {
+            print("\nACTION boardgamebox.newprofile()\n");
             bgbox::author auth;
-            auth.action_new_publisher(owner, slugid, name);
+            auth.action_new_profile(owner, slugid, name);
         }
 
-        ACTION registeruser(name owner, uint64_t app, string username) {
-            print("\nACTION boardgamebox.registeruser()\n");
+        ACTION registerprof(name owner, uint64_t author_id, string username) {
+            print("\nACTION boardgamebox.registerprof()\n");
             bgbox::author auth;
-            auth.action_register_user(owner, app, username);
+            auth.action_register_profile(owner, author_id, username);
         }        
 
         ACTION registerslug(name owner, string slugstr) {
@@ -68,9 +68,10 @@ CONTRACT boardgamebox : public eosio::contract {
         // ********************************** Core *********************************
 
         // --------------------- Apps ------------------
-        ACTION newitem(name author_owner, uint64_t author_app, name nickname, int maxgroup) {
+        ACTION newitem(name owner, uint64_t author_app, name nickname, int maxgroup) {
+            print("\nACTION boardgamebox.newitem()\n");
             bgbox::core box;
-            box.action_new_item_spec(author_owner, author_app, nickname, maxgroup);            
+            box.action_new_item_spec(owner, author_app, nickname, maxgroup);            
         };
 
         ACTION newcontainer(name author_owner, uint64_t author_app, name nickname, int space) {
@@ -92,41 +93,41 @@ CONTRACT boardgamebox : public eosio::contract {
             box.action_new_container_asset(author_owner, author_publisher, container_slug, space, spec);
         };
         
-        ACTION issueunits(name to, slug_asset quantity, string memo) {
+        ACTION issueunits(uint64_t to, slug_asset quantity, string memo) {
             print("\nACTION boardgamebox.issueunits()\n");
             bgbox::core box;
             box.action_issue_item_units(to, quantity, memo);
         };
 
         // --------------------- Users ------------------
-        ACTION transfer( name from, name to, slug_asset quantity, string memo) {
+        ACTION transfer( name owner, uint64_t from, uint64_t to, slug_asset quantity, string memo) {
             print("\nACTION boardgamebox.transfer()\n");
             bgbox::core box;
-            box.action_transfer_item_unit_quantity(from, to, quantity, memo);
+            box.action_transfer_item_unit_quantity(owner, from, to, quantity, memo);
         };
 
-        ACTION transfunits( name from, name to, slug_asset quantity, const vector<uint64_t> &items,const vector<int> &quantities, string memo ) {
+        ACTION transfunits( name owner, uint64_t from, uint64_t to, slug_asset quantity, const vector<uint64_t> &items,const vector<int> &quantities, string memo ) {
             print("\nACTION boardgamebox.transfunits()\n");
             bgbox::core box;
-            box.action_transfer_item_unit_list(from, to, quantity, items, quantities, memo);
+            box.action_transfer_item_unit_list(owner, from, to, quantity, items, quantities, memo);
         };
 
-        ACTION newusercont (name owner, uint64_t publisher, slug container_asset, name ram_payer) {
-            print("\nACTION boardgamebox.newusercont()\n");
+        ACTION cont4profile (name owner, uint64_t publisher, string container, name ram_payer) {
+            print("\nACTION boardgamebox.cont4profile()\n");
             bgbox::core box;
-            box.action_new_container_instance(owner, publisher, container_asset, ram_payer);            
+            box.action_new_container_instance(owner, publisher, container, ram_payer);            
         }
 
-        ACTION newuser4app (name user, uint64_t publisher, uint64_t app, name ram_payer) {
-            print("\nACTION boardgamebox.newuser4app()\n");
+        ACTION profile4app (name owner, uint64_t profile, uint64_t app, name ram_payer) {
+            print("\nACTION boardgamebox.profile4app()\n");
             bgbox::core box;
-            box.action_create_containers_for_user(user, publisher, app, ram_payer);              
+            box.action_create_containers_for_profile(owner, profile, app, ram_payer);              
         };
         
-        ACTION swap( name from, uint64_t unit, uint64_t app, int quantity, name to, const slotinfo &target_slot, name ram_payer) {
+        ACTION swap( name owner, uint64_t from, uint64_t unit, uint64_t app, int quantity, uint64_t to, const slotinfo &target_slot, name ram_payer) {
             print("\nACTION boardgamebox.swap()\n");
             bgbox::core box;
-            box.action_swap_slots_of_item_unit(from, unit, app, quantity, to, target_slot, ram_payer);
+            box.action_swap_slots_of_item_unit(owner, from, unit, app, quantity, to, target_slot, ram_payer);
         }
 
         ACTION open( name owner, const slug_symbol& symbol, name ram_payer ) {
@@ -142,32 +143,32 @@ CONTRACT boardgamebox : public eosio::contract {
 
 
         // -------------------- debugging porpuses ---------------------
-        void dropuser(name owner, uint64_t author) {
-            print("boardgamebox::dropuser()\n");
+        void dropprofile(name owner, uint64_t author) {
+            print("boardgamebox::dropprofile()\n");
             print("owner:", owner.to_string(), "author:", std::to_string((int) author), "\n");
 
-            users user_table(get_self(), get_self().value);
+            profiles user_table(get_self(), get_self().value);
             auto itr = user_table.find(author);
             eosio_assert(itr != user_table.end(),
                 (string("user not found: ") + 
                 owner.to_string() + " - " + std::to_string((int)author)).c_str());
-            print("users: ", itr->to_string(), "\n");
+            print("profiles: ", itr->to_string(), "\n");
             user_table.erase(itr);
 
             // borro todos los containers definidos por este usuario
-            containers cont_table(get_self(), owner.value);
+            containers cont_table(get_self(), author);
             for (auto itr = cont_table.begin(); itr != cont_table.end(); ) {
                 print("containers: ", itr->to_string(), "\n");
                 itr = cont_table.erase(itr);
             }
 
             // borro todos las experiences definidos por este usuario
-            experiences expt_table(get_self(), owner.value);
+            experiences expt_table(get_self(), author);
             for (auto itr = expt_table.begin(); itr != expt_table.end(); ) {
                 print("experiences: ", itr->to_string(), "\n");
                 itr = expt_table.erase(itr);
             }
-            print("boardgamebox::dropuser() ends...\n");
+            print("boardgamebox::dropprofile() ends...\n");
         };
 
         void dropapp(name owner, uint64_t author) {
@@ -245,19 +246,19 @@ CONTRACT boardgamebox : public eosio::contract {
             print("\nACTION boardgamebox.droptables()\n");
             
             authors authors_table(get_self(), get_self().value);
-            users users_table(get_self(), get_self().value);
+            profiles profiles_table(get_self(), get_self().value);
             apps apps_table(get_self(), get_self().value);
             auto author_itr = authors_table.begin();
-            auto user_itr = users_table.begin();
+            auto profile_itr = profiles_table.begin();
             auto app_itr = apps_table.begin();
             uint64_t user_id;
 
             for (; author_itr != authors_table.end(); author_itr = authors_table.begin()) {
-                user_itr = users_table.find(author_itr->id);
+                profile_itr = profiles_table.find(author_itr->id);
                 app_itr = apps_table.find(author_itr->id);
                                 
-                if (user_itr != users_table.end()) {
-                    dropuser(author_itr->owner, author_itr->id);
+                if (profile_itr != profiles_table.end()) {
+                    dropprofile(author_itr->owner, author_itr->id);
                 }
 
                 if (app_itr != apps_table.end()) {

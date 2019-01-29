@@ -14,7 +14,6 @@ namespace vapaee {
 
         inline name get_self()const { return _self; }
   
-        // APPS ---------------------------
         void action_new_app(name owner, name contract, string slugid, string title, int inventory) {
             print("action_new_app()\n");
             print("owner: ", owner.to_string(), "\n");
@@ -24,18 +23,7 @@ namespace vapaee {
             print("contract: ", contract.to_string(), "\n");
             authors authors_table(get_self(), get_self().value);
             // recover created author's id
-            uint64_t author_id = authors_table.available_primary_key();
-
-            // recorremos por id
-            // for (auto itr = authors_table.begin(); itr != authors_table.end(); ) {
-            //     print("newapp() id: ", itr->to_string(), "\n");
-            //     itr++;
-            // }
-
-            // slug auth_nick = vapaee::bgbox::get_author_nick(author_id);
-            // slug given_nick(nickstr);
-            // string error_str = string("INTERNAL ERROR: '") + given_nick.to_string() + "' != '" + auth_nick.to_string() + "' author_id: " + std::to_string((int)author_id);
-            // eosio_assert(auth_nick == given_nick, error_str.c_str());
+            uint64_t app_author_id = authors_table.available_primary_key();
 
             // register nick for owner and generate Author ID
             action(
@@ -48,40 +36,41 @@ namespace vapaee {
             // call BG-box for app registration
             action(
                 permission_level{owner,"active"_n},
-                "boardgamebox"_n,
+                get_self(),
                 "registerapp"_n,
-                std::make_tuple(owner, contract, author_id, inventory, title)
+                std::make_tuple(owner, contract, app_author_id, inventory, title)
             ).send();
         }
-
-        // -- INCOMPLETO --
-        void action_register_app(name author_owner, name app_contract, uint64_t author_app, int invespace, const string &title) {
+        
+        void action_register_app(name owner, name app_contract, uint64_t app_author_id, int invespace, const string &title) {
             print("author::action_register_app()\n");
-            print(" author_owner: ", author_owner.to_string(), "\n");
+            print(" owner: ", owner.to_string(), "\n");
             print(" app_contract: ", app_contract.to_string(), "\n");
-            print(" author_app: ", std::to_string((int) author_app), "\n");
+            print(" app_author_id: ", std::to_string((int) app_author_id), "\n");
             print(" invespace: ", std::to_string((int) invespace), "\n");
             print(" title: ", title, "\n");
 
+            // verifies app_author_id exists in authors table
             authors author_table(get_self(), get_self().value);
-            auto author_itr = author_table.find(author_app);
-            slug app_slug =  author_itr->slugid;
-            eosio_assert(author_itr != author_table.end(), (string("author not found. id: ") + std::to_string((int) author_app)).c_str());
+            auto author_itr = author_table.find(app_author_id);
+            slug app_slugid =  author_itr->slugid;
+            eosio_assert(author_itr != author_table.end(), (string("author not found. id: ") + std::to_string((int) app_author_id)).c_str());
             
-            // verifica que no exista un registro para el author_app
+            // verifies app_author_id does not exists in apps table
             apps app_table(get_self(), get_self().value);
-            auto itr = app_table.find(author_app);
-            eosio_assert(itr == app_table.end(), (string("author already registered as app. id: ") + std::to_string((int) author_app)).c_str());
-            // crea un nuevo apps 
-            app_table.emplace( author_owner, [&]( auto& s ) {
-                s.id = author_app;
+            auto itr = app_table.find(app_author_id);
+            eosio_assert(itr == app_table.end(), (string("author already registered as app. id: ") + std::to_string((int) app_author_id)).c_str());
+
+            // creates a new app
+            app_table.emplace( owner, [&]( auto& s ) {
+                s.id = app_author_id;
                 s.contract = app_contract;
                 s.title = title;
             });
-            print(" app_table.emplace() new app regitered\n");
+            print(" apps.emplace() new app registered\n");
 
 
-            // tengo que hallar el id del container inventory y del deposit porque los tengo que usar
+            // We obtain the id of the inventory and deposit containers spec because we are going to need them to create the container assets
             container_specs container_table(get_self(), get_self().value);
             uint64_t inv_id = container_table.available_primary_key();
             uint64_t dep_id = inv_id + 1;
@@ -89,51 +78,51 @@ namespace vapaee {
             print(" next inv_id: ", std::to_string((int) inv_id), "\n");
             print(" next dep_id: ", std::to_string((int) dep_id), "\n");
 
+            // -- container specs --
             // inventory spec
             action(
-                permission_level{author_owner,"active"_n},
+                permission_level{owner,"active"_n},
                 get_self(),
                 "newcontainer"_n,
-                std::make_tuple(author_owner, author_app, "inventory"_n, invespace)
+                std::make_tuple(owner, app_author_id, "inventory"_n, invespace)
             ).send();
 
 
             // deposit spec
             action(
-                permission_level{author_owner,"active"_n},
+                permission_level{owner,"active"_n},
                 get_self(),
                 "newcontainer"_n,
-                std::make_tuple(author_owner, author_app, "deposit"_n, 0)
+                std::make_tuple(owner, app_author_id, "deposit"_n, 0)
             ).send();
 
 
-            
+            // -- container assets --
             // inventory asset
-            slug inv_slug = slug(app_slug.to_string() + ".inventory");
+            slug inv_slug = slug(app_slugid.to_string() + ".inventory");
             action(
-                permission_level{author_owner,"active"_n},
+                permission_level{owner,"active"_n},
                 get_self(),
                 "newinventory"_n,
-                std::make_tuple(author_owner, author_app, inv_slug, invespace, inv_id)
+                std::make_tuple(owner, app_author_id, inv_slug, invespace, inv_id)
             ).send();
 
 
             // deposit asset
-            slug dep_slug = slug(app_slug.to_string() + ".deposit");
+            slug dep_slug = slug(app_slugid.to_string() + ".deposit");
             action(
-                permission_level{author_owner,"active"_n},
+                permission_level{owner,"active"_n},
                 get_self(),
                 "newinventory"_n,
-                std::make_tuple(author_owner, author_app, dep_slug, invespace, dep_id)
+                std::make_tuple(owner, app_author_id, dep_slug, invespace, dep_id)
             ).send();
             
 
             print("author::action_register_app() ends...\n");
         }
-
-        // PUBLISHERS ---------------------------
-        void action_new_publisher(name owner, string slugid, string name) {
-            print("action_new_publisher()\n");
+       
+        void action_new_profile(name owner, string slugid, string name) {
+            print("action_new_profile()\n");
             authors authors_table(get_self(), get_self().value);
             // recover created author's id
             uint64_t author_id = authors_table.available_primary_key();
@@ -148,39 +137,41 @@ namespace vapaee {
             // call BG-box for app registration
             action(
                 permission_level{owner,"active"_n},
-                "boardgamebox"_n,
+                get_self(),
                 "registeruser"_n,
                 std::make_tuple(owner, author_id, name)
             ).send();
 
-            print("action_new_publisher() ends...\n");
+            print("action_new_profile() ends...\n");
         }
 
-        // -- INCOMPLETO --
-        void action_register_user(name owner, uint64_t author_id, const string &username) {
-            print("author::action_register_user()\n");
+        void action_register_profile(name owner, uint64_t author_id, const string &username) {
+            print("author::action_register_profile()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" author_id: ", std::to_string((int) author_id), "\n");
             print(" username: ", username, "\n");
 
+            // verifies author_id exists in authors table
             authors author_table(get_self(), get_self().value);
             auto author_itr = author_table.find(author_id);
             eosio_assert(author_itr != author_table.end(), (string("ERROR: author not found. id: ") + std::to_string((int) author_id)).c_str());
             eosio_assert(owner == author_itr->owner,
                 (string("ERROR: owner '" + owner.to_string() + "' differs from author current owner '" + author_itr->owner.to_string() + "'")).c_str());
             
-            // verifica que no exista un registro para el author_id
-            users user_table(get_self(), get_self().value);
-            auto itr = user_table.find(author_id);
-            eosio_assert(itr == user_table.end(), (string("ERROR: author already registered as user. id: ") + std::to_string((int) author_id)).c_str());
-            // crea un nuevo user 
-            user_table.emplace( owner, [&]( auto& s ) {
+            // verifies author_id does not exists in profiles table
+            profiles profile_table(get_self(), get_self().value);
+            auto itr = profile_table.find(author_id);
+            eosio_assert(itr == profile_table.end(), (string("ERROR: author already registered as user. id: ") + std::to_string((int) author_id)).c_str());
+            
+            // creates a new profile
+            profile_table.emplace( owner, [&]( auto& s ) {
                 s.id = author_id;
                 s.username = username;
             });
-            print(" user_table.emplace() new user ", username, " regitered\n" );
 
-            print("author::action_register_user() ends...\n");
+            print(" profiles.emplace() new user ", username, " regitered\n" );
+
+            print("author::action_register_profile() ends...\n");
         }        
 
         void action_register_slug(name owner, string slugidstr) {
@@ -205,18 +196,16 @@ namespace vapaee {
             authors_table.emplace( owner, [&]( auto& s ) {
                 s.id            = author_id;
                 s.owner         = owner;
-                s.ownervalue    = owner.value;
                 s.slugid        = slugid;
-                s.slugvalue     = slugid.to128bits();
+                s.ownervalue    = owner.value;        // temp - for debugging porpuses
+                s.slugvalue     = slugid.to128bits(); // temp - for debugging porpuses
             });
 
-            // recorremos por id
+            // printing all registered authors (debugging)
             for (auto itr = authors_table.begin(); itr != authors_table.end(); ) {
                 print("registerslugid() id: ", itr->to_string(), "\n");
                 itr++;
             }
-
-            vapaee::bgbox::get_author_slug(author_id);
 
             print("author::action_register_slugid() ends...\n");
         }
