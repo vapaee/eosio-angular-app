@@ -50,6 +50,14 @@ export class CntService {
         this.bgbox.getTable("apps", params).then(result => {
             if (result.rows.length > 0) {
                 this.cntAuthorId = result.rows[0].id;
+                console.log("****************************************");
+                console.log("****************************************");
+                console.log("****************************************");
+                console.log("this.cntAuthorId:", this.cntAuthorId, [result]);
+                console.log("****************************************");
+                console.log("****************************************");
+                console.log("****************************************");
+                console.log("****************************************");
             }
         });
     }
@@ -124,6 +132,8 @@ export class CntService {
                     if (!this.profile || this.profile.slugid.str == "guest") {
                         this.loginState = "no-selected";
                     } else {
+                        // TODO: tengo que averiguar si ya está registrado y ponerlo como 'profile-ok'
+                        console.log("TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!");
                         this.loginState = "no-registered";
                     }
                 }

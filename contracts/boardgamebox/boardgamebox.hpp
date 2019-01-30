@@ -73,10 +73,10 @@ CONTRACT boardgamebox : public eosio::contract {
             box.action_new_item_spec(owner, author_app, nickname, maxgroup);            
         };
 
-        ACTION newcontainer(name author_owner, uint64_t author_app, name nickname, int space) {
+        ACTION newcontainer(name author_owner, uint64_t author_app, name nickname) {
             print("\nACTION boardgamebox.newcontainer()\n");
             bgbox::core box;
-            box.action_new_container_spec(author_owner, author_app, nickname, space);          
+            box.action_new_container_spec(author_owner, author_app, nickname);          
         };
 
         // --------------------- Publishers ------------------

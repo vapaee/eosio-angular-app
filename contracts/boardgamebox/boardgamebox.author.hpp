@@ -84,7 +84,7 @@ namespace vapaee {
                 permission_level{owner,"active"_n},
                 get_self(),
                 "newcontainer"_n,
-                std::make_tuple(owner, app_author_id, "inventory"_n, invespace)
+                std::make_tuple(owner, app_author_id, "inventory"_n)
             ).send();
 
 
@@ -93,7 +93,7 @@ namespace vapaee {
                 permission_level{owner,"active"_n},
                 get_self(),
                 "newcontainer"_n,
-                std::make_tuple(owner, app_author_id, "deposit"_n, 0)
+                std::make_tuple(owner, app_author_id, "deposit"_n)
             ).send();
 
 
@@ -114,7 +114,7 @@ namespace vapaee {
                 permission_level{owner,"active"_n},
                 get_self(),
                 "newinventory"_n,
-                std::make_tuple(owner, app_author_id, dep_slug, invespace, dep_id)
+                std::make_tuple(owner, app_author_id, dep_slug, 0, dep_id)
             ).send();
             
 

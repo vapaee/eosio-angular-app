@@ -48,18 +48,16 @@ namespace vapaee {
             print("core::action_new_item_spec() ends...\n");
         };
         
-        void action_new_container_spec(name owner, uint64_t app_author_id, name nickname, int space) {
+        void action_new_container_spec(name owner, uint64_t app_author_id, name nickname) {
             print("core::action_new_container_spec()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" app_author_id: ", std::to_string((int) app_author_id), "\n");
             print(" nickname: ", nickname.to_string(), "\n");
-            print(" space: ", std::to_string((int) space), "\n");
-            
+
             // owner must be the app owner and sign
             name app_owner = vapaee::bgbox::get_author_owner(app_author_id);
             require_auth(app_owner);
-            eosio_assert(app_owner == owner, "given owner is not the current owner of author");            
-            eosio_assert(space >= 0, "inventory space can't be negative");
+            eosio_assert(app_owner == owner, "given owner is not the current owner of author");
 
             // get the next container spec id
             container_specs container_table(get_self(), get_self().value);
@@ -144,6 +142,7 @@ namespace vapaee {
                 s.spec = spec; // table conainer_spec
                 s.publisher = author_publisher; // table vapaeeaouthor::authors.id
                 s.block = current_time();
+                s.space = space;
             });
             print(" container_assets.emplace() new container assets ", container_slug.to_string(), " regitered\n" );
 
@@ -290,6 +289,7 @@ namespace vapaee {
             container_asset asset;
             container_spec spec;
             vapaee::bgbox::get_container_spec_for_slug(container_slug, asset, spec);
+            print(" asset.space: ", std::to_string((int) asset.space), "\n");
             
             containers user_containers(get_self(), profile);
             auto reg_cont_index = user_containers.template get_index<"asset"_n>();
