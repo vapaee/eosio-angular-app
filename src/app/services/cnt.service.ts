@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js';
 @Injectable()
 export class CntService {
 
-    public onProfileChange:Subject<Profile> = new Subject();
+    public logged: any;
     public loginState: string;
     /*
     public loginState: string;
@@ -19,6 +19,8 @@ export class CntService {
     - 'profile-ok': user has selected a registered profile (has C&T inventories in BG-Box memory)
     */
 
+    public onLoggedChange:Subject<Profile> = new Subject();
+    public onProfileChange:Subject<Profile> = new Subject();
     public profile: Profile;
     public profiles: Profile[];
     public contract:string;
@@ -33,6 +35,8 @@ export class CntService {
         private scatter: ScatterService,
         private bgbox: BGBoxService
         ) {
+
+        this.logged = null;
         this.resetProfiles();
         this.contract = this.cardsntokens;
         this.scatter.onLogggedStateChange.subscribe(this.updateLogState.bind(this));
@@ -50,18 +54,11 @@ export class CntService {
         this.bgbox.getTable("apps", params).then(result => {
             if (result.rows.length > 0) {
                 this.cntAuthorId = result.rows[0].id;
-                console.log("****************************************");
-                console.log("****************************************");
-                console.log("****************************************");
-                console.log("this.cntAuthorId:", this.cntAuthorId, [result]);
-                console.log("****************************************");
-                console.log("****************************************");
-                console.log("****************************************");
-                console.log("****************************************");
             }
         });
     }
 
+    // --
     resetProfiles() {
         this.profiles = [];
         this.profile = {slugid:{str:"guest"}, account:this.contract};
@@ -73,6 +70,12 @@ export class CntService {
         this.scatter.login().then(() => {
             this.updateLogState();
         })
+    }
+
+    logout() {
+        this.resetProfiles();
+        this.logged = null;
+        this.onLoggedChange.next(this.logged);        
     }
 
     fetchProfile(profile:string) {
@@ -110,6 +113,28 @@ export class CntService {
             this.bgbox.contract);
     }
 
+    updateRegisteredState(_profile: Profile = null) {
+        console.log("CntService.updateRegisteredState()");
+        var profile:Profile = _profile || this.profile;
+        return this.bgbox.getProfileContainers(profile.id, this.cntAuthorId).then(data => {
+            var registered = false;
+            for (var i in data.containers) {
+                if (data.containers[i].asset_ref && data.containers[i].asset_ref.publisher == this.cntAuthorId) {
+                    registered = true;
+                    break;
+                }
+            }
+            if (registered) {
+                this.logged = {
+                    containers: data.containers,
+                    profile: profile
+                }
+                this.onLoggedChange.next(this.logged);
+            }
+            return this.logged;
+        });
+    }
+
     updateLogState() {
         console.log("CntService.updateLogState()");
         this.loginState = "no-scatter";
@@ -127,15 +152,26 @@ export class CntService {
                                 this.profiles.push(data.authors[i]);
                             }
                         }
+                        if (this.profiles.length == 1) {
+                            this.profile = this.profiles[0];
+                            this.loginState = "no-registered";
+                        }
+                        if (this.loginState == "no-registered") {
+                            this.updateRegisteredState().then(registered => {
+                                if (registered) this.loginState = "profile-ok";
+                            });
+                        }
                     });
                 } else {
                     if (!this.profile || this.profile.slugid.str == "guest") {
                         this.loginState = "no-selected";
                     } else {
-                        // TODO: tengo que averiguar si ya está registrado y ponerlo como 'profile-ok'
-                        console.log("TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!");
                         this.loginState = "no-registered";
+                        this.updateRegisteredState().then(registered => {
+                            if (registered) this.loginState = "profile-ok";
+                        });
                     }
+
                 }
             }
         })

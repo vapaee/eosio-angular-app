@@ -476,6 +476,46 @@ export class BGBoxService {
         return this.excecute("profile4app", {owner:owner, profile: profileid, app:appid, ram_payer:rampayer})
     }
 
+    getProfileContainers(profileid, appid) {
+        console.log("BGBoxService.getProfileContainers() profileid: ", profileid, "appid:", appid);
+
+        return Promise.all<any>([
+            // all containers for this profile
+            this.getTable("containers", {
+                scope:profileid, 
+                limit:50
+            }),
+            // all container assets that were registered by the app (and not by another profile/user)
+            this.getTable("contasset", {
+                lower_bound: appid, 
+                upper_bound: appid,
+                key_type: "i64",
+                index_position: "3" // by publisher
+            })
+        ]).then(result => {
+            var data = {
+                containers: result[0].rows,
+                app_containers:  result[1].rows
+            };
+
+            var map = {}; 
+
+            for (var i in data.app_containers) {
+                map["id-"+data.app_containers[i].id] = data.app_containers[i];
+            }
+
+            for (var i in data.containers) {
+                var asset = map["id-"+data.containers[i].asset];
+                if (asset) {
+                    data.containers[i].asset_ref = asset;
+                }
+            }
+
+            // console.log("getProfileContainers() ----------> ", result, data);
+            return data;
+        });
+    }
+
     // -------------------------
     droptables() {
         console.log("BGBoxService.droptables()");

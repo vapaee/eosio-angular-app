@@ -71,8 +71,8 @@
         </div>
         <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'profile-ok'}">
             <div class="pull-right">
-                <span class="btn btn-sm btn-secondary">Logout from C&T</span>
-                <span class="btn btn-sm btn-secondary margin-left">Logout from Scatter</span>
+                <span class="btn btn-sm btn-secondary" (click)="cnt.logout()">Logout from C&T</span>
+                <span class="btn btn-sm btn-secondary margin-left" (click)="scatter.logout()">Logout from Scatter</span>
             </div>
             <span>Logged as '{{cnt.profile.username}}'</span>
         </div>        
