@@ -25,7 +25,7 @@ export class InventoryPage implements OnInit, OnDestroy {
         public bgbox: BGBoxService,
         public cnt: CntService,
     ) {
-        this.subscriber = new Subscriber<Profile>(this.onProfileChange.bind(this));
+        this.subscriber = new Subscriber<Profile>(this.onCntCurrentProfileChange.bind(this));
     }
 
     ngOnDestroy() {
@@ -33,13 +33,16 @@ export class InventoryPage implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.cnt.onProfileChange.subscribe(this.subscriber);
+        this.cnt.onCurrentProfileChange.subscribe(this.subscriber);
         var profile = this.route.snapshot.paramMap.get('profile');
-        this.cnt.selectProfile(profile);
+        if (profile != "guest") {
+            this.cnt.fetchProfile(profile).then(this.cnt.setCurrentProfile.bind(this.cnt));
+        }
     }
 
-    onProfileChange(profile: Profile) {
-        console.log("ProfilePage.onProfileChange()", [profile]);
-        this.app.navigate("/cnt/inventory/" + profile.slugid.str);
+    onCntCurrentProfileChange(profile: Profile) {
+        var url = "/cnt/inventory/" + profile.slugid.str;
+        console.log("InventoryPage.onCntCurrentProfileChange()", [profile], " --> ", url);
+        this.app.navigate(url);
     }
 }

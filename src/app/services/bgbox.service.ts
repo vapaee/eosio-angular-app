@@ -9,10 +9,16 @@ export interface SlugId {
     str?: string;
     top?: string;
 }
+export interface Work {
+    items: any[];
+    containers: any[];
+}
 export interface Profile {
     id?:string;
     slugid: SlugId;
     account: string;
+    containers?: any[],
+    work?: Work;
 }
 
 export interface AuthorsCache {

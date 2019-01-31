@@ -106,6 +106,12 @@ https://t.me/HelloTelos/45546
 
 
 
+-------- TELOS SNAPSHOTS --------
+telostest get table snapsnapsnap 1 snapshots --lower viterbotelos
+telosmain get table snapshots.tf 1 snapshots --lower viterbotelos
+
+
+
 ---- TODO ----
 - box.action_new_app al final hay que ejecutar un evento dirigido al account de la app para verificar que es una app (y tiene handler para el evento)
 - transformar en javascript el datatype slug que viene como {top,low} en una string legible

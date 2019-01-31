@@ -4,6 +4,7 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 import { ScatterService } from 'src/app/services/scatter.service';
 import { ActivatedRoute } from '@angular/router';
 import { CntService } from 'src/app/services/cnt.service';
+import { BGBoxService } from 'src/app/services/bgbox.service';
 
 declare var $:any;
 
@@ -19,7 +20,8 @@ export class CntRootPage implements OnInit {
         public local: LocalStringsService,
         public elRef: ElementRef,
         public scatter: ScatterService,
-        public cnt: CntService
+        public cnt: CntService,
+        public bgbox: BGBoxService
     ) {
     }
     
@@ -36,6 +38,13 @@ export class CntRootPage implements OnInit {
         if (target && $(navbar).hasClass("show")) {
             $(target).click();
         }
+    }
+    
+    debug(){
+        console.log("--------------------------------");
+        console.log("CNT", [this.cnt]);
+        console.log("BOX", [this.bgbox]);
+        console.log("--------------------------------");
     }
 
 }

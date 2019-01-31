@@ -7,7 +7,6 @@ import BigNumber from 'bignumber.js';
 @Injectable()
 export class CntService {
 
-    public logged: any;
     public loginState: string;
     /*
     public loginState: string;
@@ -19,8 +18,11 @@ export class CntService {
     - 'profile-ok': user has selected a registered profile (has C&T inventories in BG-Box memory)
     */
 
-    public onLoggedChange:Subject<Profile> = new Subject();
-    public onProfileChange:Subject<Profile> = new Subject();
+    public logged: Profile;
+    public selected: Profile;
+    public current: Profile;
+    public onLoggedProfileChange:Subject<Profile> = new Subject();
+    public onCurrentProfileChange:Subject<Profile> = new Subject();
     public profile: Profile;
     public profiles: Profile[];
     public contract:string;
@@ -37,13 +39,16 @@ export class CntService {
         ) {
 
         this.logged = null;
-        this.resetProfiles();
+        this.current = null;
         this.contract = this.cardsntokens;
         this.scatter.onLogggedStateChange.subscribe(this.updateLogState.bind(this));
-        this.onProfileChange.subscribe(this.updateLogState.bind(this));
+        this.resetCurrentProfile();
+        this.updateLogState();
 
+        
+
+        // get the author id for this Dapp --------------------------------
         var encodedName = this.bgbox.utils.encodeName(this.cardsntokens);
-
         var params = {
             lower_bound: encodedName.toString(), 
             upper_bound: encodedName.toString(), 
@@ -59,30 +64,50 @@ export class CntService {
     }
 
     // --
-    resetProfiles() {
+    
+    resetCurrentProfile() {
         this.profiles = [];
-        this.profile = {slugid:{str:"guest"}, account:this.contract};
-        this.onProfileChange.next(this.profile);
+        this.current = {slugid:{str:"guest"}, account:this.contract};
+        this.onCurrentProfileChange.next(this.profile);
     }
 
     login() {
-        this.resetProfiles();
+        this.logout();
         this.scatter.login().then(() => {
             this.updateLogState();
-        })
+        });
     }
 
     logout() {
-        this.resetProfiles();
+        this.resetCurrentProfile();
         this.logged = null;
-        this.onLoggedChange.next(this.logged);        
+        this.onLoggedProfileChange.next(this.logged);        
     }
 
     fetchProfile(profile:string) {
         return this.bgbox.getAuthorBySlug(profile);
     }
 
+    setCurrentProfile(profile:Profile) {
+        this.current = profile;
+        this.onCurrentProfileChange.next(this.current);
+    }
+
+    selectProfile(profile:Profile) {
+        console.log("CntService.selectProfile(",[profile],")");
+        if (this.selected.slugid.str != profile.slugid.str) {
+            for (var i in this.profiles) {
+                if (this.profiles[i].slugid.str == profile.slugid.str) {
+                    this.selected = profile;
+                }
+            }
+        }
+        this.updateLogState();
+    }
+
+    /*
     selectProfile(profile:any) {
+        console.log("-------- CntService.selectProfile(",[profile],") ---------");
         if (typeof profile  == "string") {
             for (var i in this.profiles) {
                 if (this.profiles[i].slugid.str == profile) {
@@ -97,26 +122,26 @@ export class CntService {
                 this.profile = profile;
                 this.profiles.push(profile);
                 this.onProfileChange.next(this.profile);
-            }            
-
+            }
         }
-        console.log("CntService.selectProfile(",[profile],")");
-        this.updateLogState();
+        this.updateLogState();       
     }
+    */
+    
 
     registerProfile() {
         console.log("CntService.registerProfile()");
         return this.bgbox.signUpProfileForApp(
             this.scatter.account.name,
-            this.profile.id,
+            this.selected.id,
             this.cntAuthorId,
             this.bgbox.contract);
     }
 
-    updateRegisteredState(_profile: Profile = null) {
+    
+    private updateRegisteredState() {
         console.log("CntService.updateRegisteredState()");
-        var profile:Profile = _profile || this.profile;
-        return this.bgbox.getProfileContainers(profile.id, this.cntAuthorId).then(data => {
+        return this.bgbox.getProfileContainers(this.selected.id, this.cntAuthorId).then(data => {
             var registered = false;
             for (var i in data.containers) {
                 if (data.containers[i].asset_ref && data.containers[i].asset_ref.publisher == this.cntAuthorId) {
@@ -125,17 +150,16 @@ export class CntService {
                 }
             }
             if (registered) {
-                this.logged = {
-                    containers: data.containers,
-                    profile: profile
-                }
-                this.onLoggedChange.next(this.logged);
+                this.logged = this.selected;
+                this.onLoggedProfileChange.next(this.logged);
+                //this.onProfileChange.next(this.profile);
             }
             return this.logged;
         });
     }
+    
 
-    updateLogState() {
+    private updateLogState() {
         console.log("CntService.updateLogState()");
         this.loginState = "no-scatter";
         this.scatter.waitConnected.then(() => {
@@ -152,23 +176,24 @@ export class CntService {
                                 this.profiles.push(data.authors[i]);
                             }
                         }
-                        if (this.profiles.length == 1) {
-                            this.profile = this.profiles[0];
+                        if (this.profiles.length == 1 && this.profile != this.profiles[0]) {
+                            this.selected = this.profiles[0];
                             this.loginState = "no-registered";
                         }
+
                         if (this.loginState == "no-registered") {
-                            this.updateRegisteredState().then(registered => {
-                                if (registered) this.loginState = "profile-ok";
+                            this.updateRegisteredState().then(() => {
+                                if (this.logged) this.loginState = "profile-ok";
                             });
                         }
                     });
                 } else {
-                    if (!this.profile || this.profile.slugid.str == "guest") {
+                    if (!this.selected) {
                         this.loginState = "no-selected";
                     } else {
                         this.loginState = "no-registered";
-                        this.updateRegisteredState().then(registered => {
-                            if (registered) this.loginState = "profile-ok";
+                        this.updateRegisteredState().then(() => {
+                            if (this.logged) this.loginState = "profile-ok";
                         });
                     }
 

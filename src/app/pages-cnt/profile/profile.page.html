@@ -48,10 +48,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let user of cnt.profiles" class="cursor-pointer" (click)="selectProfile(user)">
-                                    <td>{{user.username}}</td>
-                                    <td>{{user.owner}}</td>
-                                    <td>{{user.slugid.str}}</td>
+                                <tr *ngFor="let profile of cnt.profiles" class="cursor-pointer" (click)="selectProfile(profile)">
+                                    <td>{{profile.username}}</td>
+                                    <td>{{profile.owner}}</td>
+                                    <td>{{profile.slugid.str}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -62,19 +62,19 @@
         </div>
             
 
-        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-registered'}">
+        <div class="card-body" *ngIf="cnt.loginState == 'no-registered'">
             <div class="pull-right">
                 <span class="btn btn-sm btn-danger" (click)="cnt.resetProfiles()">Deselect Profile</span>
                 <span class="btn btn-sm btn-success margin-left" (click)="cnt.registerProfile()">Register profile in C&T</span>
             </div>
-            <span>In order to use C&T you must first register your '{{cnt.profile.username}}' profile</span>
+            <span>In order to use C&T you must first register your '{{cnt.selected.username}}' profile</span>
         </div>
-        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'profile-ok'}">
+        <div class="card-body" *ngIf="cnt.loginState == 'profile-ok'">
             <div class="pull-right">
                 <span class="btn btn-sm btn-secondary" (click)="cnt.logout()">Logout from C&T</span>
                 <span class="btn btn-sm btn-secondary margin-left" (click)="scatter.logout()">Logout from Scatter</span>
             </div>
-            <span>Logged as '{{cnt.profile.username}}'</span>
+            <span>Logged as '{{cnt.logged.username}}'</span>
         </div>        
     </div>
 </div>
