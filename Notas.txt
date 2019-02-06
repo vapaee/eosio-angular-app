@@ -11,22 +11,17 @@
 /cnt/deploy/card/:card_id
 /cnt/deploy/album/:album_id/:publisher
 
----- TODO ----
-- hacer la estructura de páginas vacía poniendo todas las páginas en la carpeta cnt-pages
-- implementar de alguna forma un current user
-  - o bien es el usuario logueado
-  - o bien es el metaususario "guest"
-  - o es un tercero (que existe pero no es el que está logueado)
-- en la parte de profile implementar los diferentes estados:
-  - Scatter no detectado
-  - Scatter detectado pero no estás logueado
-  - Logueado pero no tenés publishers creados
-    - aparece un sólo botón que te habilita un formulario para crear el publisher y ya registrar ese públisher con C&T
-  - Tenés un (o más de 1) publisher pero no seleccionaste ninguno
-  - Tenés un publisher seleccionado pero no está registrado a C&T
-  - Finalmente tenés un publisher seleccionado y está registrado en C&T
-
-
+---- AIRDROP ----
++ incluir en el tables_tokens.sh el el comando para consultar balance de cada usario
+- vapaeetokens
+  - ACTION setsnapshot (contract, scope)
+  - ir a la funcion estática get_balance e implementar la lógica que usa el snapshot-
+  - modificar el script js que te calcula el airdrop y agregarle parámetros
+  - si hay algún movimiento de dinero el owner tiene que pagar su RAM
+- airdrops
+  - CNT: ratio 1:1 no cap
+  - BGB: ratio 1:1 cap 40000
+  - VPE: 1 per account min 1
 
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------

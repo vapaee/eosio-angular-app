@@ -2,8 +2,29 @@
 
 # checking 'force' param
 force=false
+NET=
 if [ "$1" == "force" ]; then
    force=true
+fi
+
+if [ "$2" == "force" ]; then
+   force=true
+fi
+
+if [ "$1" == "test" ]; then
+   NET='--url https://testnet.telos.caleos.io'
+fi
+
+if [ "$2" == "test" ]; then
+   NET='--url https://testnet.telos.caleos.io'
+fi
+
+if [ "$1" == "prod" ]; then
+   NET='--url https://telos.eos.barcelona'
+fi
+
+if [ "$2" == "prod" ]; then
+   NET='--url https://telos.eos.barcelona'
 fi
 
 HOME=/var/www/eosio-angular-app
@@ -15,9 +36,9 @@ APPSERVER_HOME=$HOME/contracts/_examples/appserver
 APPPLUGIN_HOME=$HOME/contracts/_examples/appplugin
 
 CARDSNTOKENS_HOME=$HOME/contracts/cardsntokens
-VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
+VAPAEETOKENS_HOME=$HOME/airdrop-on-telos/contracts/vapaeetokens
+SNAPSNAPSNAP_HOME=$HOME/airdrop-on-telos/contracts/snapsnapsnap
 BOARDGAMEBOX_HOME=$HOME/contracts/boardgamebox
-# VAPAEEAUTHOR_HOME=$HOME/contracts/vapaeeauthor
 LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 
 TESTING_HOME=$HOME/contracts/testing
@@ -76,21 +97,7 @@ if [[ boardgamebox.core.hpp -nt boardgamebox.wasm ||
       boardgamebox.hpp -nt boardgamebox.wasm || 
       $force == true ]]; then
     eosio-cpp -o boardgamebox.wasm boardgamebox.cpp --abigen -I ../includes
-    cleos set contract boardgamebox $PWD -p boardgamebox@active
-fi
-
-# echo "-------- vapaeeauthor ---------"
-# cd $VAPAEEAUTHOR_HOME
-# if [[ vapaeeauthor.cpp -nt vapaeeauthor.wasm || vapaeeauthor.hpp -nt vapaeeauthor.wasm || $force == true ]]; then
-#     eosio-cpp -o vapaeeauthor.wasm vapaeeauthor.cpp --abigen -I ../includes
-#     cleos set contract vapaeeauthor $PWD -p vapaeeauthor@active
-# fi
-
-echo "-------- vapaeetokens ---------"
-cd $VAPAEETOKENS_HOME
-if [[ vapaeetokens.cpp -nt vapaeetokens.wasm || vapaeetokens.hpp -nt vapaeetokens.wasm || $force == true ]]; then
-    eosio-cpp -o vapaeetokens.wasm vapaeetokens.cpp --abigen -I ../includes
-    cleos set contract vapaeetokens $PWD -p vapaeetokens@active
+    cleos $NET set contract boardgamebox $PWD -p boardgamebox@active
 fi
 
 echo "-------- cardsntokens ---------"
@@ -98,24 +105,27 @@ cd $CARDSNTOKENS_HOME
 if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntokens.wasm || $force == true ]]; then
     # echo "skipping..."
     eosio-cpp -o cardsntokens.wasm cardsntokens.cpp --abigen -I ../includes
-    cleos set contract cardsntokens $PWD -p cardsntokens@active
+    cleos $NET set contract cardsntokens $PWD -p cardsntokens@active
 fi
-
 
 echo "-------- localstrings ---------"
 cd $LOCALSTRINGS_HOME
 if [[ localstrings.cpp -nt localstrings.wasm || localstrings.hpp -nt localstrings.wasm || $force == true ]]; then
     # echo "skipping..."
     eosio-cpp -o localstrings.wasm localstrings.cpp --abigen -I ../includes
-    cleos set contract localstrings $PWD -p localstrings@active
+    cleos $NET set contract localstrings $PWD -p localstrings@active
 fi
 
-TESTING_HOME=$HOME/contracts/hello
-# echo "-------- test ---------"
-# cd $TESTING_HOME
-# eosio-cpp -o hello.wasm hello.cpp --abigen
-# cleos set contract hello $PWD -p hello@active
+echo "-------- vapaeetokens ---------"
+cd $VAPAEETOKENS_HOME
+if [[ vapaeetokens.cpp -nt vapaeetokens.wasm || vapaeetokens.hpp -nt vapaeetokens.wasm || $force == true ]]; then
+    eosio-cpp -o vapaeetokens.wasm vapaeetokens.cpp --abigen
+    cleos $NET set contract vapaeetokens $PWD -p vapaeetokens@active
+fi
 
-# echo $PWD
-# echo -e "\n\n"
-# g++ -o main -I ../includes main.cpp -I /usr/opt/eosio.cdt/1.4.1/include -I /usr/opt/eosio.cdt/1.4.1/include/libcxx && ./main    
+echo "-------- snapsnapsnap ---------"
+cd $SNAPSNAPSNAP_HOME
+if [[ snapsnapsnap.cpp -nt snapsnapsnap.wasm || snapsnapsnap.hpp -nt snapsnapsnap.wasm || $force == true ]]; then
+    eosio-cpp -o snapsnapsnap.wasm snapsnapsnap.cpp --abigen
+    cleos $NET set contract snapsnapsnap $PWD -p snapsnapsnap@active
+fi

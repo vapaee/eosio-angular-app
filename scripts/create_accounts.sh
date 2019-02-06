@@ -7,7 +7,7 @@ cleos create account eosio bob EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2B
 cleos create account eosio alice EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio cardsntokens EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio vapaeetokens EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
-# cleos create account eosio vapaeeauthor EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
+cleos create account eosio snapsnapsnap EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio boardgamebox EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio localstrings EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 
@@ -27,3 +27,5 @@ cd /var/www/eosio-angular-app/contracts/_examples/eosio.contracts/eosio.token
 eosio-cpp -o eosio.token.wasm src/eosio.token.cpp --abigen -I include
 cleos set contract eosio.token $PWD -p eosio.token@active
 cleos push action eosio.token create '[ "eosio", "1000000000.0000 SYS"]' -p eosio.token@active
+cleos push action eosio.token issue '["alice", "120.0000 SYS", "memo 120 SYS"]' -p eosio@active
+cleos push action eosio.token issue '["bob", "100.0000 SYS", "memo 100 SYS"]' -p eosio@active

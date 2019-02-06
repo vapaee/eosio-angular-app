@@ -1,19 +1,20 @@
 #!/bin/bash
 
 show_table() {
-    scope=$1
-    name=$2
+    code=$1
+    scope=$2
+    table=$3
 
-    echo "--------- $name ($scope) -------------------------------------------------"
-    cleos get table boardgamebox $scope $name
+    echo "--------- ($scope) -------------------------------------------------"
+    cleos get table $code $scope $table
 }
 
-show_table boardgamebox authors
-show_table boardgamebox apps
-show_table boardgamebox profiles
+show_table boardgamebox boardgamebox authors
+show_table boardgamebox boardgamebox apps
+show_table boardgamebox boardgamebox profiles
 
-show_table boardgamebox contspec
-show_table boardgamebox contasset
+show_table boardgamebox boardgamebox contspec
+show_table boardgamebox boardgamebox contasset
 
-show_table 1 containers
-show_table 2 containers
+show_table boardgamebox 1 containers
+show_table boardgamebox 2 containers

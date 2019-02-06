@@ -8,3 +8,8 @@
 -- es cómodo crear algunos scripts para automaticar ciertas ineracciones con la blockchain que de otro sería muy tedioso como:
     - visualizar tablas
     - resetear el estado de la blockchain
+-- al deployar me sorprendió que necesité x10 veces más de RAM de lo que pesa el archivo original!!!
+   vapaeetokens.wasm 37Kb, pero fueron 374Kb de RAM
+   boardgamebox.wasm 201Kb, pero 2Mb de RAM
+   - account boardgamebox has insufficient ram; needs 2022497 bytes has 1964380 bytes
+   
