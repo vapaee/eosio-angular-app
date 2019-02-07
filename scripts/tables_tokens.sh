@@ -20,12 +20,16 @@ show_balance() {
 show_table snapsnapsnap 1 snapshots
 show_table vapaeetokens bob accounts
 show_table vapaeetokens alice accounts
+show_table vapaeetokens viter accounts
 
-show_balance eosio.token bob SYS
-show_balance eosio.token alice SYS
+# show_balance eosio.token bob SYS
+# show_balance eosio.token alice SYS
 
 show_balance vapaeetokens bob CNT
 show_balance vapaeetokens alice CNT
+show_balance vapaeetokens tom CNT
+show_balance vapaeetokens kate CNT
+show_balance vapaeetokens viter CNT
 
 echo "--------- vapaeetokens CNT-------------------------------------------------"
 cleos get currency stats vapaeetokens CNT

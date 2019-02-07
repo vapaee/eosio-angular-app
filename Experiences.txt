@@ -12,4 +12,21 @@
    vapaeetokens.wasm 37Kb, pero fueron 374Kb de RAM
    boardgamebox.wasm 201Kb, pero 2Mb de RAM
    - account boardgamebox has insufficient ram; needs 2022497 bytes has 1964380 bytes
-   
+-- Al mandar actiones en linea sucede que no se generan errores de typo en tiempo de compilación.
+   basicamentye podés mandar cualquier cantidad de parámetros de cualquier typo pero explota en tiempo de ejecusión.
+   hay que verificar cantidad y typo de cada parámetro.
+    ej: 
+    // el siguiente mensaje en linea da error por el array de caracteres "airdrop"
+    action(
+        permission_level{owner,"active"_n},
+        get_self(),
+        "issue"_n,
+        std::make_tuple(owner, quantity, "airdrop")
+    ).send();
+    // lo correcto sería
+    action(
+        permission_level{owner,"active"_n},
+        get_self(),
+        "issue"_n,
+        std::make_tuple(owner, quantity, string("airdrop"))
+    ).send();
