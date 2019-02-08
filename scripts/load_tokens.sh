@@ -15,3 +15,7 @@ cleos push action vapaeetokens setsnapshot '["snapsnapsnap",1,"CNT",0,0]' -p vap
 # cleos push action vapaeetokens claim '["alice","CNT","bob"]' -p bob@active
 # cleos push action vapaeetokens claim '["kate","CNT","bob"]' -p bob@active
 
+# revisar secuencia:
+# cleos push action vapaeetokens claim '["bob","CNT","alice"]' -p alice@active
+# cleos push action vapaeetokens transfer '["bob","alice","100.0000 CNT","100 to alice"]' -p bob@active
+# cleos push action vapaeetokens claim '["alice","CNT","alice"]' -p alice@active
