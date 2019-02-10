@@ -1,0 +1,255 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sat Feb  9 20:38:45 2019",
+    "version": "eosio::abi/1.1",
+    "structs": [
+        {
+            "name": "album_spec",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "container",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "bgboxevent",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event",
+                    "type": "name"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "itemunit",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "card_post",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "item",
+                    "type": "uint64"
+                },
+                {
+                    "name": "type",
+                    "type": "int32"
+                },
+                {
+                    "name": "author",
+                    "type": "uint64"
+                },
+                {
+                    "name": "edition",
+                    "type": "uint64"
+                },
+                {
+                    "name": "editions",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "collection_instance",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "container",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "droptables",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "edition",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "author",
+                    "type": "uint64"
+                },
+                {
+                    "name": "supply",
+                    "type": "slug_asset"
+                },
+                {
+                    "name": "data",
+                    "type": "string"
+                },
+                {
+                    "name": "preview",
+                    "type": "string"
+                },
+                {
+                    "name": "preload",
+                    "type": "string"
+                },
+                {
+                    "name": "deploy",
+                    "type": "uint64"
+                },
+                {
+                    "name": "front",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "jsontemplate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "author",
+                    "type": "uint64"
+                },
+                {
+                    "name": "type",
+                    "type": "int32"
+                },
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "file",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "slug",
+            "base": "",
+            "fields": [
+                {
+                    "name": "top",
+                    "type": "uint128"
+                },
+                {
+                    "name": "low",
+                    "type": "uint128"
+                }
+            ]
+        },
+        {
+            "name": "slug_asset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "int64"
+                },
+                {
+                    "name": "symbol",
+                    "type": "slug_symbol"
+                }
+            ]
+        },
+        {
+            "name": "slug_symbol",
+            "base": "",
+            "fields": [
+                {
+                    "name": "value",
+                    "type": "slug"
+                }
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "bgboxevent",
+            "type": "bgboxevent",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "droptables",
+            "type": "droptables",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "album",
+            "type": "album_spec",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "card",
+            "type": "card_post",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "collection",
+            "type": "collection_instance",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "edition",
+            "type": "edition",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "templat",
+            "type": "jsontemplate",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "abi_extensions": []
+}

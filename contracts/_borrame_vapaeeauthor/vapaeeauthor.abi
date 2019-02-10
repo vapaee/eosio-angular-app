@@ -1,0 +1,198 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sat Jan 19 16:10:17 2019",
+    "version": "eosio::abi/1.1",
+    "structs": [
+        {
+            "name": "author_slug",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "nick",
+                    "type": "slug"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "droptables",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "newapp",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "nickstr",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "inventory",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "newpublisher",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "nickstr",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "registernick",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "nickstr",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "slug",
+            "base": "",
+            "fields": [
+                {
+                    "name": "top",
+                    "type": "uint128"
+                },
+                {
+                    "name": "low",
+                    "type": "uint128"
+                }
+            ]
+        },
+        {
+            "name": "transferid",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "newowner",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "transfernick",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "newowner",
+                    "type": "name"
+                },
+                {
+                    "name": "nick",
+                    "type": "slug"
+                }
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "droptables",
+            "type": "droptables",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "newapp",
+            "type": "newapp",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "newpublisher",
+            "type": "newpublisher",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "registernick",
+            "type": "registernick",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transferid",
+            "type": "transferid",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transfernick",
+            "type": "transfernick",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "authors",
+            "type": "author_slug",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "abi_extensions": []
+}

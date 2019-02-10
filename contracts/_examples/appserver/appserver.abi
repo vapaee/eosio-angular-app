@@ -1,0 +1,70 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sat Jan 19 01:44:14 2019",
+    "version": "eosio::abi/1.1",
+    "structs": [
+        {
+            "name": "inside",
+            "base": "",
+            "fields": [
+                {
+                    "name": "signatory",
+                    "type": "name"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "notify",
+            "base": "",
+            "fields": [
+                {
+                    "name": "signatory",
+                    "type": "name"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "outside",
+            "base": "",
+            "fields": [
+                {
+                    "name": "signatory",
+                    "type": "name"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "inside",
+            "type": "inside",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "notify",
+            "type": "notify",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "outside",
+            "type": "outside",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [],
+    "ricardian_clauses": [],
+    "variants": [],
+    "abi_extensions": []
+}

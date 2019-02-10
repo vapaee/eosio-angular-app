@@ -1,0 +1,1121 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sat Feb  9 20:38:42 2019",
+    "version": "eosio::abi/1.1",
+    "structs": [
+        {
+            "name": "account",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "asset",
+                    "type": "uint64"
+                },
+                {
+                    "name": "balance",
+                    "type": "slug_asset"
+                }
+            ]
+        },
+        {
+            "name": "app",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "aura_fx",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "mastery",
+                    "type": "uint64"
+                },
+                {
+                    "name": "container",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "aura_spec",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "nick",
+                    "type": "name"
+                },
+                {
+                    "name": "app",
+                    "type": "uint64"
+                },
+                {
+                    "name": "mastery",
+                    "type": "uint64"
+                },
+                {
+                    "name": "acumulable",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "author_slug",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "ownervalue",
+                    "type": "uint64"
+                },
+                {
+                    "name": "slugid",
+                    "type": "slug"
+                },
+                {
+                    "name": "slugvalue",
+                    "type": "uint128"
+                }
+            ]
+        },
+        {
+            "name": "burn",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "slug_asset"
+                },
+                {
+                    "name": "slot",
+                    "type": "slotinfo"
+                },
+                {
+                    "name": "aaaaaaaaa",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "close",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "symbol",
+                    "type": "slug_symbol"
+                }
+            ]
+        },
+        {
+            "name": "cont4profile",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "publisher",
+                    "type": "uint64"
+                },
+                {
+                    "name": "container",
+                    "type": "string"
+                },
+                {
+                    "name": "ram_payer",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "container_asset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "supply",
+                    "type": "slug_asset"
+                },
+                {
+                    "name": "spec",
+                    "type": "uint64"
+                },
+                {
+                    "name": "publisher",
+                    "type": "uint64"
+                },
+                {
+                    "name": "block",
+                    "type": "uint64"
+                },
+                {
+                    "name": "space",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "container_instance",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "asset",
+                    "type": "uint64"
+                },
+                {
+                    "name": "empty",
+                    "type": "int32"
+                },
+                {
+                    "name": "space",
+                    "type": "int32"
+                },
+                {
+                    "name": "slots",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "container_spec",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "nick",
+                    "type": "name"
+                },
+                {
+                    "name": "app",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "droptables",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "experience",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "mastery",
+                    "type": "uint64"
+                },
+                {
+                    "name": "container",
+                    "type": "uint64"
+                },
+                {
+                    "name": "table",
+                    "type": "name"
+                },
+                {
+                    "name": "row",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "iconinfo",
+            "base": "",
+            "fields": [
+                {
+                    "name": "small",
+                    "type": "string"
+                },
+                {
+                    "name": "big",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "issueunits",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "uint64"
+                },
+                {
+                    "name": "quantity",
+                    "type": "slug_asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "item_asset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "supply",
+                    "type": "slug_asset"
+                },
+                {
+                    "name": "max_supply",
+                    "type": "slug_asset"
+                },
+                {
+                    "name": "spec",
+                    "type": "uint64"
+                },
+                {
+                    "name": "publisher",
+                    "type": "uint64"
+                },
+                {
+                    "name": "block",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "item_spec",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "nick",
+                    "type": "name"
+                },
+                {
+                    "name": "app",
+                    "type": "uint64"
+                },
+                {
+                    "name": "maxgroup",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "item_unit",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "uint64"
+                },
+                {
+                    "name": "asset",
+                    "type": "uint64"
+                },
+                {
+                    "name": "slot",
+                    "type": "slotinfo"
+                },
+                {
+                    "name": "quantity",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "levelinfo",
+            "base": "",
+            "fields": [
+                {
+                    "name": "value",
+                    "type": "uint8"
+                },
+                {
+                    "name": "require",
+                    "type": "requireinfo"
+                }
+            ]
+        },
+        {
+            "name": "mastery_prop",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "title",
+                    "type": "name"
+                },
+                {
+                    "name": "desc",
+                    "type": "name"
+                },
+                {
+                    "name": "property",
+                    "type": "slug"
+                },
+                {
+                    "name": "icon",
+                    "type": "iconinfo"
+                },
+                {
+                    "name": "levels",
+                    "type": "levelinfo[]"
+                }
+            ]
+        },
+        {
+            "name": "mastery_spec",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "nick",
+                    "type": "name"
+                },
+                {
+                    "name": "container",
+                    "type": "uint64"
+                },
+                {
+                    "name": "app",
+                    "type": "uint64"
+                },
+                {
+                    "name": "table",
+                    "type": "name"
+                },
+                {
+                    "name": "row",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "newapp",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "slugid",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "inventory",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "newasset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author_owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author_issuer",
+                    "type": "uint64"
+                },
+                {
+                    "name": "maximum_supply",
+                    "type": "slug_asset"
+                },
+                {
+                    "name": "spec",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "newcontainer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author_owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author_app",
+                    "type": "uint64"
+                },
+                {
+                    "name": "nickname",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "newinventory",
+            "base": "",
+            "fields": [
+                {
+                    "name": "author_owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author_publisher",
+                    "type": "uint64"
+                },
+                {
+                    "name": "container_slug",
+                    "type": "slug"
+                },
+                {
+                    "name": "space",
+                    "type": "int32"
+                },
+                {
+                    "name": "spec",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "newitem",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author_app",
+                    "type": "uint64"
+                },
+                {
+                    "name": "nickname",
+                    "type": "name"
+                },
+                {
+                    "name": "maxgroup",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "newprofile",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "slugid",
+                    "type": "string"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "open",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "symbol",
+                    "type": "slug_symbol"
+                },
+                {
+                    "name": "ram_payer",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "profile",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "username",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "profile4app",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "profile",
+                    "type": "uint64"
+                },
+                {
+                    "name": "app",
+                    "type": "uint64"
+                },
+                {
+                    "name": "ram_payer",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "registerapp",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "app",
+                    "type": "uint64"
+                },
+                {
+                    "name": "invespace",
+                    "type": "int32"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "registerprof",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "author_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "username",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "registerslug",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "slugstr",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "requireinfo",
+            "base": "",
+            "fields": [
+                {
+                    "name": "points",
+                    "type": "uint8"
+                },
+                {
+                    "name": "mastery",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "slotinfo",
+            "base": "",
+            "fields": [
+                {
+                    "name": "container",
+                    "type": "uint64"
+                },
+                {
+                    "name": "position",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "slug",
+            "base": "",
+            "fields": [
+                {
+                    "name": "top",
+                    "type": "uint128"
+                },
+                {
+                    "name": "low",
+                    "type": "uint128"
+                }
+            ]
+        },
+        {
+            "name": "slug_asset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "int64"
+                },
+                {
+                    "name": "symbol",
+                    "type": "slug_symbol"
+                }
+            ]
+        },
+        {
+            "name": "slug_symbol",
+            "base": "",
+            "fields": [
+                {
+                    "name": "value",
+                    "type": "slug"
+                }
+            ]
+        },
+        {
+            "name": "swap",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "from",
+                    "type": "uint64"
+                },
+                {
+                    "name": "unit",
+                    "type": "uint64"
+                },
+                {
+                    "name": "app",
+                    "type": "uint64"
+                },
+                {
+                    "name": "quantity",
+                    "type": "int32"
+                },
+                {
+                    "name": "to",
+                    "type": "uint64"
+                },
+                {
+                    "name": "target_slot",
+                    "type": "slotinfo"
+                },
+                {
+                    "name": "ram_payer",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "transfer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "from",
+                    "type": "uint64"
+                },
+                {
+                    "name": "to",
+                    "type": "uint64"
+                },
+                {
+                    "name": "quantity",
+                    "type": "slug_asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "transferid",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "newowner",
+                    "type": "name"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "transferslug",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "newowner",
+                    "type": "name"
+                },
+                {
+                    "name": "slugid",
+                    "type": "slug"
+                }
+            ]
+        },
+        {
+            "name": "transfunits",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "from",
+                    "type": "uint64"
+                },
+                {
+                    "name": "to",
+                    "type": "uint64"
+                },
+                {
+                    "name": "quantity",
+                    "type": "slug_asset"
+                },
+                {
+                    "name": "items",
+                    "type": "uint64[]"
+                },
+                {
+                    "name": "quantities",
+                    "type": "int32[]"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "burn",
+            "type": "burn",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "close",
+            "type": "close",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "cont4profile",
+            "type": "cont4profile",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "droptables",
+            "type": "droptables",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "issueunits",
+            "type": "issueunits",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "newapp",
+            "type": "newapp",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "newasset",
+            "type": "newasset",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "newcontainer",
+            "type": "newcontainer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "newinventory",
+            "type": "newinventory",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "newitem",
+            "type": "newitem",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "newprofile",
+            "type": "newprofile",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "open",
+            "type": "open",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "profile4app",
+            "type": "profile4app",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "registerapp",
+            "type": "registerapp",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "registerprof",
+            "type": "registerprof",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "registerslug",
+            "type": "registerslug",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "swap",
+            "type": "swap",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transfer",
+            "type": "transfer",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transferid",
+            "type": "transferid",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transferslug",
+            "type": "transferslug",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "transfunits",
+            "type": "transfunits",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "accounts",
+            "type": "account",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "apps",
+            "type": "app",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "assets",
+            "type": "item_asset",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "aurafxs",
+            "type": "aura_fx",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "auras",
+            "type": "aura_spec",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "authors",
+            "type": "author_slug",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "containers",
+            "type": "container_instance",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "contasset",
+            "type": "container_asset",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "contspec",
+            "type": "container_spec",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "experience",
+            "type": "experience",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "items",
+            "type": "item_unit",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "itemspec",
+            "type": "item_spec",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "mastery",
+            "type": "mastery_spec",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "masteryprop",
+            "type": "mastery_prop",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "profiles",
+            "type": "profile",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "abi_extensions": []
+}

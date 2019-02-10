@@ -18,19 +18,31 @@ show_balance() {
 }
 
 show_table snapsnapsnap 1 snapshots
-show_table vapaeetokens bob accounts
-show_table vapaeetokens alice accounts
-show_table vapaeetokens viter accounts
 
-# show_balance eosio.token bob SYS
-# show_balance eosio.token alice SYS
+echo "********* vapaeetokens CNT *******************************************************"
+cleos get currency stats vapaeetokens CNT
+show_table vapaeetokens CNT source
 
 show_balance vapaeetokens bob CNT
 show_balance vapaeetokens alice CNT
 show_balance vapaeetokens tom CNT
 show_balance vapaeetokens kate CNT
-show_balance vapaeetokens viter CNT
 
-echo "--------- vapaeetokens CNT-------------------------------------------------"
-cleos get currency stats vapaeetokens CNT
-show_table vapaeetokens CNT source
+echo "********* vapaeetokens BOX *******************************************************"
+cleos get currency stats vapaeetokens BOX
+show_table vapaeetokens BOX source
+
+show_balance vapaeetokens bob BOX
+show_balance vapaeetokens alice BOX
+show_balance vapaeetokens tom BOX
+show_balance vapaeetokens kate BOX
+
+echo "********* vapaeetokens VPE *******************************************************"
+cleos get currency stats vapaeetokens VPE
+show_table vapaeetokens VPE source
+
+show_balance vapaeetokens bob VPE
+show_balance vapaeetokens alice VPE
+show_balance vapaeetokens tom VPE
+show_balance vapaeetokens kate VPE
+

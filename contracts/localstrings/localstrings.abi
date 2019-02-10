@@ -1,0 +1,126 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sat Feb  9 20:38:54 2019",
+    "version": "eosio::abi/1.1",
+    "structs": [
+        {
+            "name": "local_entry",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "text",
+                    "type": "string"
+                },
+                {
+                    "name": "local",
+                    "type": "name"
+                },
+                {
+                    "name": "version",
+                    "type": "name"
+                },
+                {
+                    "name": "registerer",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "newlocal",
+            "base": "",
+            "fields": [
+                {
+                    "name": "registerer",
+                    "type": "uint64"
+                },
+                {
+                    "name": "text",
+                    "type": "string"
+                },
+                {
+                    "name": "stringkey",
+                    "type": "name"
+                },
+                {
+                    "name": "local",
+                    "type": "name"
+                },
+                {
+                    "name": "version",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "newstring",
+            "base": "",
+            "fields": [
+                {
+                    "name": "registerer",
+                    "type": "uint64"
+                },
+                {
+                    "name": "key",
+                    "type": "name"
+                },
+                {
+                    "name": "text",
+                    "type": "string"
+                },
+                {
+                    "name": "local",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "string_entry",
+            "base": "",
+            "fields": [
+                {
+                    "name": "key",
+                    "type": "name"
+                },
+                {
+                    "name": "registerer",
+                    "type": "uint64"
+                }
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "newlocal",
+            "type": "newlocal",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "newstring",
+            "type": "newstring",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "locals",
+            "type": "local_entry",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "strings",
+            "type": "string_entry",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "abi_extensions": []
+}

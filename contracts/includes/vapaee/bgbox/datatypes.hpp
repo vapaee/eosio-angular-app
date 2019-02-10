@@ -9,6 +9,7 @@ using namespace eosio;
 namespace vapaee {
     namespace bgbox {
 
+
         static uint128_t combine( uint64_t key1, uint64_t key2 );
         static uint128_t combine( uint64_t key1, name key2 );
         static uint128_t combine( name key1, name key2 );
@@ -62,7 +63,7 @@ namespace vapaee {
         struct mastery_property {
             name title;   // localstrings.strings.key
             name desc;    // localstrings.strings.key
-            slug property;
+            vapaee::slug property;
             iconinfo icon;        
             std::vector<levelinfo> levels;
             std::string to_string() const {

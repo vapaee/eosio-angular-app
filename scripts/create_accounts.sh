@@ -13,7 +13,6 @@ cleos create account eosio bob EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2B
 cleos create account eosio alice EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio tom EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio kate EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
-cleos create account eosio viter EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 
 cleos create account eosio abcounter EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio addressbook EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
@@ -27,6 +26,7 @@ cleos set account permission boardgamebox active '{"threshold": 1,"keys": [{"key
 cleos set account permission appserver active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"appserver","permission":"eosio.code"},"weight":1}]}' owner -p appserver
 
 # eosio.token
+echo "-------- eosio.token (SYS) ---------"
 cd /var/www/eosio-angular-app/contracts/_examples/eosio.contracts/eosio.token
 eosio-cpp -o eosio.token.wasm src/eosio.token.cpp --abigen -I include
 cleos set contract eosio.token $PWD -p eosio.token@active
@@ -35,7 +35,6 @@ cleos push action eosio.token issue '["alice", "120.0000 SYS", "memo 120 SYS"]' 
 cleos push action eosio.token issue '["bob", "100.0000 SYS", "memo 100 SYS"]' -p eosio@active
 cleos push action eosio.token issue '["tom", "0.1234 SYS", "memo 0 SYS"]' -p eosio@active
 cleos push action eosio.token issue '["kate", "1.0000 SYS", "memo 1 SYS"]' -p eosio@active
-cleos push action eosio.token issue '["viter", "12345.0000 SYS", "memo 12345 SYS"]' -p eosio@active
 
 
 # snapshot

@@ -36,8 +36,8 @@ APPSERVER_HOME=$HOME/contracts/_examples/appserver
 APPPLUGIN_HOME=$HOME/contracts/_examples/appplugin
 
 CARDSNTOKENS_HOME=$HOME/contracts/cardsntokens
-VAPAEETOKENS_HOME=$HOME/airdrop-on-telos/contracts/vapaeetokens
-SNAPSNAPSNAP_HOME=$HOME/airdrop-on-telos/contracts/snapsnapsnap
+VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
+SNAPSNAPSNAP_HOME=$HOME/contracts/snapsnapsnap
 BOARDGAMEBOX_HOME=$HOME/contracts/boardgamebox
 LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 
@@ -119,7 +119,7 @@ fi
 echo "-------- vapaeetokens ---------"
 cd $VAPAEETOKENS_HOME
 if [[ vapaeetokens.cpp -nt vapaeetokens.wasm || vapaeetokens.hpp -nt vapaeetokens.wasm || $force == true ]]; then
-    eosio-cpp -o vapaeetokens.wasm vapaeetokens.cpp --abigen
+    eosio-cpp -o vapaeetokens.wasm vapaeetokens.cpp --abigen -I ../includes
     cleos $NET set contract vapaeetokens $PWD -p vapaeetokens@active
 fi
 

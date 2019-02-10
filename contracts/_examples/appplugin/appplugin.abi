@@ -1,0 +1,32 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sat Jan 19 01:44:16 2019",
+    "version": "eosio::abi/1.1",
+    "structs": [
+        {
+            "name": "notify",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "message",
+                    "type": "string"
+                }
+            ]
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "notify",
+            "type": "notify",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [],
+    "ricardian_clauses": [],
+    "variants": [],
+    "abi_extensions": []
+}
