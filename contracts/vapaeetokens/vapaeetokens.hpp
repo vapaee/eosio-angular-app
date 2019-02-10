@@ -1,5 +1,10 @@
-#include <eosiolib/asset.hpp>
-#include <eosiolib/eosio.hpp>
+#pragma once
+#include <vapaee/token/common.hpp>
+
+#include "vapaeetokens.core.hpp"
+#include "vapaeetokens.airdrop.hpp"
+#include "vapaeetokens.exchange.hpp"
+#include "vapaeetokens.stake.hpp"
 
 #include <string>
 #include <math.h>
@@ -10,178 +15,118 @@ using namespace std;
 
 namespace vapaee {
     namespace bgbox {
-        static uint128_t combine( uint64_t key1, uint64_t key2 ) {
-            return (uint128_t{key1} << 64) | uint128_t{key2};
-        }        
-    }    
+#include <vapaee/bgbox/tables/apps.hpp>        
+    }
 
 CONTRACT vapaeetokens : public eosio::contract {
+    
     private:
-       // TOKEN-TABLES ------------------------------------------------------------------------------------------------------
-
-        TABLE account {
-            asset    balance;
-
-            uint64_t primary_key()const { return balance.symbol.code().raw(); }
-        };
-
-        TABLE currency_stats {
-            asset    supply;
-            asset    max_supply;
-            name     issuer;
-
-            uint64_t primary_key()const { return supply.symbol.code().raw(); }
-        };
-
-        typedef eosio::multi_index< "accounts"_n, account > accounts;
-        typedef eosio::multi_index< "stat"_n, currency_stats > stats;
-
-        void sub_balance( name owner, asset value );
-        void add_balance( name owner, asset value, name ram_payer );
+#include <vapaee/token/tables.all.hpp>
 
     public:
        // TOKEN-ACTOINS ------------------------------------------------------------------------------------------------------
 
         using contract::contract;
-        // cleos push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active
-        ACTION create( name issuer, asset  maximum_supply);
-        ACTION issue( name to, const asset& quantity, string memo );
-        ACTION retire( asset quantity, string memo );
-        ACTION transfer(name from, name to, asset quantity, string  memo );
-        ACTION open( name owner, const symbol& symbol, name ram_payer );
-        ACTION close( name owner, const symbol& symbol );
-
-    private:
-        // SNAPSHOT TABLES ------------------------------------------------------------------------------------------------------
-        // auxiliar structure to query the real snapshot table on other contract. Holds an amount of TLOS of each account.
-        TABLE snapshot_table {
-            name account;
-            uint64_t amount;
-            uint64_t primary_key() const { return account.value; }
+        ACTION create( name issuer, asset maximum_supply, uint64_t app) {
+            print("\nACTION vapaeetokens.create()\n");
+            vapaee::token::core c;
+            c.action_create(issuer, maximum_supply, app);
         };
-        typedef eosio::multi_index< "snapshots"_n, snapshot_table > snapshots;
 
-        // this will have only 1 row setted by calling action setsnapshot
-        TABLE spanshot_source {
-            name contract;
-            uint64_t scope;
-            int64_t cap;
-            int64_t min;
-            int64_t ratio;
-            int64_t base;
-            uint64_t primary_key() const { return contract.value; }
-            uint64_t by_scope_key() const { return scope; }
+        ACTION issue( name to, const asset& quantity, string memo ) {
+            print("\nACTION vapaeetokens.issue()\n");
+            vapaee::token::core c;
+            c.action_issue(to, quantity, memo);
         };
-        typedef eosio::multi_index< "source"_n, spanshot_source,
-            indexed_by<"scope"_n, const_mem_fun<spanshot_source, uint64_t, &spanshot_source::by_scope_key>>
-        > source;
 
-        // Every user has this table with 1 entry for each token symbol_code claimed
-        TABLE claimed_table {
-            symbol_code sym_code;
-            uint64_t primary_key() const { return sym_code.raw(); }
+        ACTION retire( asset quantity, string memo ) {
+            print("\nACTION vapaeetokens.retire()\n");
+            vapaee::token::core c;
+            c.action_retire(quantity, memo);
         };
-        typedef eosio::multi_index< "claimed"_n, claimed_table > claimed;
+
+        ACTION transfer(name from, name to, asset quantity, string  memo ) {
+            print("\nACTION vapaeetokens.transfer()\n");
+            vapaee::token::core c;
+            c.action_transfer(from, to, quantity, memo);
+        };
+
+        ACTION open( name owner, const symbol& symbol, name ram_payer ) {
+            print("\nACTION vapaeetokens.open()\n");
+            vapaee::token::core c;
+            c.action_open(owner, symbol, ram_payer);
+        };
+
+        ACTION close( name owner, const symbol& symbol ) {
+            print("\nACTION vapaeetokens.close()\n");
+            vapaee::token::core c;
+            c.action_close(owner, symbol);
+        };
+
         
     public:
         // AIRDROP-ACTOINS  ------------------------------------------------------------------------------------------------------
-        // cleos push action vapaeetokens setsnapshot '["snapsnapsnap",1,"CNT",0,0]' -p vapaeetokens@active
-        ACTION setsnapshot (name contract, uint64_t scope, const symbol_code& symbolcode, int64_t cap, int64_t min, int64_t ratio, int64_t base);
-        ACTION nosnapshot (const symbol_code& symbolcode);
-        ACTION claim (name owner, const symbol_code & symbolcode, name ram_payer);
-
-    private:
-        // MARKET-TABLES ------------------------------------------------------------------------------------------------------
-        TABLE reg_token_table {
-            symbol_code symbol;
-            name contract;
-            uint64_t primary_key() const { return symbol.raw(); }
-            uint64_t by_contract_key() const { return contract.value; }
+        
+        ACTION setsnapshot (name contract, uint64_t scope, const symbol_code& symbolcode, int64_t cap, int64_t min, int64_t ratio, int64_t base) {
+            print("\nACTION vapaeetokens.setsnapshot()\n");
+            vapaee::token::airdrop a;
+            a.action_setsnapshot(contract, scope, symbolcode, cap, min, ratio, base);
         };
 
-        typedef eosio::multi_index< "tokens"_n, reg_token_table,
-            indexed_by<"contract"_n, const_mem_fun<reg_token_table, uint64_t, &reg_token_table::by_contract_key>>
-        > tokens;
+        ACTION nosnapshot (const symbol_code& symbolcode) {
+            print("\nACTION vapaeetokens.nosnapshot()\n");
+            vapaee::token::airdrop a;
+            a.action_nosnapshot(symbolcode);
+        };
 
+        ACTION claim (name owner, const symbol_code & symbolcode, name ram_payer) {
+            print("\nACTION vapaeetokens.claim()\n");
+            vapaee::token::airdrop a;
+            a.action_claim(owner, symbolcode, ram_payer);
+        };
 
 
     public:
-        // MARKET-ACTOINS  ------------------------------------------------------------------------------------------------------
-        ACTION addtoken (name contract, const symbol_code & symbol, name ram_payer);
-
-
-
-    private:
-        // BANKING-TABLES ------------------------------------------------------------------------------------------------------
-        // scope: owner
-        TABLE user_stakes_table {
-            uint64_t id;
-            name to;
-            asset quantity;
-            uint64_t since;
-            uint64_t last;
-            uint64_t primary_key() const { return id; }
-            uint128_t secondary_key() const { return vapaee::bgbox::combine(by_symbol_key(), by_to_key()); }
-            uint64_t by_to_key() const { return to.value; }
-            uint64_t by_symbol_key() const { return quantity.symbol.code().raw(); }
-            uint64_t by_since_key() const { return since; }
-            uint64_t by_last_key() const { return last; }
+        // EXCHANGE-ACTOINS  ------------------------------------------------------------------------------------------------------
+        ACTION addtoken (name contract, const symbol_code & symbol, name ram_payer) {
+            print("\nACTION vapaeetokens.addtoken()\n");
+            vapaee::token::exchange e;
+            e.action_addtoken(contract, symbol, ram_payer);
         };
-        typedef eosio::multi_index< "stakes"_n, user_stakes_table,
-            indexed_by<"secondary"_n, const_mem_fun<user_stakes_table, uint128_t, &user_stakes_table::secondary_key>>,
-            indexed_by<"to"_n, const_mem_fun<user_stakes_table, uint64_t, &user_stakes_table::by_to_key>>,
-            indexed_by<"symbol"_n, const_mem_fun<user_stakes_table, uint64_t, &user_stakes_table::by_symbol_key>>,
-            indexed_by<"since"_n, const_mem_fun<user_stakes_table, uint64_t, &user_stakes_table::by_since_key>>,
-            indexed_by<"last"_n, const_mem_fun<user_stakes_table, uint64_t, &user_stakes_table::by_last_key>>
-        > stakes;
 
-        // scope: owner
-        TABLE user_unstakes_table {
-            uint64_t id;
-            asset quantity;
-            uint64_t block;
-            uint64_t primary_key() const { return id; }
-            uint64_t by_symbol_key() const { return quantity.symbol.code().raw(); }
-            uint64_t by_block_key() const { return block; }
-        };
-        typedef eosio::multi_index< "unstakes"_n, user_unstakes_table,
-            indexed_by<"symbol"_n, const_mem_fun<user_unstakes_table, uint64_t, &user_unstakes_table::by_symbol_key>>,
-            indexed_by<"block"_n, const_mem_fun<user_unstakes_table, uint64_t, &user_unstakes_table::by_block_key>>
-        > unstakes;
-
-        // scope: owner
-        TABLE unstake_time_table {
-            symbol_code sym_code;
-            uint64_t min_time;
-            uint64_t max_time;
-            uint64_t auto_stake;
-            uint64_t primary_key() const { return sym_code.raw(); }
-        };
-        typedef eosio::multi_index< "config"_n, unstake_time_table > config;
 
     public:
-        // BANKING-ACTOINS  ------------------------------------------------------------------------------------------------------
-        // se genera una transacción desde el owner al contrato pagándole la cantidad quantity
-        ACTION stake (name owner, const asset & quantity, name to);
+        // STAKE-ACTOINS  ------------------------------------------------------------------------------------------------------
+        ACTION stake (name owner, const asset & quantity, name to) {
+            print("\nACTION vapaeetokens.stake()\n");
+            vapaee::token::stake s;
+            s.action_stake(owner, quantity, to);
+        };
 
-        // se fija cuanto tiempo corresponde según la cantidad.
-        // Resta esa cantidad de la entrada de la tabla stakes. Si llega a cero la elimina
-        // coloca una entrada en la tabla unstakes con el vencimiento calculado en block
-        ACTION unstake (name owner, const asset & quantity, name from);
+        ACTION unstake (name owner, const asset & quantity, name from) {
+            print("\nACTION vapaeetokens.unstake()\n");
+            vapaee::token::stake s;
+            s.action_unstake(owner, quantity, from);
+        };
 
-        // toma la entrada de unstakes indentificada por id y la elimina.
-        // luego actualiza la tabla stakes con el 'quantity' y destinatario 'to' o genera una nueva entrada si no existe
-        ACTION restake (name owner, uint64_t id, name to);
+        ACTION restake (name owner, uint64_t id, name to) {
+            print("\nACTION vapaeetokens.restake()\n");
+            vapaee::token::stake s;
+            s.action_restake(owner, id, to);
+        };
 
-        // recorre la tabla de unstakes y todos los que encuentra que tienen el block menor al block actual entonces lo saca de la lista y los suma
-        // luego hace una sola transacción desde el contrato hacia el owner
-        ACTION unstakeback (name owner);
+        ACTION unstakeback (name owner) {
+            print("\nACTION vapaeetokens.unstakeback()\n");
+            vapaee::token::stake s;
+            s.action_unstakeback(owner);
+        };
 
-        // setea el tiempo máximo y mínimo a esperar al hacer unstake. El timepo final dependerá de la cantidad en porcentaje sobre el total staked
-        // si el auto_stake es > 0, entonces por cada interaccción con el contrato se registrará el bloque (de la última actividad)
-        // Si el owner quiere hacer un transfer y la cantidad de blockes desde el ultimo registro supera auto_stake,
-        // entonces se auto stakea toda la quita y no se permite transferir fondos
-        ACTION unstaketime (name owner, const symbol_code & sym_code, uint64_t min_time, uint64_t max_time, uint64_t auto_stake);
+        ACTION unstaketime (name owner, const symbol_code & sym_code, uint64_t min_time, uint64_t max_time, uint64_t auto_stake) {
+            print("\nACTION vapaeetokens.unstaketime()\n");
+            vapaee::token::stake s;
+            s.action_unstaketime(owner, sym_code, min_time, max_time, auto_stake);
+        };
+
 
 
 

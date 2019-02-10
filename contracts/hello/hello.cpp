@@ -47,7 +47,7 @@ EOSIO_DISPATCH( hello, (trydata)(trystr) )
 /*
 
 #include <eosiolib/eosio.hpp>
-#include "../includes/vapaee/slug1.hpp"
+#include "../includes/vapaee/base/slug1.hpp"
 
 using namespace eosio;
 using namespace vapaee;

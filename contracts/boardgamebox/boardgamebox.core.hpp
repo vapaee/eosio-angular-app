@@ -18,7 +18,7 @@ namespace vapaee {
         // APPS ---------------------------
 
         void action_new_item_spec(name owner, uint64_t app_author_id, name nickname, int maxgroup) {
-            print("core::action_new_item_spec()\n");
+            print("vapaee::bgbox::core::action_new_item_spec()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" app_author_id: ", std::to_string((int) app_author_id), "\n");
             print(" nickname: ", nickname.to_string(), "\n");
@@ -32,7 +32,7 @@ namespace vapaee {
             // verifies item-nickname is not registered for app
             item_specs item_table(get_self(), get_self().value);
             auto index = item_table.template get_index<"second"_n>();
-            auto itr = index.find(vapaee::bgbox::combine(app_author_id, nickname));
+            auto itr = index.find(vapaee::utils::combine(app_author_id, nickname));
             eosio_assert(itr == index.end(), (nickname.to_string()  + " already registered as item").c_str());
 
             // crea un nuevo item_spec 
@@ -45,11 +45,11 @@ namespace vapaee {
 
             print(" item_specs.emplace() new item spec ", nickname, " regitered\n" );
             
-            print("core::action_new_item_spec() ends...\n");
+            print("vapaee::bgbox::core::action_new_item_spec() ends...\n");
         };
         
         void action_new_container_spec(name owner, uint64_t app_author_id, name nickname) {
-            print("core::action_new_container_spec()\n");
+            print("vapaee::bgbox::core::action_new_container_spec()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" app_author_id: ", std::to_string((int) app_author_id), "\n");
             print(" nickname: ", nickname.to_string(), "\n");
@@ -66,7 +66,7 @@ namespace vapaee {
 
             // verifies container-nickname is not registered for app
             auto index = container_table.template get_index<"second"_n>();
-            auto itr = index.find(vapaee::bgbox::combine(app_author_id, nickname));
+            auto itr = index.find(vapaee::utils::combine(app_author_id, nickname));
             eosio_assert(itr == index.end(), (nickname.to_string()  + " already registered as container with id " + std::to_string((int)itr->id)).c_str());
 
             // create a new container_spec for app
@@ -78,14 +78,14 @@ namespace vapaee {
 
             print(" container_specs.emplace() new container spec ", nickname, " regitered\n" );
             
-            print("core::action_new_container_spec() ends...\n");
+            print("vapaee::bgbox::core::action_new_container_spec() ends...\n");
             
         }
 
         // PUBLISHERS ---------------------------
 
         void action_new_item_asset(name author_owner, uint64_t author_issuer, const slug_asset &maximum_supply, uint64_t spec) {
-            print("core::action_new_item_asset()\n");
+            print("vapaee::bgbox::core::action_new_item_asset()\n");
             print(" author_owner: ", author_owner.to_string(), "\n");
             print(" author_issuer: ", std::to_string((int) author_issuer), "\n");
             print(" maximum_supply: ", maximum_supply.to_string(), "\n");          
@@ -113,11 +113,11 @@ namespace vapaee {
 
             print(" item_assets.emplace() new item asset ", maximum_supply.to_string(), " regitered\n" );
             
-            print("core::action_new_item_asset() ends...\n");
+            print("vapaee::bgbox::core::action_new_item_asset() ends...\n");
         }
 
         void action_new_container_asset(name author_owner, uint64_t author_publisher, slug container_slug, int space, uint64_t spec) {
-            print("core::action_new_container_asset()\n");
+            print("vapaee::bgbox::core::action_new_container_asset()\n");
             print(" author_owner: ", author_owner.to_string(), "\n");
             print(" author_publisher: ", std::to_string((int) author_publisher), "\n");
             print(" container_slug: ", container_slug.to_string(), "\n");
@@ -146,11 +146,11 @@ namespace vapaee {
             });
             print(" container_assets.emplace() new container assets ", container_slug.to_string(), " regitered\n" );
 
-            print("core::action_new_container_asset() ends...\n");
+            print("vapaee::bgbox::core::action_new_container_asset() ends...\n");
         }
 
         void action_issue_item_units(uint64_t to, slug_asset quantity, const string &memo) {
-            print("core::action_issue_item_units()\n");
+            print("vapaee::bgbox::core::action_issue_item_units()\n");
             print(" to: ", std::to_string((int) to), "\n");
             print(" quantity: ", quantity.to_string(), "\n");
             print(" memo: ", memo, "\n");
@@ -184,7 +184,7 @@ namespace vapaee {
             // hago instanciar en memoria un item_unit con estos datos en un slot del container "deposit" de este usuario
             vapaee::bgbox::allocate_slot_in_deposit(to, quantity.symbol, spec, units);            
             
-            print("core::action_issue_item_units() ends...\n");
+            print("vapaee::bgbox::core::action_issue_item_units() ends...\n");
         };
 
         // USERS ---------------------------
@@ -195,7 +195,7 @@ namespace vapaee {
             slug_asset    quantity,
             const string& memo) {
             
-            print("core::action_transfer_item_unit_quantity()\n");
+            print("vapaee::bgbox::core::action_transfer_item_unit_quantity()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" from: ", std::to_string((int)from), "\n");
             print(" to: ", std::to_string((int)to), "\n");
@@ -215,7 +215,7 @@ namespace vapaee {
             ).send();
             
 
-            print("core::action_transfer_item_unit_quantity() ends...\n");
+            print("vapaee::bgbox::core::action_transfer_item_unit_quantity() ends...\n");
         }
 
         void action_transfer_item_unit_list(
@@ -227,7 +227,7 @@ namespace vapaee {
             vector<int> quantities,
             const string& memo) {
 
-            print("core::action_transfer_item_unit_list()\n");
+            print("vapaee::bgbox::core::action_transfer_item_unit_list()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" from: ", std::to_string((int) from), "\n");
             print(" to: ", std::to_string((int) to), "\n");
@@ -269,11 +269,11 @@ namespace vapaee {
                 action_swap_slots_of_item_unit(from_owner, from, items[i], spec.app, quantities[i], to, unit.slot, ram_payer);
             }
             
-            print("core::action_transfer_item_unit_list() ends...\n");
+            print("vapaee::bgbox::core::action_transfer_item_unit_list() ends...\n");
         }
 
         void action_new_container_instance (name owner, uint64_t profile, std::string container_slug_str, name ram_payer) {
-            print("core::action_new_container_instance()\n");
+            print("vapaee::bgbox::core::action_new_container_instance()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" profile: ", std::to_string((int)profile), "\n");
             print(" container_slug_str: ", container_slug_str.c_str(), "\n");
@@ -306,11 +306,11 @@ namespace vapaee {
 
             print(" containers(): ", user_containers.find(cont_id)->to_string(), "\n");
 
-            print("core::action_new_container_instance() ends...\n");
+            print("vapaee::bgbox::core::action_new_container_instance() ends...\n");
         }
 
         void action_create_containers_for_profile (name owner, uint64_t profile, uint64_t app, name ram_payer) {
-            print("core::action_create_containers_for_profile()\n");
+            print("vapaee::bgbox::core::action_create_containers_for_profile()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" profile: ", std::to_string((int) profile), "\n");
             print(" app: ", std::to_string((int) app), "\n");
@@ -347,7 +347,7 @@ namespace vapaee {
                     ).send();
                 }
             }
-            print("core::action_create_containers_for_profile() ends...\n");
+            print("vapaee::bgbox::core::action_create_containers_for_profile() ends...\n");
         };
 
         void action_swap_slots_of_item_unit(
@@ -360,7 +360,7 @@ namespace vapaee {
             const slotinfo &target_slot,
             name ram_payer) {
 
-            print("core::action_swap_slots_of_item_unit()\n");
+            print("vapaee::bgbox::core::action_swap_slots_of_item_unit()\n");
             print(" from_owner: ", from_owner.to_string(), "\n");
             print(" from_profile: ", std::to_string((int) from_profile), "\n");
             print(" unit: ", std::to_string((int) unit), "\n");
@@ -563,7 +563,7 @@ namespace vapaee {
                 }
             }                
             
-            print("core::action_swap_slots_of_item_unit() ends...\n");
+            print("vapaee::bgbox::core::action_swap_slots_of_item_unit() ends...\n");
         };
         
     }; // class

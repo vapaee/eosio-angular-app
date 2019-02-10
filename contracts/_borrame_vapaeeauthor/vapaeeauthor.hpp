@@ -1,6 +1,6 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/print.hpp>
-#include <vapaee/slug.hpp>
+#include <vapaee/base/slug.hpp>
 #include <vapaee/vapaee_tables.hpp>
 #include <vapaee/vapaee_utils.hpp>
 

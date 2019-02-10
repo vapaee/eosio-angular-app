@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <vapaee/slug.hpp>
+#include <vapaee/base/slug.hpp>
 using namespace std;
 using namespace vapaee;
 

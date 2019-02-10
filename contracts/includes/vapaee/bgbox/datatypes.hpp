@@ -19,7 +19,7 @@ namespace vapaee {
             uint64_t position;
             slotinfo():position(0), container(0) {}
             slotinfo(const slotinfo &c):position(c.position), container(c.container) {}
-            uint128_t to128bits() const { return vapaee::bgbox::combine(container, position); }
+            uint128_t to128bits() const { return vapaee::utils::combine(container, position); }
             void setAux() {
                 position = FULL64BITS;
                 container = FULL64BITS;

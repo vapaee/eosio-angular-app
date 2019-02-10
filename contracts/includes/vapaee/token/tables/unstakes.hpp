@@ -1,0 +1,18 @@
+#include <vapaee/token/tables/_aux.hpp>
+
+        // TABLE unstakes -----------
+        // scope: owner
+        TABLE user_unstakes_table {
+            uint64_t id;
+            asset quantity;
+            uint64_t block;
+            uint64_t primary_key() const { return id; }
+            uint64_t by_symbol_key() const { return quantity.symbol.code().raw(); }
+            uint64_t by_block_key() const { return block; }
+        };
+        typedef eosio::multi_index< "unstakes"_n, user_unstakes_table,
+            indexed_by<"symbol"_n, const_mem_fun<user_unstakes_table, uint64_t, &user_unstakes_table::by_symbol_key>>,
+            indexed_by<"block"_n, const_mem_fun<user_unstakes_table, uint64_t, &user_unstakes_table::by_block_key>>
+        > unstakes;
+        // ------------------------------------
+        

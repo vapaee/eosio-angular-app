@@ -12,7 +12,7 @@
                     // "item_spec": esta maestría es para tunear un objeto de tipo descrito en la fila row
                     // "item_asset": esta maestría es para tunear un objeto identificado con un slug item_asset[row].supply.symbol.row()
                 uint64_t primary_key() const { return id; }
-                uint128_t secondary_key() const { return vapaee::bgbox::combine(app, nick); }
+                uint128_t secondary_key() const { return vapaee::utils::combine(app, nick); }
                 uint64_t app_key() const { return app; }
                 std::string to_string() const {
                     return std::to_string((int) id) + " - " + 

@@ -1,6 +1,6 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/print.hpp>
-#include <vapaee/slug_asset.hpp>
+#include <vapaee/base/slug_asset.hpp>
 
 using namespace eosio;
 namespace vapaee {

@@ -10,19 +10,6 @@ namespace vapaee {
     namespace bgbox {
         name _self = "boardgamebox"_n;
 
-        static uint128_t combine( uint64_t key1, uint64_t key2 ) {
-            return (uint128_t{key1} << 64) | uint128_t{key2};
-        }
-
-        static uint128_t combine( uint64_t key1, name key2 ) {
-            // return (uint128_t{key1.value} << 64) | uint128_t{key2};
-            return vapaee::bgbox::combine(key1, key2.value);
-        }
-
-        static uint128_t combine( name key1, name key2 ) {
-            return vapaee::bgbox::combine(key1.value, key2.value);
-        }
-
         static name get_author_owner(uint64_t author_id) {
             authors authors_table(_self, _self.value);
             auto itr = authors_table.find(author_id);

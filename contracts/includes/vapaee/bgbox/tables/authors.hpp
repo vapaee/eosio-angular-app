@@ -5,9 +5,9 @@
             TABLE author_slug {
                 uint64_t    id;
                 name        owner;
-                uint64_t    ownervalue;
+                uint64_t    ownervalue; // for debugging pourpuse
                 slug        slugid;
-                uint128_t   slugvalue;
+                uint128_t   slugvalue;  // for debugging pourpuse
                 uint64_t primary_key() const { return id;  }
                 uint64_t by_owner_key() const { return owner.value;  }
                 uint128_t by_slugid_key() const { return slugid.to128bits();  }

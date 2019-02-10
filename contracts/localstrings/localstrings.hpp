@@ -86,7 +86,7 @@ CONTRACT localstrings : public eosio::contract {
             uint64_t   registerer; // vapaeeauthor.authors.id
             uint64_t primary_key() const { return id; }
             uint64_t version_key() const { return local.value; }
-            uint128_t secondary_key() const { return vapaee::bgbox::combine(local, version); }
+            uint128_t secondary_key() const { return vapaee::utils::combine(local, version); }
         };
         typedef eosio::multi_index<"locals"_n, local_entry, 
             indexed_by<"second"_n, const_mem_fun<local_entry, uint128_t, &local_entry::secondary_key>>,

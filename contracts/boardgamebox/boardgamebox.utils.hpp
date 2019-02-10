@@ -5,7 +5,6 @@
 using namespace eosio;
 namespace vapaee {
     namespace bgbox {
-        static name contract = "boardgamebox"_n;
 
         const name get_self() {
             return vapaee::bgbox::contract;

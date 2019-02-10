@@ -10,7 +10,7 @@
                 uint64_t  acumulable; // indica la cantidad de veces que se puede acumular
                 // TODO: implementar los points: lista de tuplas (prop-level-points-value)
                 uint64_t primary_key() const { return id; }
-                uint128_t secondary_key() const { return vapaee::bgbox::combine(app, nick); }
+                uint128_t secondary_key() const { return vapaee::utils::combine(app, nick); }
                 uint64_t app_key() const { return app; }
                 std::string to_string() const {
                     return std::to_string((int) id) + " - nick(" + 
