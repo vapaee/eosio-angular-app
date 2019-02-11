@@ -1,22 +1,23 @@
 #pragma once
 #include <vapaee/token/common.hpp>
 
+using namespace eosio;
+using namespace std;
+
+using namespace eosio;
+namespace vapaee {
+    namespace bgbox {
+#include <vapaee/bgbox/tables/apps.hpp>
+    };
+};
+
 #include "vapaeetokens.core.hpp"
 #include "vapaeetokens.airdrop.hpp"
 #include "vapaeetokens.exchange.hpp"
 #include "vapaeetokens.stake.hpp"
 
-#include <string>
-#include <math.h>
-
-using namespace eosio;
-using namespace std;
-
 
 namespace vapaee {
-    namespace bgbox {
-#include <vapaee/bgbox/tables/apps.hpp>        
-    }
 
 CONTRACT vapaeetokens : public eosio::contract {
     
@@ -30,8 +31,20 @@ CONTRACT vapaeetokens : public eosio::contract {
         ACTION create( name issuer, asset maximum_supply, uint64_t app) {
             print("\nACTION vapaeetokens.create()\n");
             vapaee::token::core c;
-            c.action_create(issuer, maximum_supply, app);
+            c.action_create_token(issuer, maximum_supply, app);
         };
+
+        ACTION addissuer( uint64_t app, const symbol& symbol ) {
+            print("\nACTION vapaeetokens.addissuer()\n");
+            vapaee::token::core c;
+            c.action_add_token_issuer(app, symbol);
+        };
+        
+        ACTION removeissuer( uint64_t app, const symbol& symbol ) {
+            print("\nACTION vapaeetokens.removeissuer()\n");
+            vapaee::token::core c;
+            c.action_remove_token_issuer(app, symbol);
+        };        
 
         ACTION issue( name to, const asset& quantity, string memo ) {
             print("\nACTION vapaeetokens.issue()\n");
@@ -39,10 +52,10 @@ CONTRACT vapaeetokens : public eosio::contract {
             c.action_issue(to, quantity, memo);
         };
 
-        ACTION retire( asset quantity, string memo ) {
-            print("\nACTION vapaeetokens.retire()\n");
+        ACTION burn(name owner, asset quantity, string memo ) {
+            print("\nACTION vapaeetokens.burn()\n");
             vapaee::token::core c;
-            c.action_retire(quantity, memo);
+            c.action_burn(owner, quantity, memo);
         };
 
         ACTION transfer(name from, name to, asset quantity, string  memo ) {
@@ -93,6 +106,9 @@ CONTRACT vapaeetokens : public eosio::contract {
             vapaee::token::exchange e;
             e.action_addtoken(contract, symbol, ram_payer);
         };
+
+        ACTION order;
+        ACTION cancel;
 
 
     public:

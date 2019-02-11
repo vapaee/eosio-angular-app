@@ -3,6 +3,15 @@
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 
+-- TODO --
+- pensar en el api del Exchange para cubrir ordenes de compra
+
+
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+
 /cnt
 /cnt/cards
 /cnt/inventory/:publisher
@@ -10,18 +19,6 @@
 /cnt/profile/:publisher
 /cnt/deploy/card/:card_id
 /cnt/deploy/album/:album_id/:publisher
-
----- AIRDROP ----
-+ incluir en el tables_tokens.sh el el comando para consultar balance de cada usario
-- vapaeetokens
-  - ACTION setsnapshot (contract, scope)
-  - ir a la funcion estática get_balance e implementar la lógica que usa el snapshot-
-  - modificar el script js que te calcula el airdrop y agregarle parámetros
-  - si hay algún movimiento de dinero el owner tiene que pagar su RAM
-- airdrops
-  - CNT: ratio 1:1 no cap
-  - BGB: ratio 1:1 cap 40000
-  - VPE: 1 per account min 1
 
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------

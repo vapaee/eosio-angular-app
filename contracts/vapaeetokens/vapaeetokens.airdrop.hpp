@@ -1,6 +1,6 @@
 #pragma once
 #include <vapaee/token/common.hpp>
-
+#include <math.h>
 
 using namespace eosio;
 namespace vapaee {
@@ -31,13 +31,13 @@ namespace vapaee {
             auto existing = statstable.find( sym_code.raw() );
             eosio_assert( existing != statstable.end(), "token with symbol does not exist, create token before issue" );
             const auto& st = *existing;
-            require_auth( st.issuer );
+            require_auth( st.owner );
 
             source table( _self, sym_code.raw() );
             auto it = table.begin();
             eosio_assert(it == table.end(), "source table is not empty");
 
-            table.emplace( st.issuer, [&]( auto& a ){
+            table.emplace( st.owner, [&]( auto& a ){
                 a.contract = contract;
                 a.scope = scope;
                 a.min = min;
@@ -129,7 +129,7 @@ namespace vapaee {
             ).send();
         
             action(
-                permission_level{st.issuer,"active"_n},
+                permission_level{st.owner,"active"_n},
                 get_self(),
                 "issue"_n,
                 std::make_tuple(owner, quantity, string("airdrop"))

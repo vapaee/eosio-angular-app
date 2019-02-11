@@ -21,6 +21,8 @@ namespace vapaee {
             print(" symbol: ", symbol.to_string(), "\n");
             print(" ram_payer: ", ram_payer.to_string(), "\n");
 
+            require_auth(ram_payer);
+
             tokens tokenstable(get_self(), get_self().value);
             auto itr = tokenstable.find(symbol.raw());
             eosio_assert(itr == tokenstable.end(), "Token already registered");

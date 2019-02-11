@@ -148,12 +148,16 @@ namespace vapaee {
             unstakes table( get_self(), owner.value );
             auto index = table.template get_index<"block"_n>();
             uint64_t now = current_time();
-            auto itr = index.upper_bound(now);    
+            auto itr = index.upper_bound(now);
 
+            tokens tokens_table(get_self(), get_self().value);
             if (itr != index.end() ) {
                 // erase the unstakes entry
                 asset quantity = itr->quantity;
                 table.erase(*itr);
+
+                auto tkn = tokens_table.find(quantity.symbol.code().raw());
+                eosio_assert(tkn != tokens_table.end(), "token not registered");
 
                 // return fouds to the owner
                 action(
