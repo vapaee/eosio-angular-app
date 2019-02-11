@@ -107,8 +107,18 @@ CONTRACT vapaeetokens : public eosio::contract {
             e.action_addtoken(contract, symbol, ram_payer);
         };
 
-        ACTION order;
-        ACTION cancel;
+        ACTION order(name owner, name type, asset amount, asset price) {
+            print("\nACTION vapaeetokens.order()\n");
+            vapaee::token::exchange e;
+            e.action_order(owner, type, amount, price);
+        };
+
+        ACTION cancel(name owner, name type, const std::vector<uint64_t> & orders) {
+            print("\nACTION vapaeetokens.cancel()\n");
+            vapaee::token::exchange e;
+            e.action_cancel(owner, type, orders);
+        };
+
 
 
     public:
