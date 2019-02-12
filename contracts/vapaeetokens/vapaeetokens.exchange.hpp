@@ -24,20 +24,20 @@ namespace vapaee {
             return result;
         }
         
-        void action_addtoken(name contract, const symbol & symbol, name ram_payer) {
+        void action_addtoken(name contract, const symbol_code & sym_code, name ram_payer) {
             print("\nACTION vapaee::token::exchange::action_addtoken()\n");
             print(" contract: ", contract.to_string(), "\n");
-            print(" symbol: ", symbol.code().to_string(), "\n");
+            print(" sym_code: ", sym_code.to_string(), "\n");
             print(" ram_payer: ", ram_payer.to_string(), "\n");
 
             require_auth(ram_payer);
 
             tokens tokenstable(get_self(), get_self().value);
-            auto itr = tokenstable.find(symbol.raw());
+            auto itr = tokenstable.find(sym_code.raw());
             eosio_assert(itr == tokenstable.end(), "Token already registered");
             tokenstable.emplace( ram_payer, [&]( auto& a ){
                 a.contract = contract;
-                a.symbol = symbol;
+                a.symbol = sym_code;
             });
             print("vapaee::token::exchange::action_addtoken() ...\n");
         }

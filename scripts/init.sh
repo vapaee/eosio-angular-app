@@ -3,7 +3,7 @@
 
 ./create_accounts.sh
 
-./deploy_contracts.sh force
+./deploy_contracts.sh
 
 ./load_authors.sh
 

@@ -28,7 +28,9 @@ cleos set account permission appserver active '{"threshold": 1,"keys": [{"key": 
 # eosio.token
 echo "-------- eosio.token (TLOS) ---------"
 cd /var/www/eosio-angular-app/contracts/_examples/eosio.contracts/eosio.token
-eosio-cpp -o eosio.token.wasm src/eosio.token.cpp --abigen -I include
+if [[ src/eosio.token.cpp -nt eosio.token.wasm ]]; then
+    eosio-cpp -o eosio.token.wasm src/eosio.token.cpp --abigen -I include
+fi
 cleos set contract eosio.token $PWD -p eosio.token@active
 cleos push action eosio.token create '[ "eosio", "1000000000.0000 TLOS"]' -p eosio.token@active
 cleos push action eosio.token issue '["alice", "120.0000 TLOS", "memo 120 TLOS"]' -p eosio@active

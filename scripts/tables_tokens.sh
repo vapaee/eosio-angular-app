@@ -18,6 +18,7 @@ show_balance() {
 }
 
 show_table snapsnapsnap 1 snapshots
+show_table vapaeetokens vapaeetokens tokens
 
 echo "********* vapaeetokens CNT *******************************************************"
 cleos get currency stats vapaeetokens CNT

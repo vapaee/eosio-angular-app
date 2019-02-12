@@ -101,7 +101,7 @@ CONTRACT vapaeetokens : public eosio::contract {
 
     public:
         // EXCHANGE-ACTOINS  ------------------------------------------------------------------------------------------------------
-        ACTION addtoken (name contract, const symbol & symbol, name ram_payer) {
+        ACTION addtoken (name contract, const symbol_code & symbol, name ram_payer) {
             print("\nACTION vapaeetokens.addtoken()\n");
             vapaee::token::exchange e;
             e.action_addtoken(contract, symbol, ram_payer);

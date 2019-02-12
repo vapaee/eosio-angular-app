@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Feb 11 23:12:21 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Feb 12 15:41:26 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -36,7 +36,7 @@
                 },
                 {
                     "name": "symbol",
-                    "type": "symbol"
+                    "type": "symbol_code"
                 },
                 {
                     "name": "ram_payer",
@@ -270,7 +270,7 @@
             "fields": [
                 {
                     "name": "symbol",
-                    "type": "symbol"
+                    "type": "symbol_code"
                 },
                 {
                     "name": "contract",
@@ -565,7 +565,7 @@
                     "type": "asset"
                 },
                 {
-                    "name": "block",
+                    "name": "expire",
                     "type": "uint64"
                 }
             ]
