@@ -3,9 +3,9 @@
         // TABLE tokens (registered currency) -----------
         // scope: contract
         TABLE reg_token_table {
-            symbol_code symbol;
+            symbol symbol;
             name contract;
-            uint64_t primary_key() const { return symbol.raw(); }
+            uint64_t primary_key() const { return symbol.code().raw(); }
             uint64_t by_contract_key() const { return contract.value; }
         };
 

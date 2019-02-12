@@ -6,6 +6,10 @@ cleos push action snapsnapsnap add '["alice",10000000000,1]' -p alice@active
 cleos push action snapsnapsnap add '["tom",1000,1]' -p tom@active
 cleos push action snapsnapsnap add '["kate",9999999,1]' -p kate@active
 
+
+# register TLOS token 
+cleos push action vapaeetokens addtoken '["eosio.token","TLOS","vapaeetokens"]' -p vapaeetokens@active
+
 cleos push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active
 cleos push action vapaeetokens create '["vapaeetokens","500000000.0000 BOX"]' -p vapaeetokens@active
 cleos push action vapaeetokens create '["vapaeetokens","1000000.0000 VPE"]' -p vapaeetokens@active
@@ -18,3 +22,5 @@ cleos push action vapaeetokens setsnapshot '["snapsnapsnap",1,"BOX",400000000,10
 
 # ratio 1:0 - min 1000.0000 TLOS - base 1.0000 VPE
 cleos push action vapaeetokens setsnapshot '["snapsnapsnap",1,"VPE",0,10000000,0,10000]' -p vapaeetokens@active
+
+

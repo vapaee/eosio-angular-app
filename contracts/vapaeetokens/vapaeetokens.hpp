@@ -101,7 +101,7 @@ CONTRACT vapaeetokens : public eosio::contract {
 
     public:
         // EXCHANGE-ACTOINS  ------------------------------------------------------------------------------------------------------
-        ACTION addtoken (name contract, const symbol_code & symbol, name ram_payer) {
+        ACTION addtoken (name contract, const symbol & symbol, name ram_payer) {
             print("\nACTION vapaeetokens.addtoken()\n");
             vapaee::token::exchange e;
             e.action_addtoken(contract, symbol, ram_payer);
@@ -113,10 +113,10 @@ CONTRACT vapaeetokens : public eosio::contract {
             e.action_order(owner, type, amount, price);
         };
 
-        ACTION cancel(name owner, name type, const std::vector<uint64_t> & orders) {
+        ACTION cancel(name owner, name type, const symbol & token_a, const symbol & token_p, const std::vector<uint64_t> & orders) {
             print("\nACTION vapaeetokens.cancel()\n");
             vapaee::token::exchange e;
-            e.action_cancel(owner, type, orders);
+            e.action_cancel(owner, type, token_a, token_p, orders);
         };
 
 

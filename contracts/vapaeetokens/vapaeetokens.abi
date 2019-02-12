@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Feb 10 21:02:07 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Feb 11 22:06:59 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -36,7 +36,7 @@
                 },
                 {
                     "name": "symbol",
-                    "type": "symbol_code"
+                    "type": "symbol"
                 },
                 {
                     "name": "ram_payer",
@@ -59,6 +59,54 @@
                 {
                     "name": "memo",
                     "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "buy_order_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "cancel",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "token_a",
+                    "type": "symbol"
+                },
+                {
+                    "name": "token_p",
+                    "type": "symbol"
+                },
+                {
+                    "name": "orders",
+                    "type": "uint64[]"
                 }
             ]
         },
@@ -195,12 +243,34 @@
             ]
         },
         {
+            "name": "order",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "reg_token_table",
             "base": "",
             "fields": [
                 {
                     "name": "symbol",
-                    "type": "symbol_code"
+                    "type": "symbol"
                 },
                 {
                     "name": "contract",
@@ -237,6 +307,28 @@
                 {
                     "name": "to",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "sell_order_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
                 }
             ]
         },
@@ -497,6 +589,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "cancel",
+            "type": "cancel",
+            "ricardian_contract": ""
+        },
+        {
             "name": "claim",
             "type": "claim",
             "ricardian_contract": ""
@@ -524,6 +621,11 @@
         {
             "name": "open",
             "type": "open",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "order",
+            "type": "order",
             "ricardian_contract": ""
         },
         {
@@ -576,6 +678,13 @@
             "key_types": []
         },
         {
+            "name": "buyorders",
+            "type": "buy_order_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "claimed",
             "type": "claimed_table",
             "index_type": "i64",
@@ -585,6 +694,13 @@
         {
             "name": "config",
             "type": "unstake_time_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "sellorders",
+            "type": "sell_order_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
