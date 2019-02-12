@@ -5,7 +5,7 @@ show_table() {
     scope=$2
     table=$3
 
-    echo "--------- ($scope) -------------------------------------------------"
+    echo "--------- $code::$table ($scope) -------------------------------------------------"
     cleos get table $code $scope $table
 }
 

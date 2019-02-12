@@ -5,5 +5,7 @@
 
 ./deploy_contracts.sh force
 
+./load_authors.sh
+
 ./load_tokens.sh
 
