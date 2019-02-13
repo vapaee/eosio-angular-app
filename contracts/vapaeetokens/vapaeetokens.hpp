@@ -28,19 +28,19 @@ CONTRACT vapaeetokens : public eosio::contract {
        // TOKEN-ACTOINS ------------------------------------------------------------------------------------------------------
 
         using contract::contract;
-        ACTION create( name issuer, asset maximum_supply, uint64_t app) {
+        ACTION create( name issuer, asset maximum_supply) {
             print("\nACTION vapaeetokens.create()\n");
             vapaee::token::core c;
-            c.action_create_token(issuer, maximum_supply, app);
+            c.action_create_token(issuer, maximum_supply);
         };
 
-        ACTION addissuer( uint64_t app, const symbol& symbol ) {
+        ACTION addissuer( name app, const symbol_code& symbol ) {
             print("\nACTION vapaeetokens.addissuer()\n");
             vapaee::token::core c;
             c.action_add_token_issuer(app, symbol);
         };
         
-        ACTION removeissuer( uint64_t app, const symbol& symbol ) {
+        ACTION removeissuer( name app, const symbol_code& symbol ) {
             print("\nACTION vapaeetokens.removeissuer()\n");
             vapaee::token::core c;
             c.action_remove_token_issuer(app, symbol);

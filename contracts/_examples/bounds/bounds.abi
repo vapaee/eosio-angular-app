@@ -1,0 +1,65 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Feb 13 00:24:30 2019",
+    "version": "eosio::abi/1.1",
+    "structs": [
+        {
+            "name": "clear",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "load",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "my_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "num",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "show",
+            "base": "",
+            "fields": []
+        }
+    ],
+    "types": [],
+    "actions": [
+        {
+            "name": "clear",
+            "type": "clear",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "load",
+            "type": "load",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "show",
+            "type": "show",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "numbers",
+            "type": "my_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": [],
+    "abi_extensions": []
+}

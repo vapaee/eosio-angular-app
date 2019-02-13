@@ -17,7 +17,7 @@ namespace vapaee {
 
         // TOKEN --------------------------------------------------------------------------------------------
         
-        void action_create_token(name owner, asset maximum_supply, uint64_t app) {
+        void action_create_token(name owner, asset maximum_supply) {
             print("vapaee::token::core::action_create_token()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" maximum_supply: ", maximum_supply.to_string(), "\n");
@@ -37,8 +37,6 @@ namespace vapaee {
                 s.supply.symbol = maximum_supply.symbol;
                 s.max_supply    = maximum_supply;
                 s.owner         = owner;
-                s.app           = app;
-                s.issuers[0]    = app;
             });
 
             action(
@@ -51,15 +49,13 @@ namespace vapaee {
             print("vapaee::token::core::action_create_token() ...\n");
         }
 
-        void action_add_token_issuer( uint64_t app, const symbol& symbol ) {
+        void action_add_token_issuer( name app, const symbol_code& sym_code ) {
             print("vapaee::token::core::action_add_token_issuer()\n");
-            print(" app: ", std::to_string((int)app), "\n");
-            print(" symbol: ", symbol.code().to_string(), "\n");
+            print(" app: ", app.to_string(), "\n");
+            print(" sym_code: ", sym_code.to_string(), "\n");
 
-            eosio_assert( symbol.is_valid(), "invalid symbol name" );
-
-            stats statstable( _self, symbol.code().raw() );
-            auto token_itr = statstable.find( symbol.code().raw() );
+            stats statstable( _self, sym_code.raw() );
+            auto token_itr = statstable.find( sym_code.raw() );
             eosio_assert( token_itr != statstable.end(), "token with symbol not exists" );
 
             require_auth ( token_itr->owner );
@@ -70,22 +66,20 @@ namespace vapaee {
             print("vapaee::token::core::action_add_token_issuer() ...\n");
         }
 
-        void action_remove_token_issuer( uint64_t app, const symbol& symbol ) {
+        void action_remove_token_issuer( name app, const symbol_code& sym_code ) {
             print("vapaee::token::core::action_remove_token_issuer()\n");
-            print(" app: ", std::to_string((int)app), "\n");
-            print(" symbol: ", symbol.code().to_string(), "\n");
+            print(" app: ", app.to_string(), "\n");
+            print(" sym_code: ", sym_code.to_string(), "\n");
 
-            eosio_assert( symbol.is_valid(), "invalid symbol name" );
-
-            stats statstable( _self, symbol.code().raw() );
-            auto token_itr = statstable.find( symbol.code().raw() );
+            stats statstable( _self, sym_code.raw() );
+            auto token_itr = statstable.find( sym_code.raw() );
             eosio_assert( token_itr != statstable.end(), "token with symbol not exists" );
 
             require_auth ( token_itr->owner );
 
             statstable.modify( token_itr, token_itr->owner, [&]( auto& s ) {
-                std::vector<uint64_t> foo;
-                std::copy_if (s.issuers.begin(), s.issuers.end(), std::back_inserter(foo), [&](uint64_t i){return i!=app;} );                
+                std::vector<name> foo;
+                std::copy_if (s.issuers.begin(), s.issuers.end(), std::back_inserter(foo), [&](name i){return i!=app;} );                
                 s.issuers = foo;
             });
             print("vapaee::token::core::action_remove_token_issuer() ...\n");
@@ -109,20 +103,20 @@ namespace vapaee {
             const auto& st = *existing;
 
             // getting currency's acosiated app contract account
-            vapaee::bgbox::apps apps_table(vapaee::bgbox::contract, vapaee::bgbox::contract.value);
-            auto app = apps_table.get(st.app, "app not found");
-            name appcontract = app.contract;
-            print("  appid: ", std::to_string((int) st.app), "\n");
-            print("  appcontract: ", appcontract.to_string(), "\n");
+            // vapaee::bgbox::apps apps_table(vapaee::bgbox::contract, vapaee::bgbox::contract.value);
+            // auto app = apps_table.get(st.app, "app not found");
+            // name appcontract = app.contract;
+            // print("  appid: ", std::to_string((int) st.app), "\n");
+            // print("  appcontract: ", appcontract.to_string(), "\n");
 
             // check authorization (issuer of appcontract)
             name issuer = st.owner;
-            std::vector<uint64_t> apps = st.issuers;
-            for (int i=0; i<apps.size(); i++) {
-                auto issuer_app = apps_table.get(apps[i], (string("app ") + std::to_string((int)apps[i]) + " not found in bgbox::apps").c_str());
-                print("   issuer_app.contract: ", issuer_app.contract.to_string(), "\n");
-                if (has_auth(issuer_app.contract)) {
-                    issuer = issuer_app.contract;
+            for (int i=0; i<st.issuers.size(); i++) {
+                // auto issuer_app = apps_table.get(st.issuers[i], (string("app ") + std::to_string((int)st.issuers[i]) + " not found in bgbox::apps").c_str());
+                name issuer_app = st.issuers[i];
+                if (has_auth(issuer_app)) {
+                    issuer = issuer_app;
+                    print("   issuer_app: ", issuer.to_string(), "\n");                    
                 }
             }
             require_auth( issuer );

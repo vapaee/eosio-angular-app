@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Feb 12 15:41:26 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Feb 13 00:52:04 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -18,11 +18,11 @@
             "fields": [
                 {
                     "name": "app",
-                    "type": "uint64"
+                    "type": "name"
                 },
                 {
                     "name": "symbol",
-                    "type": "symbol"
+                    "type": "symbol_code"
                 }
             ]
         },
@@ -163,10 +163,6 @@
                 {
                     "name": "maximum_supply",
                     "type": "asset"
-                },
-                {
-                    "name": "app",
-                    "type": "uint64"
                 }
             ]
         },
@@ -187,12 +183,8 @@
                     "type": "name"
                 },
                 {
-                    "name": "app",
-                    "type": "uint64"
-                },
-                {
                     "name": "issuers",
-                    "type": "uint64[]"
+                    "type": "name[]"
                 }
             ]
         },
@@ -284,11 +276,11 @@
             "fields": [
                 {
                     "name": "app",
-                    "type": "uint64"
+                    "type": "name"
                 },
                 {
                     "name": "symbol",
-                    "type": "symbol"
+                    "type": "symbol_code"
                 }
             ]
         },

@@ -4,8 +4,25 @@
 ---------------------------------------------------------------------
 
 -- TODO --
-- pensar en el api del Exchange para cubrir ordenes de compra
+cleos push action vapaeetokens stake '["alice", "100.0000 CNT", "bob"]' -p alice
+cleos push action vapaeetokens stake '["alice", "10.0000 CNT", "bob"]' -p alice
+cleos push action vapaeetokens stake '["alice", "200.0000 CNT", "alice"]' -p alice
+cleos push action vapaeetokens stake '["alice", "10.0000 BOX", "alice"]' -p alice
+cleos push action vapaeetokens stake '["alice", "100.0000 BOX", "bob"]' -p alice
 
+cleos push action vapaeetokens unstake '["alice", "50.0000 CNT", "bob"]' -p alice
+cleos push action vapaeetokens unstake '["alice", "50.0000 CNT", "bob"]' -p alice
+cleos push action vapaeetokens unstake '["alice", "10.0000 CNT", "bob"]' -p alice
+cleos push action vapaeetokens unstake '["alice", "10.0000 BOX", "bob"]' -p alice
+
+cleos push action vapaeetokens unstakeback '["alice"]' -p alice
+
+1550018860000000
+1550018861500000
+1550018863500000
+1550018865000000
+
+1550018668061111
 
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------

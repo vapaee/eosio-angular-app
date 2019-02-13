@@ -34,6 +34,7 @@ HOME=/var/www/eosio-angular-app
 # YOUVOTE_HOME=$HOME/contracts/_examples/youvote
 # APPSERVER_HOME=$HOME/contracts/_examples/appserver
 # APPPLUGIN_HOME=$HOME/contracts/_examples/appplugin
+# BOUNDS_HOME=$HOME/contracts/_examples/bounds
 
 CARDSNTOKENS_HOME=$HOME/contracts/cardsntokens
 VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
@@ -41,7 +42,68 @@ SNAPSNAPSNAP_HOME=$HOME/contracts/snapsnapsnap
 BOARDGAMEBOX_HOME=$HOME/contracts/boardgamebox
 LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 
-TESTING_HOME=$HOME/contracts/testing
+# echo "-------- bounds ---------"
+# cd $BOUNDS_HOME
+# if [[ bounds.cpp -nt bounds.wasm || 
+#       $force == true ]]; then
+#     eosio-cpp -o bounds.wasm bounds.cpp --abigen
+# fi
+# cleos set contract bounds $PWD -p bounds@active
+
+# echo "-------- appserver ---------"
+# cd $APPSERVER_HOME
+# if [[ appserver.cpp -nt appserver.wasm ]]; then
+#     eosio-cpp -o appserver.wasm appserver.cpp --abigen
+#     cleos set contract appserver $PWD -p appserver@active
+# fi
+# 
+# echo "-------- appplugin ---------"
+# cd $APPPLUGIN_HOME
+# if [[ appplugin.cpp -nt appplugin.wasm ]]; then
+#     eosio-cpp -o appplugin.wasm appplugin.cpp --abigen
+#     cleos set contract appplugin $PWD -p appplugin@active
+# fi
+
+
+# echo "-------- hello ---------"
+# cd $HELLO_HOME
+# if [[ hello.cpp -nt hello.wasm ]]; then
+#     eosio-cpp -o hello.wasm hello.cpp --abigen
+#     cleos set contract hello $PWD -p hello@active
+# fi
+# 
+# echo "-------- addressbook ---------"
+# cd $ADDRESSBOOK_HOME
+# if [[ addressbook.cpp -nt addressbook.wasm ]]; then
+#     eosio-cpp -o addressbook.wasm addressbook.cpp --abigen
+#     cleos set contract addressbook $PWD -p addressbook@active
+# fi
+# 
+# echo "-------- abcounter ---------"
+# cd $ABCOUNTER_HOME
+# if [[ abcounter.cpp -nt abcounter.wasm ]]; then
+#     eosio-cpp -o abcounter.wasm abcounter.cpp --abigen
+#     cleos set contract abcounter $PWD -p abcounter@active
+# fi
+# 
+# echo "-------- youvote ---------"
+# cd $YOUVOTE_HOME
+# if [[ youvote.cpp -nt youvote.wasm ]]; then
+#     eosio-cpp -o youvote.wasm youvote.cpp --abigen
+#     cleos set contract youvote $PWD -p youvote@active
+# fi
+
+echo "-------- boardgamebox ---------"
+cd $BOARDGAMEBOX_HOME
+if [[ boardgamebox.core.hpp -nt boardgamebox.wasm || 
+      boardgamebox.author.hpp -nt boardgamebox.wasm ||
+      boardgamebox.utils.hpp -nt boardgamebox.wasm ||
+      boardgamebox.cpp -nt boardgamebox.wasm ||
+      boardgamebox.hpp -nt boardgamebox.wasm || 
+      $force == true ]]; then
+    eosio-cpp -o boardgamebox.wasm boardgamebox.cpp --abigen -I ../includes
+fi
+cleos $NET set contract boardgamebox $PWD -p boardgamebox@active
 
 # --------------------------------------------------------------------
 
