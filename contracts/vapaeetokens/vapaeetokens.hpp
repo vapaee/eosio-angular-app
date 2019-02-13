@@ -153,7 +153,14 @@ CONTRACT vapaeetokens : public eosio::contract {
             s.action_unstaketime(owner, sym_code, min_time, max_time, auto_stake);
         };
 
+        // this is for debug in purposes
+        ACTION rmstakes (name owner) {
+            print("\nACTION vapaeetokens.rmstakes()\n");
+            vapaee::token::stake s;
+            s.action_delete_all_for(owner);
+        };
 
+        
 
 
 };

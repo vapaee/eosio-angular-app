@@ -11,20 +11,17 @@ cleos push action vapaeetokens stake '["alice", "10.0000 BOX", "alice"]' -p alic
 cleos push action vapaeetokens stake '["alice", "100.0000 BOX", "bob"]' -p alice
 
 cleos push action vapaeetokens unstake '["alice", "50.0000 CNT", "bob"]' -p alice
-cleos push action vapaeetokens unstake '["alice", "50.0000 CNT", "bob"]' -p alice
+cleos push action vapaeetokens unstake '["alice", "5.0000 CNT", "bob"]' -p alice
+cleos push action vapaeetokens unstake '["alice", "6.0000 CNT", "bob"]' -p alice
+cleos push action vapaeetokens unstake '["alice", "7.0000 CNT", "bob"]' -p alice
 cleos push action vapaeetokens unstake '["alice", "10.0000 CNT", "bob"]' -p alice
 cleos push action vapaeetokens unstake '["alice", "10.0000 BOX", "bob"]' -p alice
 
 cleos push action vapaeetokens unstakeback '["alice"]' -p alice
 
-1550018860000000
-1550018861500000
-1550018863500000
-1550018865000000
 
-1550018668061111
-
----------------------------------------------------------------------
+cleos push action vapaeetokens rmstakes '["alice"]' -p alice
+-----------------
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------

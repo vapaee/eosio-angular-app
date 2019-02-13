@@ -115,7 +115,7 @@ namespace vapaee {
             unstakes_table.emplace( owner, [&]( auto& a ){
                 a.id = id;
                 a.quantity = quantity;
-                a.expire = current_time() + 60000000; // TODO hay que agregar un tiempo basado en config.min_time y config.max_time
+                a.expire = current_time() + 120000000; // TODO hay que agregar un tiempo basado en config.min_time y config.max_time
                 // a.expire = 1000000000000000;
             });
 
@@ -163,7 +163,7 @@ namespace vapaee {
             print("vapaee::token::stake::action_unstakeback()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
-/*
+            /*
             unstakes table( get_self(), owner.value );
             auto index = table.template get_index<"expire"_n>();
             uint64_t now = current_time();
@@ -218,10 +218,10 @@ namespace vapaee {
             for (auto ptr = index.upper_bound(1550020450061111); ptr != index.end(); ptr++) {
                 print(" ptr: ", std::to_string((unsigned long long)ptr->id), " - ", ptr->quantity.to_string(), " - ", std::to_string((unsigned long long)ptr->expire) ,"\n");
             }
-*/
+            */
 
 
-
+            /*
             tokens tokens_table(get_self(), get_self().value);
             unstakes table( get_self(), owner.value );
             auto index = table.template get_index<"expire"_n>();
@@ -239,33 +239,28 @@ namespace vapaee {
             for (auto itr = index.lower_bound(now); itr != index.end(); itr++) {
                 print(" unstake: ", std::to_string((unsigned long long)itr->id), " - ", itr->quantity.to_string(), " - ", std::to_string((unsigned long long)itr->expire) ,"\n");
             }
+            */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-            /*
+            
+            tokens tokens_table(get_self(), get_self().value);
             unstakes table( get_self(), owner.value );
             auto index = table.template get_index<"expire"_n>();
             uint64_t now = current_time();
-            // auto itr = index.lower_bound(now);
-            bool not_break = true;
+            int counter = 5;
 
-            tokens tokens_table(get_self(), get_self().value);
-            for (auto itr = index.upper_bound(now); not_break ;itr--) {
-                print(" unstake: ", std::to_string((unsigned long long)itr->id), " - ", itr->quantity.to_string(), " - ", std::to_string((unsigned long long)itr->expire) ,"\n");
+            for (auto itr = index.begin(); itr != index.end(); itr = index.begin()) {
+                if (itr->expire > now) {
+                    print(" itr->expire(", std::to_string((unsigned long long)itr->expire), ") > now(", std::to_string((unsigned long long)now) ,")\n");
+                    break;
+                }
+                if (counter-- == 0) {
+                    print(" No more than ",std::to_string(counter)," unstakes per action call\n");
+                    break;
+                }
+                print(" unstaking: ", std::to_string((unsigned long long)itr->id), " - ", itr->quantity.to_string(), " - ", std::to_string((unsigned long long)itr->expire) ,"\n");
+                
                 // erase the unstakes entry
                 asset quantity = itr->quantity;
-                if (itr == index.begin()) not_break = false;
                 table.erase(*itr);
 
                 auto tkn = tokens_table.find(quantity.symbol.code().raw());
@@ -279,7 +274,16 @@ namespace vapaee {
                     std::make_tuple(get_self(), owner, quantity, string("unstaking ") + quantity.to_string())
                 ).send();
             }
-            */
+            
+            /*for (auto itr = index.begin(); itr != index.end(); itr = index.begin()) {
+                if (itr->expire > now) {
+                    print(" itr->expire(", std::to_string((unsigned long long)itr->expire), ") > now(", std::to_string((unsigned long long)now) ,")\n");
+                    break;
+                }
+                print(" table.erase(*itr); ", std::to_string((unsigned long long)itr->id), "\n");
+                table.erase(*itr);
+            }*/
+            
             
             print("vapaee::token::stake::action_unstakeback() ...\n");
         }
@@ -309,7 +313,29 @@ namespace vapaee {
                 });
             }
             print("vapaee::token::stake::action_unstaketime() ...\n");
-        }        
+        }
+        
+        void action_delete_all_for(name owner) {
+            print("vapaee::token::stake::action_delete_all_for()\n");
+            print(" owner: ", owner.to_string(), "\n");
+
+            require_auth(get_self());
+            /*
+            stakes stakes_table( get_self(), owner.value );
+            for (auto ptr = stakes_table.begin(); ptr != stakes_table.end(); ptr = stakes_table.begin()) {
+                print(" stakes_table.erase(*itr); ", std::to_string((unsigned long long)ptr->id), "\n");
+                stakes_table.erase(ptr);
+            }
+
+            unstakes unstakes_table( get_self(), owner.value );
+            for (auto ptr = unstakes_table.begin(); ptr != unstakes_table.end(); ptr = unstakes_table.begin()) {
+                print(" unstakes_table.erase(*itr); ", std::to_string((unsigned long long)ptr->id), "\n");
+                unstakes_table.erase(ptr);
+            }
+            */
+            print("vapaee::token::stake::action_delete_all_for() ...\n");
+        }
+
         
     }; // class
 

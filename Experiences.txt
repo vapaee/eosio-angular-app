@@ -30,3 +30,10 @@
         "issue"_n,
         std::make_tuple(owner, quantity, string("airdrop"))
     ).send();
+-- El lower_bounds y el upper_bounds no son tan fáciles de usar.
+for (auto p = table.begin(); p != table.end(); p++) {
+    print(p->id);
+}
+for (auto p = table.begin(); p != table.end(); p = table.begin()) {  // <------ p++ no se puede hacer si borrás el puntero
+    table.erase(p)
+}

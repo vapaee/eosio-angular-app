@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Feb 13 00:52:04 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Feb 13 14:26:23 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -298,6 +298,16 @@
                 },
                 {
                     "name": "to",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "rmstakes",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
                     "type": "name"
                 }
             ]
@@ -628,6 +638,11 @@
         {
             "name": "restake",
             "type": "restake",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "rmstakes",
+            "type": "rmstakes",
             "ricardian_contract": ""
         },
         {
