@@ -4,11 +4,14 @@
 ---------------------------------------------------------------------
 
 -- TODO --
-- agregar un campo más al stake "concept" para saber porqué se stakearon los tokens (o sea, para qué además de para quién)
-- cada vez que se destakean tokens debería ajendarse una acción que ejecute unstakeback de forma automática luego que expire el unstake
-- utilizar los datos del config para saber cuanto tiempo de unstake tiene configurado el usuario. Si no, usar 3 días por defecto.
-
-
+cleos push action vapaeetokens stake '["alice", "10.0000 CNT", "bob", "aaa"]' -p alice
+cleos push action vapaeetokens stake '["alice", "10.0000 CNT", "bob", "bbb"]' -p alice
+./tables_user_tokens.sh alice CNT
+cleos push action vapaeetokens unstake '["alice", "10.0000 CNT", "bob", "aaa"]' -p alice
+cleos push action vapaeetokens unstake '["alice", "10.0000 CNT", "bob", "bbb"]' -p alice
+./tables_user_tokens.sh alice CNT
+cleos push action vapaeetokens restake '["alice", 0, "bob", "bbb"]' -p alice
+./tables_user_tokens.sh alice CNT
 
 
 -----------------

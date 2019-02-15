@@ -123,22 +123,22 @@ CONTRACT vapaeetokens : public eosio::contract {
 
     public:
         // STAKE-ACTOINS  ------------------------------------------------------------------------------------------------------
-        ACTION stake (name owner, const asset & quantity, name to) {
+        ACTION stake (name owner, const asset & quantity, name to, name concept) {
             print("\nACTION vapaeetokens.stake()\n");
             vapaee::token::stake s;
-            s.action_stake(owner, quantity, to);
+            s.action_stake(owner, quantity, to, concept);
         };
 
-        ACTION unstake (name owner, const asset & quantity, name from) {
+        ACTION unstake (name owner, const asset & quantity, name from, name concept) {
             print("\nACTION vapaeetokens.unstake()\n");
             vapaee::token::stake s;
-            s.action_unstake(owner, quantity, from);
+            s.action_unstake(owner, quantity, from, concept);
         };
 
-        ACTION restake (name owner, uint64_t id, name to) {
+        ACTION restake (name owner, uint64_t id, name to, name concept) {
             print("\nACTION vapaeetokens.restake()\n");
             vapaee::token::stake s;
-            s.action_restake(owner, id, to);
+            s.action_restake(owner, id, to, concept);
         };
 
         ACTION unstakeback (name owner) {

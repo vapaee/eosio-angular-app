@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Feb 15 09:03:34 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Feb 15 12:59:10 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -299,6 +299,10 @@
                 {
                     "name": "to",
                     "type": "name"
+                },
+                {
+                    "name": "concept",
+                    "type": "name"
                 }
             ]
         },
@@ -427,6 +431,10 @@
                 {
                     "name": "to",
                     "type": "name"
+                },
+                {
+                    "name": "concept",
+                    "type": "name"
                 }
             ]
         },
@@ -466,6 +474,10 @@
                 },
                 {
                     "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "concept",
                     "type": "name"
                 }
             ]
@@ -543,6 +555,10 @@
                 {
                     "name": "quantity",
                     "type": "asset"
+                },
+                {
+                    "name": "concept",
+                    "type": "name"
                 },
                 {
                     "name": "since",
