@@ -23,6 +23,7 @@ namespace vapaee {
             print(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
 
             require_auth(owner);
+            eosio_assert( is_account( to ), "to account does not exist");
 
             // entry on stakes table
             stakes stakes_table( get_self(), owner.value );
@@ -130,13 +131,15 @@ namespace vapaee {
             print(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
 
             require_auth(owner);
+            eosio_assert( is_account( to ), "to account does not exist");
 
+            // remove the unstake entry
             unstakes unstakes_table( get_self(), owner.value );
-            auto unstake_itr = unstakes_table.get(unstake_id);
-            asset quantity = unstake_itr.quantity;
+            auto unstake_itr = unstakes_table.find(unstake_id);
+            asset quantity = unstake_itr->quantity;
             unstakes_table.erase(unstake_itr);
 
-            // entry on stakes table
+            // create entry on stakes table (no tokens transfering)
             stakes stakes_table( get_self(), owner.value );
             auto stakes_index = stakes_table.template get_index<"secondary"_n>();
             auto stakes_itr = stakes_index.find(vapaee::utils::combine(quantity.symbol.code().raw(), to.value));
@@ -144,13 +147,14 @@ namespace vapaee {
             if (stakes_itr == stakes_index.end()) {
                 stakes_table.emplace( owner, [&]( auto& a ){
                     a.id = id;
+                    a.to = to;
                     a.quantity = quantity;
                     a.since = current_time();
                     a.last = a.since;
                 });        
             } else {
                 stakes_table.modify( *stakes_itr, same_payer, [&]( auto& a ) {
-                    a.quantity.amount += quantity.amount;
+                    a.quantity += quantity;
                     a.last = current_time();
                     id = a.id;
                 });
@@ -163,84 +167,6 @@ namespace vapaee {
             print("vapaee::token::stake::action_unstakeback()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
-            /*
-            unstakes table( get_self(), owner.value );
-            auto index = table.template get_index<"expire"_n>();
-            uint64_t now = current_time();
-
-            print(" itr ------------\n");
-            for (auto itr = table.begin(); itr != table.end(); itr++) {
-                print(" itr: ", std::to_string((unsigned long long)itr->id), " - ", itr->quantity.to_string(), " - ", std::to_string((unsigned long long)itr->expire) ,"\n");
-            }
-            
-
-            print(" lower ------------\n");
-            for (auto lower = table.lower_bound(1); lower != table.end(); lower++) {
-                print(" lower: ", std::to_string((unsigned long long)lower->id), " - ", lower->quantity.to_string(), " - ", std::to_string((unsigned long long)lower->expire) ,"\n");
-            }
-
-            print(" upper ------------\n");
-            for (auto upper = table.upper_bound(1); upper != table.end(); upper++) {
-                print(" upper: ", std::to_string((unsigned long long)upper->id), " - ", upper->quantity.to_string(), " - ", std::to_string((unsigned long long)upper->expire) ,"\n");
-            }
-
-            print(" 1000000000000000 ------------\n");
-            auto ptr = index.lower_bound(1000000000000000);
-            print(" ptr: ", std::to_string((unsigned long long)ptr->id), " - ", ptr->quantity.to_string(), " - ", std::to_string((unsigned long long)ptr->expire) ,"\n");
-            if (ptr != index.end()) {
-                print(" ptr != table.end();\n");
-            } else {
-                print(" ptr == table.end();\n");
-            }
-
-            print(" 1550020450061111 ------------\n");
-            ptr = index.lower_bound(1550020450061111);
-            print(" ptr: ", std::to_string((unsigned long long)ptr->id), " - ", ptr->quantity.to_string(), " - ", std::to_string((unsigned long long)ptr->expire) ,"\n");
-
-
-            print(" lower_bound 1000000000000000 ------------\n");
-            for (auto ptr = index.lower_bound(1000000000000000); ptr != index.end(); ptr++) {
-                print(" ptr: ", std::to_string((unsigned long long)ptr->id), " - ", ptr->quantity.to_string(), " - ", std::to_string((unsigned long long)ptr->expire) ,"\n");
-            }
-            
-            print(" upper_bound 1000000000000000 ------------\n");
-            for (auto ptr = index.upper_bound(1000000000000000); ptr != index.end(); ptr++) {
-                print(" ptr: ", std::to_string((unsigned long long)ptr->id), " - ", ptr->quantity.to_string(), " - ", std::to_string((unsigned long long)ptr->expire) ,"\n");
-            }
-
-
-            print(" lower_bound 1550020450061111 ------------\n");
-            for (auto ptr = index.lower_bound(1550020450061111); ptr != index.end(); ptr++) {
-                print(" ptr: ", std::to_string((unsigned long long)ptr->id), " - ", ptr->quantity.to_string(), " - ", std::to_string((unsigned long long)ptr->expire) ,"\n");
-            }
-            
-            print(" upper_bound 1550020450061111 ------------\n");
-            for (auto ptr = index.upper_bound(1550020450061111); ptr != index.end(); ptr++) {
-                print(" ptr: ", std::to_string((unsigned long long)ptr->id), " - ", ptr->quantity.to_string(), " - ", std::to_string((unsigned long long)ptr->expire) ,"\n");
-            }
-            */
-
-
-            /*
-            tokens tokens_table(get_self(), get_self().value);
-            unstakes table( get_self(), owner.value );
-            auto index = table.template get_index<"expire"_n>();
-            uint64_t now = current_time();
-            // auto itr = index.lower_bound(now);
-            bool not_break = true;
-
-            print(" index.upper_bound(now); ------------\n");
-            for (auto itr = index.upper_bound(now); not_break ;itr--) {
-                print(" unstake: ", std::to_string((unsigned long long)itr->id), " - ", itr->quantity.to_string(), " - ", std::to_string((unsigned long long)itr->expire) ,"\n");
-                if (itr == index.begin()) break;
-            }
-
-            print(" index.lower_bound(now); ------------\n");
-            for (auto itr = index.lower_bound(now); itr != index.end(); itr++) {
-                print(" unstake: ", std::to_string((unsigned long long)itr->id), " - ", itr->quantity.to_string(), " - ", std::to_string((unsigned long long)itr->expire) ,"\n");
-            }
-            */
-
             
             tokens tokens_table(get_self(), get_self().value);
             unstakes table( get_self(), owner.value );
@@ -274,16 +200,6 @@ namespace vapaee {
                     std::make_tuple(get_self(), owner, quantity, string("unstaking ") + quantity.to_string())
                 ).send();
             }
-            
-            /*for (auto itr = index.begin(); itr != index.end(); itr = index.begin()) {
-                if (itr->expire > now) {
-                    print(" itr->expire(", std::to_string((unsigned long long)itr->expire), ") > now(", std::to_string((unsigned long long)now) ,")\n");
-                    break;
-                }
-                print(" table.erase(*itr); ", std::to_string((unsigned long long)itr->id), "\n");
-                table.erase(*itr);
-            }*/
-            
             
             print("vapaee::token::stake::action_unstakeback() ...\n");
         }
