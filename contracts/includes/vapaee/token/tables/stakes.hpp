@@ -5,6 +5,7 @@
         TABLE user_stakes_table {
             uint64_t id;
             name to;
+            name concept;
             asset quantity;
             uint64_t since;
             uint64_t last;

@@ -93,18 +93,6 @@ LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 #     cleos set contract youvote $PWD -p youvote@active
 # fi
 
-echo "-------- boardgamebox ---------"
-cd $BOARDGAMEBOX_HOME
-if [[ boardgamebox.core.hpp -nt boardgamebox.wasm || 
-      boardgamebox.author.hpp -nt boardgamebox.wasm ||
-      boardgamebox.utils.hpp -nt boardgamebox.wasm ||
-      boardgamebox.cpp -nt boardgamebox.wasm ||
-      boardgamebox.hpp -nt boardgamebox.wasm || 
-      $force == true ]]; then
-    eosio-cpp -o boardgamebox.wasm boardgamebox.cpp --abigen -I ../includes
-fi
-cleos $NET set contract boardgamebox $PWD -p boardgamebox@active
-
 # --------------------------------------------------------------------
 
 echo "-------- boardgamebox ---------"
@@ -139,6 +127,7 @@ if [[ vapaeetokens.core.hpp -nt vapaeetokens.wasm ||
       vapaeetokens.stake.hpp -nt vapaeetokens.wasm ||
       vapaeetokens.exchange.hpp -nt vapaeetokens.wasm ||
       vapaeetokens.airdrop.hpp -nt vapaeetokens.wasm ||
+      vapaeetokens.dispatcher.hpp -nt vapaeetokens.wasm || 
       vapaeetokens.cpp -nt vapaeetokens.wasm ||
       vapaeetokens.hpp -nt vapaeetokens.wasm || 
       $force == true ]]; then

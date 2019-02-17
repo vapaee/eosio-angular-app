@@ -43,7 +43,7 @@ namespace vapaee {
                 permission_level{owner,"active"_n},
                 get_self(),
                 "addtoken"_n,
-                std::make_tuple(get_self(), maximum_supply.symbol.code(), owner)
+                std::make_tuple(get_self(), maximum_supply.symbol.code(), maximum_supply.symbol.precision(), owner)
             ).send();
 
             print("vapaee::token::core::action_create_token() ...\n");

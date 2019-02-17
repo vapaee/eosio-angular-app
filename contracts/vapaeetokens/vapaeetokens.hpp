@@ -11,11 +11,11 @@ namespace vapaee {
     };
 };
 
+#include "vapaeetokens.dispatcher.hpp"
 #include "vapaeetokens.core.hpp"
 #include "vapaeetokens.airdrop.hpp"
 #include "vapaeetokens.exchange.hpp"
 #include "vapaeetokens.stake.hpp"
-
 
 namespace vapaee {
 
@@ -101,44 +101,51 @@ CONTRACT vapaeetokens : public eosio::contract {
 
     public:
         // EXCHANGE-ACTOINS  ------------------------------------------------------------------------------------------------------
-        ACTION addtoken (name contract, const symbol_code & symbol, name ram_payer) {
+        ACTION addtoken (name contract, const symbol_code & symbol, uint8_t precision, name ram_payer) {
             print("\nACTION vapaeetokens.addtoken()\n");
             vapaee::token::exchange e;
-            e.action_addtoken(contract, symbol, ram_payer);
+            e.action_addtoken(contract, symbol, precision, ram_payer);
         };
 
-        ACTION order(name owner, name type, asset amount, asset price) {
-            print("\nACTION vapaeetokens.order()\n");
-            vapaee::token::exchange e;
-            e.action_order(owner, type, amount, price);
-        };
-
-        ACTION cancel(name owner, name type, const symbol & token_a, const symbol & token_p, const std::vector<uint64_t> & orders) {
+        ACTION cancel(name owner, name type, const symbol_code & token_a, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
             print("\nACTION vapaeetokens.cancel()\n");
             vapaee::token::exchange e;
             e.action_cancel(owner, type, token_a, token_p, orders);
         };
 
-
+        HANDLER htransfer(name from, name to, asset quantity, string  memo ) {
+            print("\nHANDLER vapaeetokens.htransfer()\n");
+            vapaee::token::exchange e(get_code());
+            e.handler_transfer(from, to, quantity, memo);
+        }
+        
+        //*
+        ACTION cancel2(name owner, name type, const symbol_code & token_a, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
+            print("\nACTION vapaeetokens.cancel2()\n");
+            vapaee::token::exchange e;
+            e.action_cancel(owner, type, token_a, token_p, orders);
+        };
+        //*/
+        
 
     public:
         // STAKE-ACTOINS  ------------------------------------------------------------------------------------------------------
-        ACTION stake (name owner, const asset & quantity, name to) {
+        ACTION stake (name owner, const asset & quantity, name to, name concept) {
             print("\nACTION vapaeetokens.stake()\n");
             vapaee::token::stake s;
-            s.action_stake(owner, quantity, to);
+            s.action_stake(owner, quantity, to, concept);
         };
 
-        ACTION unstake (name owner, const asset & quantity, name from) {
+        ACTION unstake (name owner, const asset & quantity, name from, name concept) {
             print("\nACTION vapaeetokens.unstake()\n");
             vapaee::token::stake s;
-            s.action_unstake(owner, quantity, from);
+            s.action_unstake(owner, quantity, from, concept);
         };
 
-        ACTION restake (name owner, uint64_t id, name to) {
+        ACTION restake (name owner, uint64_t id, name to, name concept) {
             print("\nACTION vapaeetokens.restake()\n");
             vapaee::token::stake s;
-            s.action_restake(owner, id, to);
+            s.action_restake(owner, id, to, concept);
         };
 
         ACTION unstakeback (name owner) {
@@ -152,9 +159,6 @@ CONTRACT vapaeetokens : public eosio::contract {
             vapaee::token::stake s;
             s.action_unstaketime(owner, sym_code, min_time, max_time, auto_stake);
         };
-
-
-
 
 };
 

@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Feb 13 00:52:04 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Feb 17 16:48:59 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -37,6 +37,10 @@
                 {
                     "name": "symbol",
                     "type": "symbol_code"
+                },
+                {
+                    "name": "precision",
+                    "type": "uint8"
                 },
                 {
                     "name": "ram_payer",
@@ -81,6 +85,10 @@
                 {
                     "name": "amount",
                     "type": "asset"
+                },
+                {
+                    "name": "deposit",
+                    "type": "asset"
                 }
             ]
         },
@@ -98,11 +106,37 @@
                 },
                 {
                     "name": "token_a",
-                    "type": "symbol"
+                    "type": "symbol_code"
                 },
                 {
                     "name": "token_p",
-                    "type": "symbol"
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "orders",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "cancel2",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "token_a",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "token_p",
+                    "type": "symbol_code"
                 },
                 {
                     "name": "orders",
@@ -235,34 +269,16 @@
             ]
         },
         {
-            "name": "order",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "type",
-                    "type": "name"
-                },
-                {
-                    "name": "amount",
-                    "type": "asset"
-                },
-                {
-                    "name": "price",
-                    "type": "asset"
-                }
-            ]
-        },
-        {
             "name": "reg_token_table",
             "base": "",
             "fields": [
                 {
                     "name": "symbol",
                     "type": "symbol_code"
+                },
+                {
+                    "name": "precision",
+                    "type": "uint8"
                 },
                 {
                     "name": "contract",
@@ -299,6 +315,10 @@
                 {
                     "name": "to",
                     "type": "name"
+                },
+                {
+                    "name": "concept",
+                    "type": "name"
                 }
             ]
         },
@@ -320,6 +340,10 @@
                 },
                 {
                     "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "deposit",
                     "type": "asset"
                 }
             ]
@@ -417,6 +441,10 @@
                 {
                     "name": "to",
                     "type": "name"
+                },
+                {
+                    "name": "concept",
+                    "type": "name"
                 }
             ]
         },
@@ -456,6 +484,10 @@
                 },
                 {
                     "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "concept",
                     "type": "name"
                 }
             ]
@@ -531,6 +563,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "concept",
+                    "type": "name"
+                },
+                {
                     "name": "quantity",
                     "type": "asset"
                 },
@@ -586,6 +622,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "cancel2",
+            "type": "cancel2",
+            "ricardian_contract": ""
+        },
+        {
             "name": "claim",
             "type": "claim",
             "ricardian_contract": ""
@@ -613,11 +654,6 @@
         {
             "name": "open",
             "type": "open",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "order",
-            "type": "order",
             "ricardian_contract": ""
         },
         {

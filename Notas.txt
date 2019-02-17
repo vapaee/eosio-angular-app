@@ -4,30 +4,25 @@
 ---------------------------------------------------------------------
 
 -- TODO --
-cleos push action vapaeetokens stake '["alice", "100.0000 CNT", "bob"]' -p alice
-cleos push action vapaeetokens stake '["alice", "10.0000 CNT", "bob"]' -p alice
-cleos push action vapaeetokens stake '["alice", "200.0000 CNT", "alice"]' -p alice
-cleos push action vapaeetokens stake '["alice", "10.0000 BOX", "alice"]' -p alice
-cleos push action vapaeetokens stake '["alice", "100.0000 BOX", "bob"]' -p alice
+cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|5.0000 CNT|0.2000 TLOS"]' -p alice
+cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|10.0000 CNT|0.1000 TLOS"]' -p alice
+cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|2.5000 CNT|0.4000 TLOS"]' -p alice
 
-cleos push action vapaeetokens unstake '["alice", "50.0000 CNT", "bob"]' -p alice
-cleos push action vapaeetokens unstake '["alice", "50.0000 CNT", "bob"]' -p alice
-cleos push action vapaeetokens unstake '["alice", "10.0000 CNT", "bob"]' -p alice
-cleos push action vapaeetokens unstake '["alice", "10.0000 BOX", "bob"]' -p alice
-
-cleos push action vapaeetokens unstakeback '["alice"]' -p alice
-
-1550018860000000
-1550018861500000
-1550018863500000
-1550018865000000
-
-1550018668061111
+# compra toda la primer orden
+cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "2.5000 CNT", "sell|2.5000 CNT|0.4000 TLOS"]' -p alice
+# compra toda la primer orden y la desborda -> crea sell order
+cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "5.0000 CNT", "sell|5.0000 CNT|0.4000 TLOS"]' -p bob
+# compra toda la primer orden y parte de la segunda -> elimina buyorder y decrementa la otra
+cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "5.0000 CNT", "sell|5.0000 CNT|0.2000 TLOS"]' -p bob
 
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
+
+{"symbol":"TLOSEOS","type":"LIMIT","side":"SELL","orgin":"scatter", "price":"0.02900000", "account":"eosaccount"}
+
+4251.5708 QBE
 
 /cnt
 /cnt/cards

@@ -6,9 +6,9 @@ using namespace eosio;
 
 #define longint unsigned long
 #define maxlong 50
-#define bytes 32
+#define BYTES 32
 #define nibble 62 
-#define bits 256
+
 
 namespace vapaee {
 
@@ -58,14 +58,14 @@ namespace vapaee {
                 } else {
                     c = v >> (-1 * shift);
                     ptr[j] |= c;
-                    if (j<bytes) {
+                    if (j<BYTES) {
                         c = v << (8+shift);
                         ptr[j+1] |= c;
                     }
                 }
             }
 
-            ptr[bytes-1] |= n;
+            ptr[BYTES-1] |= n;
         }
 
         static char char_to_value( char c ) {
@@ -118,7 +118,7 @@ namespace vapaee {
                     v = 31 >> (-1 * shift);
                     c = ptr[j] & v;
                     c <<= -1 * shift;
-                    if (j<bytes) {
+                    if (j<BYTES) {
                         v = 31 << (8+shift);
                         v = ptr[j+1] & v;
                         v >>= 1;

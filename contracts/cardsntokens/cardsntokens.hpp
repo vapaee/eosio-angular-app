@@ -2,6 +2,10 @@
 #include <eosiolib/print.hpp>
 #include <vapaee/base/slug_asset.hpp>
 
+// #include <nlohmann/json_fwd.hpp>
+// #include <nlohmann/json.hpp>
+// using json = nlohmann::json;
+
 using namespace eosio;
 namespace vapaee {
 

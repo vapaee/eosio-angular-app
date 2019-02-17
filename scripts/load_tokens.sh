@@ -8,7 +8,7 @@ cleos push action snapsnapsnap add '["kate",9999999,1]' -p kate@active
 
 
 # register TLOS token 
-cleos push action vapaeetokens addtoken '["eosio.token","TLOS","vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
 
 cleos push action vapaeetokens create '["vapaeetokens","500000000.0000 BOX"]' -p vapaeetokens@active
 cleos push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active

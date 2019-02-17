@@ -4,6 +4,7 @@
         // scope: contract
         TABLE reg_token_table {
             symbol_code symbol;
+            uint8_t precision;
             name contract;
             uint64_t primary_key() const { return symbol.raw(); }
             uint64_t by_contract_key() const { return contract.value; }
