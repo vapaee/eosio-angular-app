@@ -28,3 +28,4 @@ cleos push action vapaeetokens setsnapshot '["snapsnapsnap",1,"VPE",0,10000000,0
 cleos push action vapaeetokens addissuer '["boardgamebox","BOX"]' -p vapaeetokens@active
 cleos push action vapaeetokens addissuer '["cardsntokens","CNT"]' -p vapaeetokens@active
 cleos push action vapaeetokens addissuer '["vapaeetokens","VPE"]' -p vapaeetokens@active
+

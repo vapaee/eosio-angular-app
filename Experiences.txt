@@ -30,6 +30,16 @@
         "issue"_n,
         std::make_tuple(owner, quantity, string("airdrop"))
     ).send();
+<<<<<<< HEAD
 -- confundir get con find. el get te devuelve un objeto, mientras que el find un puntero. Si vas a borra, está mal pedir el objeto. necesitás el puntero.
     auto unstake_itr = unstakes_table.get(unstake_id);  // <<---- esto está mal
     unstakes_table.erase(unstake_itr);
+=======
+-- El lower_bounds y el upper_bounds no son tan fáciles de usar.
+for (auto p = table.begin(); p != table.end(); p++) {
+    print(p->id);
+}
+for (auto p = table.begin(); p != table.end(); p = table.begin()) {  // <------ p++ no se puede hacer si borrás el puntero
+    table.erase(p)
+}
+>>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1

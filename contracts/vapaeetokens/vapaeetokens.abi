@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
     "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Feb 17 16:48:59 2019",
+=======
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Feb 15 12:59:10 2019",
+>>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -319,6 +323,19 @@
                 {
                     "name": "concept",
                     "type": "name"
+<<<<<<< HEAD
+=======
+                }
+            ]
+        },
+        {
+            "name": "rmstakes",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+>>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1
                 }
             ]
         },
@@ -571,6 +588,10 @@
                     "type": "asset"
                 },
                 {
+                    "name": "concept",
+                    "type": "name"
+                },
+                {
                     "name": "since",
                     "type": "uint64"
                 },
@@ -664,6 +685,11 @@
         {
             "name": "restake",
             "type": "restake",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "rmstakes",
+            "type": "rmstakes",
             "ricardian_contract": ""
         },
         {

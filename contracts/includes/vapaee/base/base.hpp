@@ -5,7 +5,10 @@
 #include <eosiolib/asset.hpp>
 #include <eosiolib/print.hpp>
 #include <eosiolib/transaction.hpp>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1
 
 // defining namespaces 
 using namespace eosio;

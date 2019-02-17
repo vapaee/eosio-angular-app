@@ -4,6 +4,7 @@
 ---------------------------------------------------------------------
 
 -- TODO --
+<<<<<<< HEAD
 cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|5.0000 CNT|0.2000 TLOS"]' -p alice
 cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|10.0000 CNT|0.1000 TLOS"]' -p alice
 cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|2.5000 CNT|0.4000 TLOS"]' -p alice
@@ -16,6 +17,19 @@ cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "5.0000 CNT", "
 cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "5.0000 CNT", "sell|5.0000 CNT|0.2000 TLOS"]' -p bob
 
 ---------------------------------------------------------------------
+=======
+cleos push action vapaeetokens stake '["alice", "10.0000 CNT", "bob", "aaa"]' -p alice
+cleos push action vapaeetokens stake '["alice", "10.0000 CNT", "bob", "bbb"]' -p alice
+./tables_user_tokens.sh alice CNT
+cleos push action vapaeetokens unstake '["alice", "10.0000 CNT", "bob", "aaa"]' -p alice
+cleos push action vapaeetokens unstake '["alice", "10.0000 CNT", "bob", "bbb"]' -p alice
+./tables_user_tokens.sh alice CNT
+cleos push action vapaeetokens restake '["alice", 0, "bob", "bbb"]' -p alice
+./tables_user_tokens.sh alice CNT
+
+
+-----------------
+>>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
