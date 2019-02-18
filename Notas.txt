@@ -6,7 +6,7 @@
 -- TODO --
 - ponerle un atribunto lock al stakes para cuando se quiera trancar un stake hasta una fecha concreta.
 - por cada orden se te stakea 0.1000 VPE con una semana de lock.
-  - Si no tenés VPE se te cobra 1.0000 TLOS
+  - Si no tenés VPE se te cobra 0.1% de la contrapartida de tu orden (vendés CNT, te cobramos 0.1% de lo que recibas en TLOS)
   - Si cancela la orden no se devuelven los costos (ni se destakean los VPE)
 
 
