@@ -92,10 +92,6 @@ LOCALSTRINGS_HOME=$HOME/contracts/localstrings
 #     eosio-cpp -o youvote.wasm youvote.cpp --abigen
 #     cleos set contract youvote $PWD -p youvote@active
 # fi
-<<<<<<< HEAD
-
-=======
->>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1
 # --------------------------------------------------------------------
 
 echo "-------- boardgamebox ---------"

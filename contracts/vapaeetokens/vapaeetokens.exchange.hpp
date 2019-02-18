@@ -66,7 +66,7 @@ namespace vapaee {
             string order_str;
             string quantity_str;
             string price_str;
-            vector<string> strings = {"","",""};
+            vector<string> strings = {""};
             print(" strings.size(): ", std::to_string(strings.size()), "\n");
             int i,j,s;
 
@@ -75,6 +75,7 @@ namespace vapaee {
                 if (memo[i] == '|') {
                     s++;
                     j=0;
+                    strings.push_back(string(""));
                     // print(" i: ", std::to_string(i), " j: ", std::to_string(j), " s: ", std::to_string(s), " continue\n");
                     continue;
                 } else {
@@ -101,7 +102,6 @@ namespace vapaee {
             print(" order_amount: ", order_amount.to_string(), "\n");
             print(" order_price: ", order_price.to_string(), "\n");
             print(" order_quantity: ", order_quantity.to_string(), "\n");
-
             
             eosio_assert(order_type == "sell"_n || order_type == "buy"_n, (string("order must be 'sell' or 'buy'. got: ") + order_type.to_string()).c_str());
             if (order_type == "sell"_n) {
@@ -117,196 +117,144 @@ namespace vapaee {
             print("vapaee::token::exchange::handler_transfer() ...\n");
         }
 
-        string get_error_1(const asset & amount, uint8_t precision) {
-            return string("Token ") +
-                amount.symbol.code().to_string() +
-                " has not the same precision(" +
-                std::to_string(amount.symbol.precision()) +
-                ") as registered(" +
-                std::to_string(precision) + 
-                ")";
-        }
-
         void generate_order(name owner, name type, asset amount, asset price, asset quantity) {
-            print("apaee::token::exchange::generate_order()\n");
+            print("vapaee::token::exchange::generate_order()\n");
             print(" owner: ", owner.to_string(), "\n");
             print(" type: ", type.to_string(), "\n");
             print(" amount: ", amount.to_string(), "\n");
             print(" price: ", price.to_string(), "\n");
             print(" quantity: ", quantity.to_string(), "\n");
 
-            require_auth(owner);
-
-            tokens tokenstable(get_self(), get_self().value);
-            print(" tokens tokenstable()\n");
-            auto atk_itr = tokenstable.find(amount.symbol.code().raw());
-            auto ptk_itr = tokenstable.find(price.symbol.code().raw());
-            print(" tokenstable.find()\n");
-            eosio_assert(atk_itr != tokenstable.end(), (string("Token ") + amount.symbol.code().to_string() + " not registered registered").c_str());
-            eosio_assert(ptk_itr != tokenstable.end(), (string("Token ") + price.symbol.code().to_string() + " not registered registered").c_str());
-            eosio_assert(atk_itr->precision == amount.symbol.precision(), get_error_1(amount, atk_itr->precision).c_str());
-            eosio_assert(ptk_itr->precision == price.symbol.precision(), get_error_1(price, ptk_itr->precision).c_str());
-            eosio_assert(quantity.symbol == price.symbol || quantity.symbol == amount.symbol , (string("quantity token symbol ") + price.symbol.code().to_string() + " is different from amount and price").c_str());
-            print(" eosio_assert() OK!\n");
+            require_auth(owner);            
 
             // create scope for the orders table
             string p_sym_str = price.symbol.code().to_string();
             string a_sym_str = amount.symbol.code().to_string();
-            string scope_str = a_sym_str + "." + p_sym_str;
-            scope_str = aux_to_lowercase(scope_str); 
-            name scope(scope_str);
-            print(" scope: ", scope.to_string(), "\n");
+            string scope_buy_str = a_sym_str + "." + p_sym_str;
+            string scope_sell_str = p_sym_str + "." + a_sym_str;
+            scope_buy_str = aux_to_lowercase(scope_buy_str); 
+            scope_sell_str = aux_to_lowercase(scope_sell_str); 
+            name scope_buy(scope_buy_str);
+            name scope_sell(scope_sell_str);
 
-            buyorders buytable(get_self(), scope.value);
-            sellorders selltable(get_self(), scope.value);
-            auto buy_index = buytable.template get_index<"price"_n>();
-            auto sell_index = selltable.template get_index<"price"_n>();
-            asset remaining = amount;
-            asset current_deposit = quantity;
-            asset payment = price;
-            asset current_price;
-            asset current_amount;
-
-            uint64_t amount_unit = pow(10.0, atk_itr->precision);
-            uint64_t price_unit = pow(10.0, ptk_itr->precision);
-           
+            print(" scope_buy: ", scope_buy.to_string(), "\n");
+            print(" scope_sell: ", scope_sell.to_string(), "\n");
             
             if (type == "sell"_n) {
-                // iterate over a list or buy order from the maximun price down
-                for (auto b_ptr = buy_index.begin(); b_ptr != buy_index.end(); b_ptr = buy_index.begin()) {
-                    eosio_assert(b_ptr->price.symbol == price.symbol, "price symbol are different");
-                    print("  buyorder - price:", b_ptr->price.to_string(), " amount: ", b_ptr->amount.to_string(),"\n");
-                    if (b_ptr->price.amount >= price.amount) {
-                        // transaction !!!
-                        current_price = b_ptr->price;
-
-                        if (b_ptr->amount > remaining) {
-                            // buyer wants more that the user is selling -> reduces buyer amount
-                            current_amount = remaining;
-                            payment.amount = (int64_t)(current_amount.amount * current_price.amount / price_unit);
-                            buytable.modify(*b_ptr, same_payer, [&](auto& a){
-                                a.amount -= remaining;
-                                a.deposit -= payment;
-                            });
-                        } else {
-                            // buyer gets all amount wanted -> destroy order
-                            current_amount = b_ptr->amount;
-                            payment = b_ptr->deposit;
-                            buytable.erase(*b_ptr);
-                        }
-
-                        // transfer to buyer
-                        remaining -= current_amount;
-                        action(
-                            permission_level{get_self(),"active"_n},
-                            atk_itr->contract,
-                            "transfer"_n,
-                            std::make_tuple(get_self(), b_ptr->owner, current_amount, string(""))
-                        ).send();
-                        
-                        // transfer to seller
-                        action(
-                            permission_level{get_self(),"active"_n},
-                            ptk_itr->contract,
-                            "transfer"_n,
-                            std::make_tuple(get_self(), owner, payment, string(""))
-                        ).send();
-                        
-                        
-                    } else {
-                        break;
-                    }
-
-                    print("  remaining:", remaining.to_string(),"\n");
-                    if (remaining.amount <= 0) break;
-                }
-
-                if (remaining.amount > 0) {
-                    print("  final remaining: ", remaining.to_string(), "\n");
-                    // insert sell order
-                    uint64_t id = selltable.available_primary_key();
-                    selltable.emplace( get_self(), [&]( auto& a ) {
-                        a.id = id;
-                        a.owner = owner;
-                        a.amount = remaining;
-                        a.price = price;
-                        a.deposit = remaining;
-                    });
-                    print("  sellorders.emplace(): ", std::to_string((unsigned long long) id), "\n");
-                }
-
+                generate_sell_order(owner, scope_sell, scope_buy, amount, price, quantity);
             } else if (type == "buy"_n) {
-                
-                // iterate over a list or sell order from the bottom price (0) up
-                for (auto s_ptr = sell_index.begin(); s_ptr != sell_index.end(); s_ptr = sell_index.begin()) {
-                    eosio_assert(s_ptr->price.symbol == price.symbol, "price symbol are different");
-                    print("  sellorder - price:", s_ptr->price.to_string(), " amount: ", s_ptr->amount.to_string(),"\n");
-                    if (s_ptr->price.amount <= price.amount) {
-                        // transaction !!!
-                        current_price = s_ptr->price;
-
-                        if (s_ptr->amount > remaining) {
-                            // seller wants to sell more that the user is buying -> reduces seller amount
-                            print("  sellorders.modify(): ", std::to_string((int)s_ptr->id), "-", amount.to_string(), "\n");
-                            selltable.modify(*s_ptr, same_payer, [&](auto& a){
-                                a.amount -= remaining;
-                            });
-                            current_amount = remaining;
-                        } else {
-                            // seller sells all -> destroy order
-                            print("  sellorders.erase(): ", std::to_string((int)s_ptr->id), "\n");
-                            selltable.erase(*s_ptr);
-                            current_amount = s_ptr->amount;
-                        }
-
-                        // transfer to buyer
-                        remaining.amount -= current_amount.amount;
-                        print("  remaining: ", remaining.to_string(), "\n");
-                        action(
-                            permission_level{get_self(),"active"_n},
-                            atk_itr->contract,
-                            "transfer"_n,
-                            std::make_tuple(get_self(), owner, current_amount, string(""))
-                        ).send();
-                        
-                        // transfer to seller
-                        payment.amount = (int64_t)(current_amount.amount * current_price.amount / price_unit);
-                        action(
-                            permission_level{get_self(),"active"_n},
-                            ptk_itr->contract,
-                            "transfer"_n,
-                            std::make_tuple(get_self(), s_ptr->owner, payment, string(""))
-                        ).send();                        
-                    } else {
-                        break;
-                    }
-
-                    print("  remaining:", remaining.to_string(),"\n");
-                    if (remaining.amount <= 0) break;
-                }
-
-                if (remaining.amount > 0) {
-                    print("  final remaining: ", remaining.to_string(), "\n");
-                    // insert buy order
-                    uint64_t id = buytable.available_primary_key();
-                    buytable.emplace( get_self(), [&]( auto& a ) {
-                        a.id = id;
-                        a.owner = owner;
-                        a.price = price;
-                        a.amount = remaining;
-                        a.deposit = quantity;
-                    }); 
-                    
-
-                    print("  buyorders.emplace(): ", std::to_string((unsigned long long) id), "\n");
-                }
-
+                asset inverse = vapaee::utils::inverse(price, amount.symbol);
+                generate_sell_order(owner, scope_buy, scope_sell, quantity, inverse, amount);
             } else {
                 eosio_assert(false, (string("type must be 'sell' or 'buy' in lower case, got: ") + type.to_string()).c_str());
             }
-
             
             print("vapaee::token::exchange::generate_order() ...\n");
+        }
+
+        void generate_sell_order(name owner, name scope_buy, name scope_sell, asset amount, asset price, asset quantity) {
+            print("vapaee::token::exchange::generate_sell_order()\n");
+            print(" owner: ", owner.to_string(), "\n");
+            print(" scope_buy: ", scope_buy.to_string(), "\n");
+            print(" scope_sell: ", scope_sell.to_string(), "\n");
+            print(" amount: ", amount.to_string(), "\n");
+            print(" price: ", price.to_string(), "\n");
+            print(" quantity: ", quantity.to_string(), "\n");
+            
+            sellorders buytable(get_self(), scope_buy.value);
+            sellorders selltable(get_self(), scope_sell.value);
+            // sellorders selltable(get_self(), scope.value);
+            auto buy_index = buytable.template get_index<"price"_n>();
+            // auto sell_index = selltable.template get_index<"price"_n>();
+            auto sell_index = selltable.template get_index<"price"_n>();
+            asset remaining = amount;
+            asset payment = price;
+            asset current_price;
+            asset current_inverse;
+            asset current_amount;
+            asset inverse = vapaee::utils::inverse(price, amount.symbol);
+
+            tokens tokenstable(get_self(), get_self().value);
+            auto atk_itr = tokenstable.find(amount.symbol.code().raw());
+            auto ptk_itr = tokenstable.find(price.symbol.code().raw());
+            eosio_assert(atk_itr != tokenstable.end(), (string("Token ") + amount.symbol.code().to_string() + " not registered registered").c_str());
+            eosio_assert(ptk_itr != tokenstable.end(), (string("Token ") + price.symbol.code().to_string() + " not registered registered").c_str());
+            eosio_assert(atk_itr->precision == amount.symbol.precision(), aux_error_1(amount, atk_itr->precision).c_str());
+            eosio_assert(ptk_itr->precision == price.symbol.precision(), aux_error_1(price, ptk_itr->precision).c_str());
+            eosio_assert(quantity.symbol == price.symbol || quantity.symbol == amount.symbol , (string("quantity token symbol ") + price.symbol.code().to_string() + " is different from amount and price").c_str());
+
+            uint64_t amount_unit = pow(10.0, atk_itr->precision);
+            uint64_t price_unit = pow(10.0, ptk_itr->precision);            
+
+            // iterate over a list or buy order from the maximun price down
+            for (auto b_ptr = buy_index.begin(); b_ptr != buy_index.end(); b_ptr = buy_index.begin()) {
+                eosio_assert(b_ptr->price.symbol == inverse.symbol, "buy order price symbol and inverse symbol are different");
+                print("  buyorder - price:", b_ptr->price.to_string(), " amount: ", b_ptr->amount.to_string(), " deposit: ", b_ptr->deposit.to_string(),"\n");
+                print("           inverse:", inverse.to_string() ,"\n");
+                
+                if (b_ptr->price.amount <= inverse.amount) {
+                    // transaction !!!
+                    current_price = b_ptr->price;   // TLOS
+                    print("   b_ptr->amount: ", b_ptr->amount.to_string(), " > remaining: ", remaining.to_string(),"\n");
+                    if (b_ptr->amount > remaining) { // CNT
+                        // buyer wants more that the user is selling -> reduces buyer amount
+                        current_amount = remaining;  // CNT
+                        payment.amount = (int64_t)( (double)(remaining.amount * b_ptr->deposit.amount) / (double)b_ptr->amount.amount);
+                        buytable.modify(*b_ptr, same_payer, [&](auto& a){
+                            a.amount -= remaining;   // CNT
+                            a.deposit -= payment;    // TLOS
+                        });
+                        print("   payment(1):  ", payment.to_string(),"\n");
+                    } else {
+                        // buyer gets all amount wanted -> destroy order
+                        current_amount = b_ptr->amount;
+                        payment = b_ptr->deposit;
+                        buytable.erase(*b_ptr);
+                        print("   payment(2):  ", payment.to_string(),"\n");
+                    }
+
+                    // transfer to buyer CNT
+                    remaining -= current_amount;
+                    action(
+                        permission_level{get_self(),"active"_n},
+                        atk_itr->contract,
+                        "transfer"_n,
+                        std::make_tuple(get_self(), b_ptr->owner, current_amount, string(""))
+                    ).send();
+                    print("   transfer ", current_amount.to_string(), " to ", b_ptr->owner.to_string(),"\n");
+                        
+                    // transfer to seller TLOS
+                    action(
+                        permission_level{get_self(),"active"_n},
+                        ptk_itr->contract,
+                        "transfer"_n,
+                        std::make_tuple(get_self(), owner, payment, string(""))
+                    ).send();
+                    print("   transfer ", payment.to_string(), " to ", owner.to_string(),"\n");
+                    
+                } else {
+                    break;
+                }
+
+                print("  remaining:", remaining.to_string(),"\n");
+                if (remaining.amount <= 0) break;
+            }
+
+            if (remaining.amount > 0) {
+                print("  final remaining: ", remaining.to_string(), "\n");
+                // insert sell order
+                uint64_t id = selltable.available_primary_key();
+                // inverse = vapaee::utils::inverse(price, amount.symbol);
+                payment.amount = (int64_t)((double)(remaining.amount * price.amount) / (double)amount_unit);
+                selltable.emplace( get_self(), [&]( auto& a ) {
+                    a.id = id;
+                    a.owner = owner;
+                    a.price = price;       // CNT
+                    a.amount = payment;    // TLOS 
+                    a.deposit = remaining; // CNT
+                });
+                print("  sellorders.emplace(): ", std::to_string((unsigned long long) id), "\n");
+            }            
         }
 
         void action_cancel(name owner, name type, const symbol_code & token_a, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
@@ -317,60 +265,68 @@ namespace vapaee {
             print(" token_p: ",  token_p.to_string(), "\n");
             print(" orders.size(): ", std::to_string((int) orders.size()), "\n");
 
-            tokens tokenstable(get_self(), get_self().value);
-            auto atk_itr = tokenstable.find(token_a.raw());
-            auto ptk_itr = tokenstable.find(token_p.raw());
-            eosio_assert(atk_itr != tokenstable.end(), (string("Token ") + token_a.to_string() + " not registered registered").c_str());
-            eosio_assert(ptk_itr != tokenstable.end(), (string("Token ") + token_p.to_string() + " not registered registered").c_str());
+            require_auth(owner);
 
-
+            // create scope for the orders table
             string a_sym_str = token_a.to_string();
             string p_sym_str = token_p.to_string();
-            string scope_str = a_sym_str + "." + p_sym_str;
-            scope_str = aux_to_lowercase(scope_str);
-            name scope(scope_str);
-            print("  scope: ", scope.to_string(), "\n");
-
-            buyorders buytable(get_self(), scope.value);
-            sellorders selltable(get_self(), scope.value);
-            asset return_amount;
+            string scope_buy_str = a_sym_str + "." + p_sym_str;
+            string scope_sell_str = p_sym_str + "." + a_sym_str;
+            scope_buy_str = aux_to_lowercase(scope_buy_str); 
+            scope_sell_str = aux_to_lowercase(scope_sell_str); 
+            name scope_buy(scope_buy_str);
+            name scope_sell(scope_sell_str);
 
             if (type == "sell"_n) {
-                for (int i=0; i<orders.size(); i++) {
-                    auto itr = selltable.find(orders[i]);
-                    eosio_assert(itr != selltable.end(), "sell order not found");
-                    eosio_assert(itr->owner == owner, "attemp to delete someone elses sell order");
-                    return_amount = itr->deposit;
-                    selltable.erase(itr);
-
-                    action(
-                        permission_level{get_self(),"active"_n},
-                        atk_itr->contract,
-                        "transfer"_n,
-                        std::make_tuple(get_self(), owner, return_amount, string(""))
-                    ).send();                     
-                }
-            }
+                cancel_sell_order(owner, scope_buy, token_a, orders);
+            } 
 
             if (type == "buy"_n) {
-                for (int i=0; i<orders.size(); i++) {
-                    auto itr = buytable.find(orders[i]);
-                    eosio_assert(itr != buytable.end(), "buy order not found");
-                    eosio_assert(itr->owner == owner, "attemp to delete someone elses buy order");
-                    return_amount = itr->deposit;
-                    buytable.erase(itr);
-
-                    action(
-                        permission_level{get_self(),"active"_n},
-                        ptk_itr->contract,
-                        "transfer"_n,
-                        std::make_tuple(get_self(), owner, return_amount, string(""))
-                    ).send();
-                }
+                cancel_sell_order(owner, scope_sell, token_p, orders);
             }
 
             print("vapaee::token::exchange::action_cancel() ...\n");
         }
+
+        void cancel_sell_order(name owner, name scope, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
+            print("vapaee::token::exchange::cancel_sell_order()\n");
+            print(" owner: ", owner.to_string(), "\n");
+            print(" scope: ", scope.to_string(), "\n");
+            print(" orders.size(): ", orders.size(), "\n");
+
+            tokens tokenstable(get_self(), get_self().value);
+            auto ptk_itr = tokenstable.find(token_p.raw());
+            eosio_assert(ptk_itr != tokenstable.end(), (string("Token ") + token_p.to_string() + " not registered registered").c_str());            
+
+            sellorders selltable(get_self(), scope.value);
+            asset return_amount;
+
+            for (int i=0; i<orders.size(); i++) {
+                auto itr = selltable.find(orders[i]);
+                eosio_assert(itr != selltable.end(), "buy order not found");
+                eosio_assert(itr->owner == owner, "attemp to delete someone elses buy order");
+                return_amount = itr->deposit;
+                selltable.erase(itr);
+
+                action(
+                    permission_level{get_self(),"active"_n},
+                    ptk_itr->contract,
+                    "transfer"_n,
+                    std::make_tuple(get_self(), owner, return_amount, string(""))
+                ).send();
+            }
+        }
+
+
+        string aux_error_1(const asset & amount, uint8_t precision) {
+            return string("Token ") +
+                amount.symbol.code().to_string() +
+                " has not the same precision(" +
+                std::to_string(amount.symbol.precision()) +
+                ") as registered(" +
+                std::to_string(precision) + 
+                ")";
+        }        
 
     }; // class
 

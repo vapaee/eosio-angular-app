@@ -7,7 +7,6 @@
             name to;
             name concept;
             asset quantity;
-            name concept;
             uint64_t since;
             uint64_t last;
             uint64_t primary_key() const { return id; }

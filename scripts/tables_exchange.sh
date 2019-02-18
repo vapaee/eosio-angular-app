@@ -19,10 +19,11 @@ show_table() {
 
 show_table vapaeetokens vapaeetokens tokens
 
+show_table vapaeetokens tlos.cnt sellorders
 show_table vapaeetokens cnt.tlos sellorders
-show_table vapaeetokens cnt.tlos buyorders
 
 show_balance bob
 show_balance alice
+show_balance vapaeetokens
 # show_balance tom
 # show_balance kate

@@ -4,32 +4,37 @@
 ---------------------------------------------------------------------
 
 -- TODO --
-<<<<<<< HEAD
+- ponerle un atribunto lock al stakes para cuando se quiera trancar un stake hasta una fecha concreta.
+- por cada orden se te stakea 0.1000 VPE con una semana de lock.
+  - Si no tenés VPE se te cobra 1.0000 TLOS
+  - Si cancela la orden no se devuelven los costos (ni se destakean los VPE)
+
+
+
+
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+-- Exchange ---------------------------------------------------------
+---------------------------------------------------------------------
 cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|5.0000 CNT|0.2000 TLOS"]' -p alice
 cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|10.0000 CNT|0.1000 TLOS"]' -p alice
 cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|2.5000 CNT|0.4000 TLOS"]' -p alice
 
 # compra toda la primer orden
-cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "2.5000 CNT", "sell|2.5000 CNT|0.4000 TLOS"]' -p alice
+cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "2.5000 CNT", "sell|2.5000 CNT|0.4000 TLOS"]' -p bob
 # compra toda la primer orden y la desborda -> crea sell order
 cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "5.0000 CNT", "sell|5.0000 CNT|0.4000 TLOS"]' -p bob
 # compra toda la primer orden y parte de la segunda -> elimina buyorder y decrementa la otra
 cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "5.0000 CNT", "sell|5.0000 CNT|0.2000 TLOS"]' -p bob
 
+-
+cleos push action vapaeetokens transfer '["alice", "vapaeetokens", "5.0000 CNT",  "sell|5.0000 CNT|0.2000 TLOS"]' -p alice
+cleos push action vapaeetokens transfer '["alice", "vapaeetokens", "10.0000 CNT", "sell|10.0000 CNT|0.1000 TLOS"]' -p alice
+cleos push action vapaeetokens transfer '["alice", "vapaeetokens", "2.5000 CNT",  "sell|2.5000 CNT|0.4000 TLOS"]' -p alice
+
+
+cleos push action eosio.token transfer '["bob", "vapaeetokens", "2.5000 TLOS", "buy|6.2500 CNT|0.4000 TLOS"]' -p bob
 ---------------------------------------------------------------------
-=======
-cleos push action vapaeetokens stake '["alice", "10.0000 CNT", "bob", "aaa"]' -p alice
-cleos push action vapaeetokens stake '["alice", "10.0000 CNT", "bob", "bbb"]' -p alice
-./tables_user_tokens.sh alice CNT
-cleos push action vapaeetokens unstake '["alice", "10.0000 CNT", "bob", "aaa"]' -p alice
-cleos push action vapaeetokens unstake '["alice", "10.0000 CNT", "bob", "bbb"]' -p alice
-./tables_user_tokens.sh alice CNT
-cleos push action vapaeetokens restake '["alice", 0, "bob", "bbb"]' -p alice
-./tables_user_tokens.sh alice CNT
-
-
------------------
->>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------

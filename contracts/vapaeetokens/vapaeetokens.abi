@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Feb 17 16:48:59 2019",
-=======
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Feb 15 12:59:10 2019",
->>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Feb 17 23:20:37 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -71,59 +67,7 @@
             ]
         },
         {
-            "name": "buy_order_table",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "price",
-                    "type": "asset"
-                },
-                {
-                    "name": "amount",
-                    "type": "asset"
-                },
-                {
-                    "name": "deposit",
-                    "type": "asset"
-                }
-            ]
-        },
-        {
             "name": "cancel",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "type",
-                    "type": "name"
-                },
-                {
-                    "name": "token_a",
-                    "type": "symbol_code"
-                },
-                {
-                    "name": "token_p",
-                    "type": "symbol_code"
-                },
-                {
-                    "name": "orders",
-                    "type": "uint64[]"
-                }
-            ]
-        },
-        {
-            "name": "cancel2",
             "base": "",
             "fields": [
                 {
@@ -323,19 +267,6 @@
                 {
                     "name": "concept",
                     "type": "name"
-<<<<<<< HEAD
-=======
-                }
-            ]
-        },
-        {
-            "name": "rmstakes",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
->>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1
                 }
             ]
         },
@@ -588,10 +519,6 @@
                     "type": "asset"
                 },
                 {
-                    "name": "concept",
-                    "type": "name"
-                },
-                {
                     "name": "since",
                     "type": "uint64"
                 },
@@ -643,11 +570,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "cancel2",
-            "type": "cancel2",
-            "ricardian_contract": ""
-        },
-        {
             "name": "claim",
             "type": "claim",
             "ricardian_contract": ""
@@ -688,11 +610,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "rmstakes",
-            "type": "rmstakes",
-            "ricardian_contract": ""
-        },
-        {
             "name": "setsnapshot",
             "type": "setsnapshot",
             "ricardian_contract": ""
@@ -727,13 +644,6 @@
         {
             "name": "accounts",
             "type": "account",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "buyorders",
-            "type": "buy_order_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

@@ -119,7 +119,7 @@ CONTRACT vapaeetokens : public eosio::contract {
             e.handler_transfer(from, to, quantity, memo);
         }
         
-        //*
+        /*
         ACTION cancel2(name owner, name type, const symbol_code & token_a, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
             print("\nACTION vapaeetokens.cancel2()\n");
             vapaee::token::exchange e;
@@ -160,19 +160,6 @@ CONTRACT vapaeetokens : public eosio::contract {
             s.action_unstaketime(owner, sym_code, min_time, max_time, auto_stake);
         };
 
-<<<<<<< HEAD
-=======
-        // this is for debug in purposes
-        ACTION rmstakes (name owner) {
-            print("\nACTION vapaeetokens.rmstakes()\n");
-            vapaee::token::stake s;
-            s.action_delete_all_for(owner);
-        };
-
-        
-
-
->>>>>>> 7b646012e5e82575ba769bdc6545467fadd03fb1
 };
 
 }; // namespace
