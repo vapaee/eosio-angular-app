@@ -10,6 +10,7 @@
             int64_t min;
             int64_t ratio;
             int64_t base;
+            string memo;
             uint64_t primary_key() const { return contract.value; }
             uint64_t by_scope_key() const { return scope; }
         };

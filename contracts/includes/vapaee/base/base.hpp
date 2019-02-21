@@ -1,4 +1,3 @@
-// #ifndef TABLE
 #pragma once
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/symbol.hpp>
@@ -32,5 +31,5 @@ using namespace utils;
 #include <vapaee/base/slug_symbol.hpp>
 #include <vapaee/base/utils.hpp>
 
-// #endif
-
+// #define PRINT(...) print(__VA_ARGS__)
+#define PRINT(...)

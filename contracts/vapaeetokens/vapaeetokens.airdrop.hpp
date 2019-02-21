@@ -16,15 +16,16 @@ namespace vapaee {
         inline name get_self()const { return vapaee::token::contract; }  
 
 
-        void action_setsnapshot(name contract, uint64_t scope, const symbol_code& sym_code, int64_t cap, int64_t min, int64_t ratio, int64_t base) {
-            print("vapaee::token::airdrop::action_setsnapshot()\n");
-            print(" contract: ", contract.to_string(), "\n");
-            print(" scope: ", std::to_string((int) scope), "\n");
-            print(" sym_code: ", sym_code.to_string(), "\n");
-            print(" cap: ", std::to_string((int) cap), "\n");
-            print(" min: ", std::to_string((int) min), "\n");
-            print(" ratio: ", std::to_string((int) ratio), "\n");
-            print(" base: ", std::to_string((int) base), "\n");
+        void action_setsnapshot(name contract, uint64_t scope, const symbol_code& sym_code, int64_t cap, int64_t min, int64_t ratio, int64_t base, const std::string & memo) {
+            PRINT("vapaee::token::airdrop::action_setsnapshot()\n");
+            PRINT(" contract: ", contract.to_string(), "\n");
+            PRINT(" scope: ", std::to_string((int) scope), "\n");
+            PRINT(" sym_code: ", sym_code.to_string(), "\n");
+            PRINT(" cap: ", std::to_string((int) cap), "\n");
+            PRINT(" min: ", std::to_string((int) min), "\n");
+            PRINT(" ratio: ", std::to_string((int) ratio), "\n");
+            PRINT(" base: ", std::to_string((int) base), "\n");
+            PRINT(" memo: ", memo.c_str(), "\n");
 
             // check token existance
             stats statstable( _self, sym_code.raw() );
@@ -44,13 +45,14 @@ namespace vapaee {
                 a.cap = cap;
                 a.ratio = ratio;
                 a.base = base;
+                a.memo = memo;
             });
-            print("vapaee::token::airdrop::action_setsnapshot() ...\n");
+            PRINT("vapaee::token::airdrop::action_setsnapshot() ...\n");
         }
 
-        void action_nosnapshot(const symbol_code& sym_code) {
-            print("vapaee::token::airdrop::action_nosnapshot()\n");
-            print(" sym_code: ", sym_code.to_string(), "\n");
+        /*void action_nosnapshot(const symbol_code& sym_code) {
+            PRINT("vapaee::token::airdrop::action_nosnapshot()\n");
+            PRINT(" sym_code: ", sym_code.to_string(), "\n");
 
             require_auth( _self );
             source table( _self, sym_code.raw() );
@@ -58,14 +60,14 @@ namespace vapaee {
             eosio_assert(it != table.end(), "source table is empty");
 
             table.erase(it);
-            print("vapaee::token::airdrop::action_nosnapshot() ...\n");
-        }
+            PRINT("vapaee::token::airdrop::action_nosnapshot() ...\n");
+        }*/
 
         void action_claim(name owner, const symbol_code& sym_code, name ram_payer) {
-            print("vapaee::token::airdrop::action_claim()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" sym_code: ", sym_code.to_string(), "\n");
-            print(" ram_payer: ", ram_payer.to_string(), "\n");
+            PRINT("vapaee::token::airdrop::action_claim()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" sym_code: ", sym_code.to_string(), "\n");
+            PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
 
             require_auth( ram_payer );
             auto sym_code_raw = sym_code.raw();
@@ -88,6 +90,7 @@ namespace vapaee {
             int64_t min = srcit->min;
             int64_t ratio = srcit->ratio;
             int64_t base = srcit->base;
+            string message = srcit->memo;
             
             // filter
             if (cap > 0) if (amount > cap) {
@@ -132,10 +135,10 @@ namespace vapaee {
                 permission_level{st.owner,"active"_n},
                 get_self(),
                 "issue"_n,
-                std::make_tuple(owner, quantity, string("airdrop"))
+                std::make_tuple(owner, quantity, message)
             ).send();
             
-            print("vapaee::token::airdrop::action_claim() ...\n");
+            PRINT("vapaee::token::airdrop::action_claim() ...\n");
         }
         
     }; // class

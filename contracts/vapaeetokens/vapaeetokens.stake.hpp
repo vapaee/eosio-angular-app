@@ -16,12 +16,12 @@ namespace vapaee {
         inline name get_self()const { return vapaee::token::contract; }
 
         void action_stake (name owner, const asset & quantity, name to, name concept) {
-            print("vapaee::token::stake::action_stake()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" quantity: ", quantity.to_string(), "\n");
-            print(" to: ", to.to_string(), "\n");
-            print(" concept: ", concept.to_string(), "\n");
-            print(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
+            PRINT("vapaee::token::stake::action_stake()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
+            PRINT(" to: ", to.to_string(), "\n");
+            PRINT(" concept: ", concept.to_string(), "\n");
+            PRINT(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
 
             require_auth(owner);
             eosio_assert( is_account( to ), "to account does not exist");
@@ -41,16 +41,16 @@ namespace vapaee {
                 std::make_tuple(owner, get_self(), quantity, std::to_string((unsigned long long)id) + " - staking " + quantity.to_string() + " to " + to.to_string())
             ).send();
 
-            print("vapaee::token::stake::action_stake() ...\n");
+            PRINT("vapaee::token::stake::action_stake() ...\n");
         }
 
         void action_unstake (name owner, const asset & quantity, name from, name concept) {
-            print("vapaee::token::stake::action_unstake()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" quantity: ", quantity.to_string(), "\n");
-            print(" from: ", from.to_string(), "\n");
-            print(" concept: ", concept.to_string(), "\n");
-            print(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
+            PRINT("vapaee::token::stake::action_unstake()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
+            PRINT(" from: ", from.to_string(), "\n");
+            PRINT(" concept: ", concept.to_string(), "\n");
+            PRINT(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
 
             require_auth(owner);
 
@@ -91,7 +91,7 @@ namespace vapaee {
             unstakes unstakes_table( get_self(), owner.value );
             uint64_t id = unstakes_table.available_primary_key();
             uint64_t transaction_id = owner.value + id;
-            print(" unstakes.emplace() ", std::to_string((unsigned long long) id), " - ", quantity.to_string(),"\n");
+            PRINT(" unstakes.emplace() ", std::to_string((unsigned long long) id), " - ", quantity.to_string(),"\n");
             unstakes_table.emplace( owner, [&]( auto& a ){
                 a.id = id;
                 a.quantity = quantity;
@@ -106,17 +106,17 @@ namespace vapaee {
                 std::make_tuple(owner)
             );
             out.delay_sec = (uint64_t) (expires / 1000000);
-            print(" transaction (", std::to_string((unsigned long long) transaction_id), ") --> ", std::to_string((unsigned long long) expires),"\n");
+            PRINT(" transaction (", std::to_string((unsigned long long) transaction_id), ") --> ", std::to_string((unsigned long long) expires),"\n");
             out.send(transaction_id, get_self());
 
             // if it has the same amount, you have to delete the entry from the table
             if (stakes_itr->quantity.amount == quantity.amount) {
-                print(" stakes.erase() ", std::to_string((unsigned long long) stakes_itr->id), " - ", quantity.to_string(),"\n");
+                PRINT(" stakes.erase() ", std::to_string((unsigned long long) stakes_itr->id), " - ", quantity.to_string(),"\n");
                 stakes_table.erase( *stakes_itr );
                 
             } else {
                 // If it have less quantity, we have to subtract it from the existing entry
-                print(" stakes.modify() ", std::to_string((unsigned long long) stakes_itr->id), " - ", quantity.to_string(),"\n");
+                PRINT(" stakes.modify() ", std::to_string((unsigned long long) stakes_itr->id), " - ", quantity.to_string(),"\n");
                 stakes_table.modify( *stakes_itr, same_payer, [&]( auto& a ) {
                     eosio_assert(a.quantity.amount > quantity.amount, "a.quantity.amount < quantity.amount");
                     a.quantity.amount -= quantity.amount;
@@ -124,16 +124,16 @@ namespace vapaee {
                 });
             }            
 
-            print("vapaee::token::stake::action_unstake() ...\n");
+            PRINT("vapaee::token::stake::action_unstake() ...\n");
         }
 
         void action_restake (name owner, uint64_t unstake_id, name to, name concept) {
-            print("vapaee::token::stake::action_restake()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" unstake_id: ", std::to_string((unsigned long long) unstake_id), "\n");
-            print(" to: ", to.to_string(), "\n");
-            print(" concept: ", concept.to_string(), "\n");
-            print(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
+            PRINT("vapaee::token::stake::action_restake()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" unstake_id: ", std::to_string((unsigned long long) unstake_id), "\n");
+            PRINT(" to: ", to.to_string(), "\n");
+            PRINT(" concept: ", concept.to_string(), "\n");
+            PRINT(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
 
             require_auth(owner);
             eosio_assert( is_account( to ), "to account does not exist");
@@ -148,13 +148,13 @@ namespace vapaee {
             // entry on stakes table
             uint64_t id = aux_create_stake_entry(owner, quantity, to, concept);
 
-            print("vapaee::token::stake::action_restake() ...\n");
+            PRINT("vapaee::token::stake::action_restake() ...\n");
         }
 
         void action_unstakeback (name owner) {
-            print("vapaee::token::stake::action_unstakeback()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
+            PRINT("vapaee::token::stake::action_unstakeback()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" current_time(): ", std::to_string((unsigned long long) current_time() ), "\n");
             tokens tokens_table(get_self(), get_self().value);
             unstakes table( get_self(), owner.value );
             auto index = table.template get_index<"expire"_n>();
@@ -163,12 +163,12 @@ namespace vapaee {
             int counter = 5;
             for (auto itr = index.begin(); itr != index.end(); itr = index.begin()) {
                 if (counter-- == 0) {
-                    print(" no more than 5 unstakes per action");
+                    PRINT(" no more than 5 unstakes per action");
                     break;
                 }
 
                 if (itr->expire <= now) {
-                    print(" unstake: ", std::to_string((unsigned long long)itr->id), " - ", itr->quantity.to_string(), " - ", std::to_string((unsigned long long)itr->expire) ,"\n");
+                    PRINT(" unstake: ", std::to_string((unsigned long long)itr->id), " - ", itr->quantity.to_string(), " - ", std::to_string((unsigned long long)itr->expire) ,"\n");
                     asset quantity = itr->quantity;
                     table.erase(*itr);
 
@@ -185,16 +185,16 @@ namespace vapaee {
                 }
             }            
             
-            print("vapaee::token::stake::action_unstakeback() ...\n");
+            PRINT("vapaee::token::stake::action_unstakeback() ...\n");
         }
 
         void action_unstaketime (name owner, const symbol_code & sym_code, uint64_t min_time, uint64_t max_time, uint64_t auto_stake) {
-            print("vapaee::token::stake::action_unstaketime()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" sym_code: ", sym_code.to_string(), "\n");
-            print(" min_time: ", std::to_string((unsigned long long) min_time), "\n");
-            print(" max_time: ", std::to_string((unsigned long long) max_time), "\n");
-            print(" auto_stake: ", std::to_string((unsigned long long) auto_stake), "\n");
+            PRINT("vapaee::token::stake::action_unstaketime()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" sym_code: ", sym_code.to_string(), "\n");
+            PRINT(" min_time: ", std::to_string((unsigned long long) min_time), "\n");
+            PRINT(" max_time: ", std::to_string((unsigned long long) max_time), "\n");
+            PRINT(" auto_stake: ", std::to_string((unsigned long long) auto_stake), "\n");
 
             eosio_assert(max_time >= min_time, "max_time MUST be grather or equals to min_time");
             require_auth(owner);
@@ -215,15 +215,15 @@ namespace vapaee {
                     a.auto_stake = auto_stake;
                 });
             }
-            print("vapaee::token::stake::action_unstaketime() ...\n");
+            PRINT("vapaee::token::stake::action_unstaketime() ...\n");
         }
 
         uint64_t aux_create_stake_entry(name owner, const asset & quantity, name to, name concept) {
-            print("vapaee::token::stake::aux_create_stake_entry()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" quantity: ", quantity.to_string(), "\n");
-            print(" to: ", to.to_string(), "\n");
-            print(" concept: ", concept.to_string(), "\n");
+            PRINT("vapaee::token::stake::aux_create_stake_entry()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
+            PRINT(" to: ", to.to_string(), "\n");
+            PRINT(" concept: ", concept.to_string(), "\n");
 
             stakes stakes_table( get_self(), owner.value );
             auto stakes_index = stakes_table.template get_index<"secondary"_n>();
@@ -259,7 +259,7 @@ namespace vapaee {
                 });
             }
 
-            print("vapaee::token::stake::aux_create_stake_entry() ...\n");
+            PRINT("vapaee::token::stake::aux_create_stake_entry() ...\n");
             return id;            
         }
 
@@ -275,7 +275,7 @@ namespace vapaee {
                 } else {
                     double percent = (double) quantity.amount / (double) total;
                     expires = (uint64_t) (percent * itr->max_time);
-                    print(" percent ", std::to_string(percent), " expires:", std::to_string((unsigned long long) expires),"\n");
+                    PRINT(" percent ", std::to_string(percent), " expires:", std::to_string((unsigned long long) expires),"\n");
                     if (expires < itr->min_time) {
                         expires = itr->min_time;
                     }

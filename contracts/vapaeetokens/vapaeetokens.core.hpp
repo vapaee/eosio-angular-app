@@ -18,9 +18,9 @@ namespace vapaee {
         // TOKEN --------------------------------------------------------------------------------------------
         
         void action_create_token(name owner, asset maximum_supply) {
-            print("vapaee::token::core::action_create_token()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" maximum_supply: ", maximum_supply.to_string(), "\n");
+            PRINT("vapaee::token::core::action_create_token()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" maximum_supply: ", maximum_supply.to_string(), "\n");
 
             require_auth( owner );
 
@@ -46,13 +46,13 @@ namespace vapaee {
                 std::make_tuple(get_self(), maximum_supply.symbol.code(), maximum_supply.symbol.precision(), owner)
             ).send();
 
-            print("vapaee::token::core::action_create_token() ...\n");
+            PRINT("vapaee::token::core::action_create_token() ...\n");
         }
 
         void action_add_token_issuer( name app, const symbol_code& sym_code ) {
-            print("vapaee::token::core::action_add_token_issuer()\n");
-            print(" app: ", app.to_string(), "\n");
-            print(" sym_code: ", sym_code.to_string(), "\n");
+            PRINT("vapaee::token::core::action_add_token_issuer()\n");
+            PRINT(" app: ", app.to_string(), "\n");
+            PRINT(" sym_code: ", sym_code.to_string(), "\n");
 
             stats statstable( _self, sym_code.raw() );
             auto token_itr = statstable.find( sym_code.raw() );
@@ -63,13 +63,13 @@ namespace vapaee {
             statstable.modify( token_itr, token_itr->owner, [&]( auto& s ) {
                 s.issuers.push_back(app);
             });
-            print("vapaee::token::core::action_add_token_issuer() ...\n");
+            PRINT("vapaee::token::core::action_add_token_issuer() ...\n");
         }
 
         void action_remove_token_issuer( name app, const symbol_code& sym_code ) {
-            print("vapaee::token::core::action_remove_token_issuer()\n");
-            print(" app: ", app.to_string(), "\n");
-            print(" sym_code: ", sym_code.to_string(), "\n");
+            PRINT("vapaee::token::core::action_remove_token_issuer()\n");
+            PRINT(" app: ", app.to_string(), "\n");
+            PRINT(" sym_code: ", sym_code.to_string(), "\n");
 
             stats statstable( _self, sym_code.raw() );
             auto token_itr = statstable.find( sym_code.raw() );
@@ -82,14 +82,14 @@ namespace vapaee {
                 std::copy_if (s.issuers.begin(), s.issuers.end(), std::back_inserter(foo), [&](name i){return i!=app;} );                
                 s.issuers = foo;
             });
-            print("vapaee::token::core::action_remove_token_issuer() ...\n");
+            PRINT("vapaee::token::core::action_remove_token_issuer() ...\n");
         }
 
         void action_issue( name to, const asset& quantity, string memo ) {
-            print("vapaee::token::core::action_issue()\n");
-            print(" to: ", to.to_string(), "\n");
-            print(" quantity: ", quantity.to_string(), "\n");
-            print(" memo: ", memo.c_str(), "\n");
+            PRINT("vapaee::token::core::action_issue()\n");
+            PRINT(" to: ", to.to_string(), "\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
+            PRINT(" memo: ", memo.c_str(), "\n");
 
             // check on symbol
             auto sym = quantity.symbol;
@@ -106,8 +106,8 @@ namespace vapaee {
             // vapaee::bgbox::apps apps_table(vapaee::bgbox::contract, vapaee::bgbox::contract.value);
             // auto app = apps_table.get(st.app, "app not found");
             // name appcontract = app.contract;
-            // print("  appid: ", std::to_string((int) st.app), "\n");
-            // print("  appcontract: ", appcontract.to_string(), "\n");
+            // PRINT("  appid: ", std::to_string((int) st.app), "\n");
+            // PRINT("  appcontract: ", appcontract.to_string(), "\n");
 
             // check authorization (issuer of appcontract)
             name issuer = st.owner;
@@ -116,7 +116,7 @@ namespace vapaee {
                 name issuer_app = st.issuers[i];
                 if (has_auth(issuer_app)) {
                     issuer = issuer_app;
-                    print("   issuer_app: ", issuer.to_string(), "\n");                    
+                    PRINT("   issuer_app: ", issuer.to_string(), "\n");                    
                 }
             }
             require_auth( issuer );
@@ -145,13 +145,13 @@ namespace vapaee {
                     std::make_tuple(issuer, to, quantity, memo)
                 ).send();
             }
-            print("vapaee::token::core::action_issue() ...\n");
+            PRINT("vapaee::token::core::action_issue() ...\n");
         }
 
         void action_burn(name owner, asset quantity, string memo ) {
-            print("vapaee::token::core::action_retire()\n");
-            print(" quantity: ", quantity.to_string(), "\n");
-            print(" memo: ", memo.c_str(), "\n");
+            PRINT("vapaee::token::core::action_retire()\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
+            PRINT(" memo: ", memo.c_str(), "\n");
 
             auto sym = quantity.symbol;
             eosio_assert( sym.is_valid(), "invalid symbol name" );
@@ -173,15 +173,15 @@ namespace vapaee {
             });
 
             sub_balance( owner, quantity );
-            print("vapaee::token::core::action_retire() ...\n");
+            PRINT("vapaee::token::core::action_retire() ...\n");
         }
 
         void action_transfer(name from, name to, asset quantity, string memo) {
-            print("vapaee::token::core::action_transfer()\n");
-            print(" from: ", from.to_string(), "\n");
-            print(" to: ", to.to_string(), "\n");
-            print(" quantity: ", quantity.to_string(), "\n");
-            print(" memo: ", memo.c_str(), "\n");
+            PRINT("vapaee::token::core::action_transfer()\n");
+            PRINT(" from: ", from.to_string(), "\n");
+            PRINT(" to: ", to.to_string(), "\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
+            PRINT(" memo: ", memo.c_str(), "\n");
 
 
             eosio_assert( from != to, "cannot transfer to self" );
@@ -204,13 +204,13 @@ namespace vapaee {
             sub_balance( from, quantity );
             add_balance( to, quantity, ram_payer );
             
-            print("vapaee::token::core::action_transfer() ...\n");
+            PRINT("vapaee::token::core::action_transfer() ...\n");
         }
 
         void sub_balance( name owner, asset value ) {
-            print("vapaee::token::core::action_sub_balance()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" value: ", value.to_string(), "\n");
+            PRINT("vapaee::token::core::action_sub_balance()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" value: ", value.to_string(), "\n");
 
             accounts from_acnts( _self, owner.value );
 
@@ -231,14 +231,14 @@ namespace vapaee {
                     std::make_tuple(owner, value.symbol)
                 ).send();                
             }
-            print("vapaee::token::core::action_sub_balance() ...\n");
+            PRINT("vapaee::token::core::action_sub_balance() ...\n");
         }
 
         void add_balance( name owner, asset value, name ram_payer ) {
-            print("vapaee::token::core::action_add_balance()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" value: ", value.to_string(), "\n");
-            print(" ram_payer: ", ram_payer.to_string(), "\n");
+            PRINT("vapaee::token::core::action_add_balance()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" value: ", value.to_string(), "\n");
+            PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
 
             accounts to_acnts( _self, owner.value );
             auto to = to_acnts.find( value.symbol.code().raw() );
@@ -251,14 +251,14 @@ namespace vapaee {
                     a.balance += value;
                 });
             }
-            print("vapaee::token::core::action_add_balance() ...\n");
+            PRINT("vapaee::token::core::action_add_balance() ...\n");
         }
 
         void action_open( name owner, const symbol& symbol, name ram_payer ) {
-            print("vapaee::token::core::action_open()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" symbol: ", symbol.code().to_string(), "\n");
-            print(" ram_payer: ", ram_payer.to_string(), "\n");
+            PRINT("vapaee::token::core::action_open()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" symbol: ", symbol.code().to_string(), "\n");
+            PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
 
             require_auth( ram_payer );
 
@@ -275,13 +275,13 @@ namespace vapaee {
                     a.balance = asset{0, symbol};
                 });
             }
-            print("vapaee::token::core::action_open() ...\n");    
+            PRINT("vapaee::token::core::action_open() ...\n");    
         }
 
         void action_close( name owner, const symbol& symbol ) {
-            print("vapaee::token::core::action_close()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" symbol: ", symbol.code().to_string(), "\n");
+            PRINT("vapaee::token::core::action_close()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" symbol: ", symbol.code().to_string(), "\n");
 
             require_auth( owner );
             accounts acnts( _self, owner.value );
@@ -289,7 +289,7 @@ namespace vapaee {
             eosio_assert( it != acnts.end(), "Balance row already deleted or never existed. Action won't have any effect." );
             eosio_assert( it->balance.amount == 0, "Cannot close because the balance is not zero." );
             acnts.erase( it );
-            print("vapaee::token::core::action_close() ...\n");
+            PRINT("vapaee::token::core::action_close() ...\n");
         }        
 
         

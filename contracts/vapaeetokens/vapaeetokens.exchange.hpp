@@ -29,11 +29,11 @@ namespace vapaee {
         }
         
         void action_addtoken(name contract, const symbol_code & sym_code, uint8_t precision, name ram_payer) {
-            print("vapaee::token::exchange::action_addtoken()\n");
-            print(" contract: ", contract.to_string(), "\n");
-            print(" sym_code: ", sym_code.to_string(), "\n");
-            print(" precision: ", std::to_string((unsigned) precision), "\n");
-            print(" ram_payer: ", ram_payer.to_string(), "\n");
+            PRINT("vapaee::token::exchange::action_addtoken()\n");
+            PRINT(" contract: ", contract.to_string(), "\n");
+            PRINT(" sym_code: ", sym_code.to_string(), "\n");
+            PRINT(" precision: ", std::to_string((unsigned) precision), "\n");
+            PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
 
             require_auth(ram_payer);
 
@@ -45,7 +45,7 @@ namespace vapaee {
                 a.symbol = sym_code;
                 a.precision = precision;
             });
-            print("vapaee::token::exchange::action_addtoken() ...\n");
+            PRINT("vapaee::token::exchange::action_addtoken() ...\n");
         }
 
         void handler_transfer(name from, name to, asset quantity, string memo) {
@@ -55,39 +55,39 @@ namespace vapaee {
                 return;
             }
             
-            print("vapaee::token::exchange::handler_transfer()\n");
-            print(" from: ", from.to_string(), "\n");
-            print(" to: ", to.to_string(), "\n");
-            print(" quantity: ", quantity.to_string(), "\n");
-            print(" memo: ", memo.c_str(), "\n");
-            print(" code: ", get_code(), "\n");
+            PRINT("vapaee::token::exchange::handler_transfer()\n");
+            PRINT(" from: ", from.to_string(), "\n");
+            PRINT(" to: ", to.to_string(), "\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
+            PRINT(" memo: ", memo.c_str(), "\n");
+            PRINT(" code: ", get_code(), "\n");
 
 
             string order_str;
             string quantity_str;
             string price_str;
             vector<string> strings = {""};
-            print(" strings.size(): ", std::to_string(strings.size()), "\n");
+            PRINT(" strings.size(): ", std::to_string(strings.size()), "\n");
             int i,j,s;
 
             for (i=0,j=0,s=0; i<memo.size(); i++,j++) {
-                // print(" memo[", std::to_string(i), "]: ", memo[i], " j: ", std::to_string(j), " s: ", std::to_string(s), "\n");
+                // PRINT(" memo[", std::to_string(i), "]: ", memo[i], " j: ", std::to_string(j), " s: ", std::to_string(s), "\n");
                 if (memo[i] == '|') {
                     s++;
                     j=0;
                     strings.push_back(string(""));
-                    // print(" i: ", std::to_string(i), " j: ", std::to_string(j), " s: ", std::to_string(s), " continue\n");
+                    // PRINT(" i: ", std::to_string(i), " j: ", std::to_string(j), " s: ", std::to_string(s), " continue\n");
                     continue;
                 } else {
                     strings[s] += memo[i];
-                    // print(" strings[", std::to_string(s), "][", std::to_string(j), "]: ", memo[i], " strings[", std::to_string(s), "]:", strings[s].c_str(), "\n");
-                    // print(" strings[", std::to_string(s), "]:", strings[s].c_str(), "\n");
+                    // PRINT(" strings[", std::to_string(s), "][", std::to_string(j), "]: ", memo[i], " strings[", std::to_string(s), "]:", strings[s].c_str(), "\n");
+                    // PRINT(" strings[", std::to_string(s), "]:", strings[s].c_str(), "\n");
                 }
             }
 
-            // print(" strings[0]: ", strings[0].c_str(), "\n");
-            // print(" strings[1]: ", strings[1].c_str(), "\n");
-            // print(" strings[2]: ", strings[2].c_str(), "\n");
+            // PRINT(" strings[0]: ", strings[0].c_str(), "\n");
+            // PRINT(" strings[1]: ", strings[1].c_str(), "\n");
+            // PRINT(" strings[2]: ", strings[2].c_str(), "\n");
 
             eosio_assert(2==s, "memo malformed must be: 'order|amount|price'");
             name order_type(strings[0]);
@@ -98,10 +98,10 @@ namespace vapaee {
             uint64_t price_unit = pow(10.0, order_price.symbol.precision());
             payment.amount = (int64_t)(order_amount.amount * order_price.amount / price_unit);
 
-            print(" order_type: ", order_type.to_string(), "\n");
-            print(" order_amount: ", order_amount.to_string(), "\n");
-            print(" order_price: ", order_price.to_string(), "\n");
-            print(" order_quantity: ", order_quantity.to_string(), "\n");
+            PRINT(" order_type: ", order_type.to_string(), "\n");
+            PRINT(" order_amount: ", order_amount.to_string(), "\n");
+            PRINT(" order_price: ", order_price.to_string(), "\n");
+            PRINT(" order_quantity: ", order_quantity.to_string(), "\n");
             
             eosio_assert(order_type == "sell"_n || order_type == "buy"_n, (string("order must be 'sell' or 'buy'. got: ") + order_type.to_string()).c_str());
             if (order_type == "sell"_n) {
@@ -114,16 +114,16 @@ namespace vapaee {
 
             generate_order(from, order_type, order_amount, order_price, order_quantity);
 
-            print("vapaee::token::exchange::handler_transfer() ...\n");
+            PRINT("vapaee::token::exchange::handler_transfer() ...\n");
         }
 
         void generate_order(name owner, name type, asset amount, asset price, asset quantity) {
-            print("vapaee::token::exchange::generate_order()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" type: ", type.to_string(), "\n");
-            print(" amount: ", amount.to_string(), "\n");
-            print(" price: ", price.to_string(), "\n");
-            print(" quantity: ", quantity.to_string(), "\n");
+            PRINT("vapaee::token::exchange::generate_order()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" type: ", type.to_string(), "\n");
+            PRINT(" amount: ", amount.to_string(), "\n");
+            PRINT(" price: ", price.to_string(), "\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
 
             require_auth(owner);            
 
@@ -137,8 +137,8 @@ namespace vapaee {
             name scope_buy(scope_buy_str);
             name scope_sell(scope_sell_str);
 
-            print(" scope_buy: ", scope_buy.to_string(), "\n");
-            print(" scope_sell: ", scope_sell.to_string(), "\n");
+            PRINT(" scope_buy: ", scope_buy.to_string(), "\n");
+            PRINT(" scope_sell: ", scope_sell.to_string(), "\n");
             
             if (type == "sell"_n) {
                 generate_sell_order(owner, scope_sell, scope_buy, amount, price, quantity);
@@ -149,17 +149,17 @@ namespace vapaee {
                 eosio_assert(false, (string("type must be 'sell' or 'buy' in lower case, got: ") + type.to_string()).c_str());
             }
             
-            print("vapaee::token::exchange::generate_order() ...\n");
+            PRINT("vapaee::token::exchange::generate_order() ...\n");
         }
 
         void generate_sell_order(name owner, name scope_buy, name scope_sell, asset amount, asset price, asset quantity) {
-            print("vapaee::token::exchange::generate_sell_order()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" scope_buy: ", scope_buy.to_string(), "\n");
-            print(" scope_sell: ", scope_sell.to_string(), "\n");
-            print(" amount: ", amount.to_string(), "\n");
-            print(" price: ", price.to_string(), "\n");
-            print(" quantity: ", quantity.to_string(), "\n");
+            PRINT("vapaee::token::exchange::generate_sell_order()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" scope_buy: ", scope_buy.to_string(), "\n");
+            PRINT(" scope_sell: ", scope_sell.to_string(), "\n");
+            PRINT(" amount: ", amount.to_string(), "\n");
+            PRINT(" price: ", price.to_string(), "\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
             
             sellorders buytable(get_self(), scope_buy.value);
             sellorders selltable(get_self(), scope_sell.value);
@@ -189,13 +189,13 @@ namespace vapaee {
             // iterate over a list or buy order from the maximun price down
             for (auto b_ptr = buy_index.begin(); b_ptr != buy_index.end(); b_ptr = buy_index.begin()) {
                 eosio_assert(b_ptr->price.symbol == inverse.symbol, "buy order price symbol and inverse symbol are different");
-                print("  buyorder - price:", b_ptr->price.to_string(), " amount: ", b_ptr->amount.to_string(), " deposit: ", b_ptr->deposit.to_string(),"\n");
-                print("           inverse:", inverse.to_string() ,"\n");
+                PRINT("  buyorder - price:", b_ptr->price.to_string(), " amount: ", b_ptr->amount.to_string(), " deposit: ", b_ptr->deposit.to_string(),"\n");
+                PRINT("           inverse:", inverse.to_string() ,"\n");
                 
                 if (b_ptr->price.amount <= inverse.amount) {
                     // transaction !!!
                     current_price = b_ptr->price;   // TLOS
-                    print("   b_ptr->amount: ", b_ptr->amount.to_string(), " > remaining: ", remaining.to_string(),"\n");
+                    PRINT("   b_ptr->amount: ", b_ptr->amount.to_string(), " > remaining: ", remaining.to_string(),"\n");
                     if (b_ptr->amount > remaining) { // CNT
                         // buyer wants more that the user is selling -> reduces buyer amount
                         current_amount = remaining;  // CNT
@@ -204,13 +204,13 @@ namespace vapaee {
                             a.amount -= remaining;   // CNT
                             a.deposit -= payment;    // TLOS
                         });
-                        print("   payment(1):  ", payment.to_string(),"\n");
+                        PRINT("   payment(1):  ", payment.to_string(),"\n");
                     } else {
                         // buyer gets all amount wanted -> destroy order
                         current_amount = b_ptr->amount;
                         payment = b_ptr->deposit;
                         buytable.erase(*b_ptr);
-                        print("   payment(2):  ", payment.to_string(),"\n");
+                        PRINT("   payment(2):  ", payment.to_string(),"\n");
                     }
 
                     // transfer to buyer CNT
@@ -221,7 +221,7 @@ namespace vapaee {
                         "transfer"_n,
                         std::make_tuple(get_self(), b_ptr->owner, current_amount, string(""))
                     ).send();
-                    print("   transfer ", current_amount.to_string(), " to ", b_ptr->owner.to_string(),"\n");
+                    PRINT("   transfer ", current_amount.to_string(), " to ", b_ptr->owner.to_string(),"\n");
                         
                     // transfer to seller TLOS
                     action(
@@ -230,18 +230,18 @@ namespace vapaee {
                         "transfer"_n,
                         std::make_tuple(get_self(), owner, payment, string(""))
                     ).send();
-                    print("   transfer ", payment.to_string(), " to ", owner.to_string(),"\n");
+                    PRINT("   transfer ", payment.to_string(), " to ", owner.to_string(),"\n");
                     
                 } else {
                     break;
                 }
 
-                print("  remaining:", remaining.to_string(),"\n");
+                PRINT("  remaining:", remaining.to_string(),"\n");
                 if (remaining.amount <= 0) break;
             }
 
             if (remaining.amount > 0) {
-                print("  final remaining: ", remaining.to_string(), "\n");
+                PRINT("  final remaining: ", remaining.to_string(), "\n");
                 // insert sell order
                 uint64_t id = selltable.available_primary_key();
                 // inverse = vapaee::utils::inverse(price, amount.symbol);
@@ -253,17 +253,17 @@ namespace vapaee {
                     a.amount = payment;    // TLOS 
                     a.deposit = remaining; // CNT
                 });
-                print("  sellorders.emplace(): ", std::to_string((unsigned long long) id), "\n");
+                PRINT("  sellorders.emplace(): ", std::to_string((unsigned long long) id), "\n");
             }            
         }
 
         void action_cancel(name owner, name type, const symbol_code & token_a, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
-            print("vapaee::token::exchange::action_cancel()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" type: ", type.to_string(), "\n");
-            print(" token_a: ",  token_a.to_string(), "\n");
-            print(" token_p: ",  token_p.to_string(), "\n");
-            print(" orders.size(): ", std::to_string((int) orders.size()), "\n");
+            PRINT("vapaee::token::exchange::action_cancel()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" type: ", type.to_string(), "\n");
+            PRINT(" token_a: ",  token_a.to_string(), "\n");
+            PRINT(" token_p: ",  token_p.to_string(), "\n");
+            PRINT(" orders.size(): ", std::to_string((int) orders.size()), "\n");
 
             require_auth(owner);
 
@@ -285,14 +285,14 @@ namespace vapaee {
                 cancel_sell_order(owner, scope_sell, token_p, orders);
             }
 
-            print("vapaee::token::exchange::action_cancel() ...\n");
+            PRINT("vapaee::token::exchange::action_cancel() ...\n");
         }
 
         void cancel_sell_order(name owner, name scope, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
-            print("vapaee::token::exchange::cancel_sell_order()\n");
-            print(" owner: ", owner.to_string(), "\n");
-            print(" scope: ", scope.to_string(), "\n");
-            print(" orders.size(): ", orders.size(), "\n");
+            PRINT("vapaee::token::exchange::cancel_sell_order()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" scope: ", scope.to_string(), "\n");
+            PRINT(" orders.size(): ", orders.size(), "\n");
 
             tokens tokenstable(get_self(), get_self().value);
             auto ptk_itr = tokenstable.find(token_p.raw());

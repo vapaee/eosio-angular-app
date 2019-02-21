@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Feb 18 10:55:42 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Feb 20 22:49:37 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -309,7 +309,7 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "symbolcode",
+                    "name": "sym_code",
                     "type": "symbol_code"
                 },
                 {
@@ -327,6 +327,10 @@
                 {
                     "name": "base",
                     "type": "int64"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -371,6 +375,10 @@
                 {
                     "name": "base",
                     "type": "int64"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -524,6 +532,10 @@
                 },
                 {
                     "name": "last",
+                    "type": "uint64"
+                },
+                {
+                    "name": "lock",
                     "type": "uint64"
                 }
             ]

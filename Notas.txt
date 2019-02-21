@@ -1,14 +1,37 @@
+
+
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
+-- Mainnet ----------------------------------------------------------
+---------------------------------------------------------------------
+telosmain set contract vapaeetokens $PWD -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active
+telosmain push action vapaeetokens setsnapshot '["snapshots.tf",1,"CNT",0,0,10000,0,"CNT Token Airdrop - Cards & Tokens - http://cardsandtokens.com"]' -p vapaeetokens@active
+
+
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
+-- Testnet ----------------------------------------------------------
+---------------------------------------------------------------------
+telostest set contract vapaeetokens $PWD -p vapaeetokens@active
+telostest push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
+telostest push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active
+telostest push action vapaeetokens setsnapshot '["setsnapshot",1,"CNT",0,0,10000,0,"CNT Token Airdrop - Cards & Tokens - http://cardsandtokens.com"]' -p vapaeetokens@active
+
+
+
+
+
 
 -- TODO --
 - ponerle un atribunto lock al stakes para cuando se quiera trancar un stake hasta una fecha concreta.
 - por cada orden se te stakea 0.1000 VPE con una semana de lock.
-  - Si no tenés VPE se te cobra 0.1% de la contrapartida de tu orden (vendés CNT, te cobramos 0.1% de lo que recibas en TLOS)
+  - Si no tenés VPE se te cobra 1.0000 TLOS
   - Si cancela la orden no se devuelven los costos (ni se destakean los VPE)
 
+https://askubuntu.com/questions/289559/how-can-i-create-a-windows-bootable-usb-stick-using-ubuntu
+"CNT Token Airdrop - Cards & Tokens: user made trading cards, albums and games !! please visit us at http://cardsandtokens.com"
 
 
 
