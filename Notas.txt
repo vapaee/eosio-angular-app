@@ -156,6 +156,8 @@ https://t.me/HelloTelos/45546
 telostest get table snapsnapsnap 1 snapshots --lower viterbotelos
 telosmain get table snapshots.tf 1 snapshots --lower viterbotelos
 
+cleos --url https://telos.eos.barcelona get table snapshots.tf 1 snapshots --lower geytinzygige
+
 
 
 ---- TODO ----
