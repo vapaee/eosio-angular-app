@@ -115,8 +115,30 @@ CONTRACT vapaeetokens : public eosio::contract {
 
         HANDLER htransfer(name from, name to, asset quantity, string  memo ) {
             PRINT("\nHANDLER vapaeetokens.htransfer()\n");
-            vapaee::token::exchange e(get_code());
-            e.handler_transfer(from, to, quantity, memo);
+
+            // skipp handling outcoming transfers from this contract to outside
+            if (from == get_self()) {
+                print(from.to_string(), " to ", to.to_string(), ": ", quantity.to_string(), " vapaee::token::exchange::handler_transfer() skip...\n");
+                return;
+            }
+            
+            string order_str;
+            int i,j,s;
+
+            for (i=0,j=0,s=0; i<memo.size(); i++,j++) {
+                if (memo[i] == '|') {
+                    break;
+                } else {
+                    order_str += memo[i];
+                }
+            }
+
+            // name order_type(order_str);
+
+            if (order_str == string("sell") || order_str == string("buy")) {
+                vapaee::token::exchange e(get_code());
+                e.handler_transfer(from, to, quantity, memo);                
+            }
         }
         
         /*
