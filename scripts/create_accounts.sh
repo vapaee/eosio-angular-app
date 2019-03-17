@@ -1,6 +1,11 @@
 #!/bin/bash
 # rm /var/www/blockchain/eosio/data -fr
 
+# cleos wallet import
+# eosio: 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
+# cleos wallet import
+# dev: 5J1astpVJcAJVGX8PGWN9KCcHU5DMszi4gJgCEpWc5DxmpTsKqp
+
 cleos create account eosio gqydoobuhege EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio eosio.token EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio cardsntokens EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
@@ -39,6 +44,13 @@ cleos push action eosio.token issue '["alice", "120.0000 TLOS", "memo 120 TLOS"]
 cleos push action eosio.token issue '["bob", "100.0000 TLOS", "memo 100 TLOS"]' -p eosio@active
 cleos push action eosio.token issue '["tom", "0.1234 TLOS", "memo 0 TLOS"]' -p eosio@active
 cleos push action eosio.token issue '["kate", "1.0000 TLOS", "memo 1 TLOS"]' -p eosio@active
+
+echo "-------- eosio.token (ACORN) ---------"
+cleos push action eosio.token create '[ "eosio", "1000000000.0000 ACORN"]' -p eosio.token@active
+cleos push action eosio.token issue '["alice", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
+cleos push action eosio.token issue '["bob", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
+cleos push action eosio.token issue '["tom", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
+cleos push action eosio.token issue '["kate", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
 
 
 # snapshot

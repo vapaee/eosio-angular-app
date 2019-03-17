@@ -8,6 +8,7 @@
             asset price; // symbol_code_P - how much P per A unit
             asset amount; // symbol_code_P - how much P you want
             asset deposit; // symbol_code_A - how much A you are selling
+            uint64_t lock;
             uint64_t primary_key() const { return id; }
             uint64_t by_price_key() const { return price.amount; } // return asset::max_amount
             // uint64_t by_inverse_key() const { ((double)price.amount / (double)pow(10.0, price.symbol.precision())) / 1.0; }

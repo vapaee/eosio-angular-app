@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Mar 13 10:23:31 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Mar 17 19:09:48 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -135,6 +135,20 @@
             ]
         },
         {
+            "name": "configfee",
+            "base": "",
+            "fields": [
+                {
+                    "name": "action",
+                    "type": "name"
+                },
+                {
+                    "name": "fee",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "create",
             "base": "",
             "fields": [
@@ -171,6 +185,36 @@
             ]
         },
         {
+            "name": "deposits_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "dotick",
+            "base": "",
+            "fields": [
+                {
+                    "name": "caller",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "feeconfig_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fee",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "issue",
             "base": "",
             "fields": [
@@ -185,6 +229,40 @@
                 {
                     "name": "memo",
                     "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "locks_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "expire",
+                    "type": "uint64"
+                },
+                {
+                    "name": "concept",
+                    "type": "name"
+                },
+                {
+                    "name": "foreign",
+                    "type": "uint64"
+                },
+                {
+                    "name": "scope",
+                    "type": "uint64"
                 }
             ]
         },
@@ -261,6 +339,20 @@
             ]
         },
         {
+            "name": "retire",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "sell_order_table",
             "base": "",
             "fields": [
@@ -283,6 +375,10 @@
                 {
                     "name": "deposit",
                     "type": "asset"
+                },
+                {
+                    "name": "lock",
+                    "type": "uint64"
                 }
             ]
         },
@@ -582,8 +678,18 @@
             "ricardian_contract": ""
         },
         {
+            "name": "configfee",
+            "type": "configfee",
+            "ricardian_contract": ""
+        },
+        {
             "name": "create",
             "type": "create",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "dotick",
+            "type": "dotick",
             "ricardian_contract": ""
         },
         {
@@ -604,6 +710,11 @@
         {
             "name": "restake",
             "type": "restake",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "retire",
+            "type": "retire",
             "ricardian_contract": ""
         },
         {
@@ -655,6 +766,27 @@
         {
             "name": "config",
             "type": "unstake_time_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "deposits",
+            "type": "deposits_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "feeconfig",
+            "type": "feeconfig_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "locks",
+            "type": "locks_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

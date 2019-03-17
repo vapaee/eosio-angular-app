@@ -6,6 +6,7 @@ echo "-------------------------------------------------------------------------"
 cleos wallet stop
 keosd --unlock-timeout=9999999 &
 sleep 1
+echo "PW5KAEy5M2mbEPeDni4LBU6KdYoVAv8BQr85So6VPaEEMv973AnPx (new)"
 echo "PW5KG6YzAowdzRaNWEH1PterYoYUCPpBpMYxNN3EctcECw1Ke5vgS (home)"
 echo "PW5KVpRdxvAWfAYVD62sNWqyVN7R4fohFQC7VVgYpXKNrbRCTYRBv (im)"
 cleos wallet unlock

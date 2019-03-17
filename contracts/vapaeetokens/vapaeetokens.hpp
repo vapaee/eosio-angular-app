@@ -113,6 +113,12 @@ CONTRACT vapaeetokens : public eosio::contract {
             e.action_cancel(owner, type, token_a, token_p, orders);
         };
 
+        ACTION retire(name owner, const asset & quantity) {
+            PRINT("\nACTION vapaeetokens.retire()\n");
+            vapaee::token::exchange e;
+            e.action_retire(owner, quantity);
+        };
+
         HANDLER htransfer(name from, name to, asset quantity, string  memo ) {
             PRINT("\nHANDLER vapaeetokens.htransfer()\n");
 
@@ -135,7 +141,7 @@ CONTRACT vapaeetokens : public eosio::contract {
 
             // name order_type(order_str);
 
-            if (order_str == string("sell") || order_str == string("buy")) {
+            if (order_str == string("sell") || order_str == string("buy") || order_str == string("deposit")) {
                 vapaee::token::exchange e(get_code());
                 e.handler_transfer(from, to, quantity, memo);                
             }
@@ -149,6 +155,19 @@ CONTRACT vapaeetokens : public eosio::contract {
         };
         //*/
         
+        ACTION dotick (name caller) {
+            PRINT("\nACTION vapaeetokens.dotick()\n");
+            require_auth( caller );
+            vapaee::token::exchange e;
+            e.aux_try_to_unlock(caller);
+        };
+        
+
+        ACTION configfee(name action, const asset & fee) {
+            PRINT("\nACTION vapaeetokens.configfee()\n");
+            vapaee::token::exchange e;
+            e.action_configfee(action, fee);
+        };        
 
     public:
         // STAKE-ACTOINS  ------------------------------------------------------------------------------------------------------

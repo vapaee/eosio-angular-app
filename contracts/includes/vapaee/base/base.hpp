@@ -4,19 +4,20 @@
 #include <eosiolib/asset.hpp>
 #include <eosiolib/print.hpp>
 #include <eosiolib/transaction.hpp>
+#include <eosiolib/singleton.hpp>
 
 // defining namespaces 
 using namespace eosio;
 
 namespace vapaee {
     namespace bgbox {
-        static name contract = "boardgamebox"_n;
+        static name contract = eosio::name("boardgamebox");
     };
     namespace token {
-        static name contract = "vapaeetokens"_n;
+        static name contract = eosio::name("vapaeetokens");
     };
     namespace cnt {
-        static name contract = "cardsntokens"_n;
+        static name contract = eosio::name("cardsntokens");
     };
     namespace utils {}
 };
@@ -31,5 +32,8 @@ using namespace utils;
 #include <vapaee/base/slug_symbol.hpp>
 #include <vapaee/base/utils.hpp>
 
-// #define PRINT(...) print(__VA_ARGS__)
+//*
+#define PRINT(...) print(__VA_ARGS__)
+/*/
 #define PRINT(...)
+//*/

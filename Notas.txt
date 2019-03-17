@@ -1,5 +1,64 @@
 
 
+-- TODO --
+- Subasta
+  - tengo que poder vender M (de los N XXX tokens depositados) cada T tiempo al mejor postor que page con ZZZ, hasta agotar stock.
+    auction1(owner, receiver, "N.0000 XXX", "ZZZ", "M.0000 XXX", interval_time)
+    auction2(owner, receiver, "N.0000 XXX", "ZZZ", total_time)
+    doauction(): ejecuta el primer auction si está vencido. lo puede ejecutar cualqueira.
+  - Table auction: scope contract
+    {
+        uint64_t id;
+        name owner;
+        name receiver;
+        asset portion;      // XXX to sell each interval
+        asset remaining;    // XXX
+        asset collected;    // ZZZ
+        uint64_t interval;  // interval time
+        uint64_t next;      // next expire time
+        uint64_t timer;     // last timer expire time
+    }
+  - ajustar el htransfer para que se fije si hay algún auction para ejecutar.
+    - Se fija en la tabla de auctions ordenando por next.
+    - Si el primero ya está vencido, lo ejecuta y agenda el siguiente si no está agendado ya.
+    - si el primero no está vencido, se fija si está agendado comparando timer con next.
+      Si timer < next => reagendar y actualizar timer
+- UI
+  - zzzzzzzz
+- Hostirial de transacciones
+  - tabla {
+      uint64_t id;
+      uint64_t date;
+      name buyer;
+      name seller;
+      asset amount;
+      asset price;
+      asset buyfee;
+      asset sellfee;
+  }  
+- Comisión:
+  + tabla singleton que tiene los datos de cual es la moneda que se usa para cobrar comisión y caunto por cada TLOS
+  + acción que me permite ajustar esos datos
+  - cuando alguien hace una orden, le lockeo la cantidad corresp de la moneda de comisión según cuantos TLOS tenga la orden
+  - cuando una transacción se concreta, le consumo el depósito lockeado a ambas partes.
+  
+- DoTick:
+  - es una action que cualqueira puede ejecutar (porque no requiere auth).
+  - es agendada por el handler de transfer.
+
+- Depósitos:
+  + DEPOSITAR A NOMBRE DE OTRO
+  + tengo que poder depositar N.0000 XXX tokens
+    transfer memo: "deposit|owneraccount"
+  + tengo que poder retirar un depósito de cualqueir moneda y cantidad (previamente depositada)
+  + Table deposits: scope owner
+    {
+        asset amount;
+    }
+
+
+
+
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 -- Mainnet ----------------------------------------------------------
@@ -24,11 +83,10 @@ telostest push action vapaeetokens setsnapshot '["setsnapshot",1,"CNT",0,0,10000
 
 
 
--- TODO --
-- ponerle un atribunto lock al stakes para cuando se quiera trancar un stake hasta una fecha concreta.
-- por cada orden se te stakea 0.1000 VPE con una semana de lock.
-  - Si no tenés VPE se te cobra 1.0000 TLOS
-  - Si cancela la orden no se devuelven los costos (ni se destakean los VPE)
+
+
+
+
 
 https://askubuntu.com/questions/289559/how-can-i-create-a-windows-bootable-usb-stick-using-ubuntu
 "CNT Token Airdrop - Cards & Tokens: user made trading cards, albums and games !! please visit us at http://cardsandtokens.com"
@@ -162,7 +220,6 @@ cleos --url https://telos.eos.barcelona get table snapshots.tf 1 snapshots --low
 
 ---- TODO ----
 - box.action_new_app al final hay que ejecutar un evento dirigido al account de la app para verificar que es una app (y tiene handler para el evento)
-- transformar en javascript el datatype slug que viene como {top,low} en una string legible
 - generar un inline event al account de la aplicación involucrada después de realizado cada uno de los eventos de bgbox para que maneje los detalles
 - pasar en limpio el scatter:
   - que se pueda ejecutar cualquier función en cualquier momento y si no está logueado que haga las dos cosas juntas (loguearse y ejecutar transacción)

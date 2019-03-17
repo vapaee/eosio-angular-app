@@ -9,3 +9,4 @@
 
 ./load_tokens.sh
 
+./claim_tokens.sh
