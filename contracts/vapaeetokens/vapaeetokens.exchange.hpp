@@ -29,20 +29,17 @@ namespace vapaee {
             return result;
         }
 
-        void aux_substract_deposits(name owner, const asset & amount, bool erase, name ram_payer) {
+        void aux_substract_deposits(name owner, const asset & amount, name ram_payer) {
             PRINT("vapaee::token::exchange::aux_substract_deposits()\n");
             PRINT(" owner: ", owner.to_string(), "\n");
             PRINT(" amount: ", amount.to_string(), "\n");
-            PRINT(" erase: ", std::to_string(erase), "\n");
 
             deposits depositstable(get_self(), owner.value);
             auto itr = depositstable.find(amount.symbol.code().raw());
             eosio_assert(itr != depositstable.end(), "user has no deposits for this token to subtract from");
             if (itr->amount == amount) {
                 PRINT("  itr->amount == amount: ",  amount.to_string(), "\n");
-                if (erase) {
-                    depositstable.erase(itr);
-                }
+                depositstable.erase(itr);
             } else {
                 PRINT("  itr->amount > amount: ", itr->amount.to_string(), " > ", amount.to_string(),  "\n");
                 eosio_assert(itr->amount > amount, "user has not enought deposits to subtract from");
@@ -74,7 +71,7 @@ namespace vapaee {
                     a.amount += amount;
                 });
             }
-            PRINT("vapaee::token::exchange::aux_add_deposits() ...\n");            
+            PRINT("vapaee::token::exchange::aux_add_deposits() ...\n");
         }        
 
         void aux_load_lock(uint64_t id, locks_table & lock) {
@@ -100,7 +97,7 @@ namespace vapaee {
             PRINT(" scope: ", std::to_string((unsigned) scope), "\n");
             PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
 
-            aux_substract_deposits(owner, amount, false, ram_payer);
+            aux_substract_deposits(owner, amount, ram_payer);
             locks lockstable(get_self(), get_self().value);
             uint64_t id = lockstable.available_primary_key();
 
@@ -237,7 +234,7 @@ namespace vapaee {
 
             aux_add_deposits(get_self(), total_fee, ram_payer);
 
-            PRINT("vapaee::token::exchange::aux_charge_fee_for_order() ...\n");            
+            PRINT("vapaee::token::exchange::aux_charge_fee_for_order() ...\n");
         } */
 
         /* void aux_charge_fee_for_sell(name owner, const asset & amount, const asset & payment, name ram_payer) {
@@ -252,7 +249,7 @@ namespace vapaee {
             aux_substract_deposits(owner, total_fee, true, ram_payer);
             aux_add_deposits(get_self(), total_fee, ram_payer);
 
-            PRINT("vapaee::token::exchange::aux_charge_fee_for_sell() ...\n");            
+            PRINT("vapaee::token::exchange::aux_charge_fee_for_sell() ...\n");
         } */
 
         /* uint64_t aux_lock_payment_for_order(name scope_sell, const sell_order_table & sell_order, name concept, name ram_payer) {
@@ -270,7 +267,7 @@ namespace vapaee {
             action(
                 permission_level{owner,"active"_n},
                 get_self(),
-                "swapdeposits"_n,
+                "swapdeposit"_n,
                 std::make_tuple(owner, get_self(), payment, string("deposits for ") + concept.to_string())
             ).send();
             PRINT("   transfer ", current_amount.to_string(), " to ", b_ptr->owner.to_string(),"\n");
@@ -299,7 +296,7 @@ namespace vapaee {
             action(
                 permission_level{owner,"active"_n},
                 get_self(),
-                "swapdeposits"_n,
+                "swapdeposit"_n,
                 std::make_tuple(owner, get_self(), remaining, string("deposits for ") + concept.to_string())
             ).send();
 
@@ -355,7 +352,7 @@ namespace vapaee {
 
             // substract or remove deposit entry
             require_auth(owner);
-            aux_substract_deposits(owner, quantity, true, owner);
+            aux_substract_deposits(owner, quantity, owner);
 
             // send tokens
             tokens tokenstable(get_self(), get_self().value);
@@ -401,7 +398,7 @@ namespace vapaee {
                 }
             }
 
-            PRINT("vapaee::token::exchange::action_configfee() ...\n");            
+            PRINT("vapaee::token::exchange::action_configfee() ...\n");
             
         }
         
@@ -425,41 +422,41 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::action_addtoken() ...\n");
         }
 
-        void action_swapdeposits(name from, name to, const asset & quantity, string memo) {
-            PRINT("vapaee::token::exchange::action_swapdeposits()\n");
+        void action_swapdeposit(name from, name to, const asset & quantity, string memo) {
+            PRINT("vapaee::token::exchange::action_swapdeposit()\n");
             PRINT(" from: ", from.to_string(), "\n");
             PRINT(" to: ", to.to_string(), "\n");
             PRINT(" quantity: ", quantity.to_string(), "\n");
             PRINT(" memo: ", memo.c_str(), "\n");
-
+            
             eosio_assert( from != to, "cannot swap deposits to self" );
-            if (to == get_self()) {
+            require_auth( from );
+            /*if (to == get_self()) {
                 PRINT("   to == get_self()  ---> require_auth( to ): ", to.to_string(), "\n");
                 require_auth( to );
             } else {
                 PRINT("   to == get_self()  ---> require_auth( from ): ", from.to_string(), "\n");
                 require_auth( from );
-            }
+            }*/
             
             eosio_assert( is_account( to ), "to account does not exist");
             auto sym = quantity.symbol.code();
-            stats statstable( _self, sym.raw() );
-            const auto& st = statstable.get( sym.raw() );
+            tokens tokenstable(get_self(), get_self().value);
+            const auto& st = tokenstable.get( sym.raw() );
 
             require_recipient( from );
             require_recipient( to );
 
             eosio_assert( quantity.is_valid(), "invalid quantity" );
             eosio_assert( quantity.amount > 0, "must transfer positive quantity" );
-            eosio_assert( quantity.symbol == st.supply.symbol, "symbol precision mismatch" );
+            eosio_assert( quantity.symbol.precision() == st.precision, "symbol precision mismatch" );
             eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
-
             auto ram_payer = has_auth( to ) ? to : from;
 
-            aux_substract_deposits(from, quantity, false, ram_payer);
+            aux_substract_deposits(from, quantity, ram_payer);
             aux_add_deposits(to, quantity, ram_payer);
             
-            PRINT("vapaee::token::exchange::action_swapdeposits() ...\n"); 
+            PRINT("vapaee::token::exchange::action_swapdeposit() ...\n"); 
         }        
 
         void handler_transfer(name from, name to, asset quantity, string memo) {
@@ -648,10 +645,10 @@ namespace vapaee {
                     // transfer to buyer CNT
                     remaining -= current_amount;
                     action(
-                        permission_level{get_self(),"active"_n},
+                        permission_level{owner,"active"_n},
                         get_self(),
-                        "swapdeposits"_n,
-                        std::make_tuple(get_self(), b_ptr->owner, current_amount, string(""))
+                        "swapdeposit"_n,
+                        std::make_tuple(owner, b_ptr->owner, current_amount, string("exchange made for ") + payment.to_string())
                     ).send();
                     PRINT("   transfer ", current_amount.to_string(), " to ", b_ptr->owner.to_string(),"\n");
                         
@@ -659,8 +656,8 @@ namespace vapaee {
                     action(
                         permission_level{get_self(),"active"_n},
                         get_self(),
-                        "swapdeposits"_n,
-                        std::make_tuple(get_self(), owner, payment, string(""))
+                        "swapdeposit"_n,
+                        std::make_tuple(get_self(), owner, payment, string("exchange made for ") + current_amount.to_string())
                     ).send();
                     PRINT("   transfer ", payment.to_string(), " to ", owner.to_string(),"\n");
 
@@ -668,9 +665,9 @@ namespace vapaee {
                     asset total_fee;
                     aux_alculate_total_fee(owner, payment, current_amount, total_fee);
                     action(
-                        permission_level{get_self(),"active"_n},
+                        permission_level{owner,"active"_n},
                         get_self(),
-                        "swapdeposits"_n,
+                        "swapdeposit"_n,
                         std::make_tuple(owner, get_self(), total_fee, string("order fee"))
                     ).send();
                     
@@ -693,9 +690,9 @@ namespace vapaee {
 
                 // transfer payment deposits to contract
                 action(
-                    permission_level{get_self(),"active"_n},
+                    permission_level{owner,"active"_n},
                     get_self(),
-                    "swapdeposits"_n,
+                    "swapdeposit"_n,
                     std::make_tuple(owner, get_self(), remaining, string("payment for order"))
                 ).send();
 
@@ -703,9 +700,9 @@ namespace vapaee {
                 asset total_fee;
                 aux_alculate_total_fee(owner, payment, remaining, total_fee);
                 action(
-                    permission_level{get_self(),"active"_n},
+                    permission_level{owner,"active"_n},
                     get_self(),
-                    "swapdeposits"_n,
+                    "swapdeposit"_n,
                     std::make_tuple(owner, get_self(), total_fee, string("order fee"))
                 ).send();
 
@@ -716,6 +713,7 @@ namespace vapaee {
                     a.price = price;       // CNT
                     a.amount = payment;    // TLOS 
                     a.deposit = remaining; // CNT
+                    a.fee = total_fee;
                 });
                 PRINT("  sellorders.emplace(): ", std::to_string((unsigned long long) id), "\n");
             }
@@ -761,9 +759,9 @@ namespace vapaee {
             PRINT(" orders.size(): ", orders.size(), "\n");
 
             tokens tokenstable(get_self(), get_self().value);
-            locks lockstable(get_self(), get_self().value);
+            
             auto ptk_itr = tokenstable.find(token_p.raw());
-            eosio_assert(ptk_itr != tokenstable.end(), (string("Token ") + token_p.to_string() + " not registered registered").c_str());            
+            eosio_assert(ptk_itr != tokenstable.end(), (string("Token ") + token_p.to_string() + " not registered").c_str());            
 
             sellorders selltable(get_self(), scope.value);
             asset return_amount;
@@ -776,29 +774,21 @@ namespace vapaee {
                 eosio_assert(itr->owner == owner, "attemp to delete someone elses buy order");
                 return_amount = itr->deposit;
                 return_fee = itr->fee;
-                // auto lock = lockstable.find(itr->feelock);
-                // PRINT("- itr->feelock: ", std::to_string((unsigned) itr->feelock), "\n");
                 PRINT("  return_amount: ", return_amount.to_string(), "\n");
                 PRINT("  return_fee: ", return_fee.to_string(), "\n");
-                // eosio_assert(lock != lockstable.end(), "lock reference does notexist");
-
-                // aux_add_deposits(owner, lock->amount, owner);
-
-
                 selltable.erase(*itr);
-                // lockstable.erase(*lock);
 
                 action(
                     permission_level{get_self(),"active"_n},
                     get_self(),
-                    "swapdeposits"_n,
+                    "swapdeposit"_n,
                     std::make_tuple(get_self(), owner, return_fee, string("order canceled, fees returned"))
                 ).send();                
 
                 action(
                     permission_level{get_self(),"active"_n},
                     get_self(),
-                    "swapdeposits"_n,
+                    "swapdeposit"_n,
                     std::make_tuple(get_self(), owner, return_amount, string("order canceled, payment returned"))
                 ).send();
             }

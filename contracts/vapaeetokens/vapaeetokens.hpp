@@ -126,10 +126,10 @@ CONTRACT vapaeetokens : public eosio::contract {
             e.action_withdraw(owner, quantity);
         };        
 
-        ACTION swapdeposits(name from, name to, const asset & quantity, string  memo) {
-            PRINT("\nACTION vapaeetokens.swapdeposits()\n");
+        ACTION swapdeposit(name from, name to, const asset & quantity, string  memo) {
+            PRINT("\nACTION vapaeetokens.swapdeposit()\n");
             vapaee::token::exchange e;
-            e.action_swapdeposits(from, to, quantity, memo);
+            e.action_swapdeposit(from, to, quantity, memo);
         };
 
 
