@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Mar 17 19:09:48 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Mar 17 23:40:57 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -285,6 +285,32 @@
             ]
         },
         {
+            "name": "order",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "payment",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "reg_token_table",
             "base": "",
             "fields": [
@@ -339,20 +365,6 @@
             ]
         },
         {
-            "name": "retire",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "quantity",
-                    "type": "asset"
-                }
-            ]
-        },
-        {
             "name": "sell_order_table",
             "base": "",
             "fields": [
@@ -377,8 +389,8 @@
                     "type": "asset"
                 },
                 {
-                    "name": "lock",
-                    "type": "uint64"
+                    "name": "fee",
+                    "type": "asset"
                 }
             ]
         },
@@ -487,6 +499,28 @@
                 {
                     "name": "concept",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "swapdeposits",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
                 }
             ]
         },
@@ -643,6 +677,20 @@
                     "type": "uint64"
                 }
             ]
+        },
+        {
+            "name": "withdraw",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
         }
     ],
     "types": [],
@@ -703,6 +751,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "order",
+            "type": "order",
+            "ricardian_contract": ""
+        },
+        {
             "name": "removeissuer",
             "type": "removeissuer",
             "ricardian_contract": ""
@@ -713,11 +766,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "retire",
-            "type": "retire",
-            "ricardian_contract": ""
-        },
-        {
             "name": "setsnapshot",
             "type": "setsnapshot",
             "ricardian_contract": ""
@@ -725,6 +773,11 @@
         {
             "name": "stake",
             "type": "stake",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "swapdeposits",
+            "type": "swapdeposits",
             "ricardian_contract": ""
         },
         {
@@ -745,6 +798,11 @@
         {
             "name": "unstaketime",
             "type": "unstaketime",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "withdraw",
+            "type": "withdraw",
             "ricardian_contract": ""
         }
     ],

@@ -113,11 +113,26 @@ CONTRACT vapaeetokens : public eosio::contract {
             e.action_cancel(owner, type, token_a, token_p, orders);
         };
 
-        ACTION retire(name owner, const asset & quantity) {
-            PRINT("\nACTION vapaeetokens.retire()\n");
+        // "bob", "buy", "5.0000 CNT", "0.2000 TLOS", "1.0000 TLOS"
+        ACTION order(name owner, name type, const asset & amount, const asset & price, const asset & payment) {
+            PRINT("\nACTION vapaeetokens.order()\n");
             vapaee::token::exchange e;
-            e.action_retire(owner, quantity);
+            e.action_order(owner, type, amount, price, payment);
         };
+
+        ACTION withdraw(name owner, const asset & quantity) {
+            PRINT("\nACTION vapaeetokens.withdraw()\n");
+            vapaee::token::exchange e;
+            e.action_withdraw(owner, quantity);
+        };        
+
+        ACTION swapdeposits(name from, name to, const asset & quantity, string  memo) {
+            PRINT("\nACTION vapaeetokens.swapdeposits()\n");
+            vapaee::token::exchange e;
+            e.action_swapdeposits(from, to, quantity, memo);
+        };
+
+
 
         HANDLER htransfer(name from, name to, asset quantity, string  memo ) {
             PRINT("\nHANDLER vapaeetokens.htransfer()\n");
@@ -141,7 +156,7 @@ CONTRACT vapaeetokens : public eosio::contract {
 
             // name order_type(order_str);
 
-            if (order_str == string("sell") || order_str == string("buy") || order_str == string("deposit")) {
+            if (order_str == string("deposit")) {
                 vapaee::token::exchange e(get_code());
                 e.handler_transfer(from, to, quantity, memo);                
             }
