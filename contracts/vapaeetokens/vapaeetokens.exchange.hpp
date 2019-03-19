@@ -142,8 +142,19 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::aux_cancel_lock() ...\n");
             */
         }
+
+        asset aux_wichone_is_tlos(const asset & amount_a, const asset & amount_b) {
+            asset tlos;
+            if (amount_a.symbol.code().to_string() == string("TLOS")) {
+                tlos = amount_a;
+            }
+            if (amount_b.symbol.code().to_string() == string("TLOS")) {
+                tlos = amount_b;
+            }
+            return tlos;
+        }
          
-        void aux_alculate_total_fee(name owner, const asset & amount_a, const asset & amount_b, asset & total_fee) {
+        void aux_alculate_total_fee(name owner, const asset & amount_a, const asset & amount_b, asset & total_fee, asset & tlos) {
             PRINT("vapaee::token::exchange::aux_alculate_total_fee()\n");
             PRINT(" owner: ", owner.to_string(), "\n");
             PRINT(" amount_a: ", amount_a.to_string(), "\n");
@@ -152,13 +163,7 @@ namespace vapaee {
             feeconfig feetable(get_self(), get_self().value);
             deposits depositstable(get_self(), owner.value);
 
-            asset tlos;
-            if (amount_a.symbol.code().to_string() == string("TLOS")) {
-                tlos = amount_a;
-            }
-            if (amount_b.symbol.code().to_string() == string("TLOS")) {
-                tlos = amount_b;
-            }
+            tlos = aux_wichone_is_tlos(amount_a, amount_b);
 
             auto itr = feetable.begin();
             bool success = false;
@@ -620,7 +625,7 @@ namespace vapaee {
                 if (b_ptr->price.amount <= inverse.amount) {
                     // transaction !!!
                     current_price = b_ptr->price;   // TLOS
-                    PRINT("   b_ptr->amount: ", b_ptr->amount.to_string(), " > remaining: ", remaining.to_string(),"\n");
+                    PRINT("   b_ptr->amount: ", b_ptr->amount.to_string(), " > remaining: ", remaining.to_string()," ?\n");
                     if (b_ptr->amount > remaining) { // CNT
                         // buyer wants more that the user is selling -> reduces buyer order amount
                         current_amount = remaining;  // CNT
@@ -662,13 +667,13 @@ namespace vapaee {
                     PRINT("   transfer ", payment.to_string(), " to ", owner.to_string(),"\n");
 
                     // charge fee to buyer
-                    asset total_fee;
-                    aux_alculate_total_fee(owner, payment, current_amount, total_fee);
+                    asset total_fee, tlos;
+                    aux_alculate_total_fee(owner, payment, current_amount, total_fee, tlos);
                     action(
                         permission_level{owner,"active"_n},
                         get_self(),
                         "swapdeposit"_n,
-                        std::make_tuple(owner, get_self(), total_fee, string("order fee"))
+                        std::make_tuple(owner, get_self(), total_fee, string("charging order fee for ") + tlos.to_string())
                     ).send();
                     
                 } else {
@@ -693,17 +698,17 @@ namespace vapaee {
                     permission_level{owner,"active"_n},
                     get_self(),
                     "swapdeposit"_n,
-                    std::make_tuple(owner, get_self(), remaining, string("payment for order"))
+                    std::make_tuple(owner, get_self(), remaining, string("future payment for order"))
                 ).send();
 
                 // transfer order fees to contract
-                asset total_fee;
-                aux_alculate_total_fee(owner, payment, remaining, total_fee);
+                asset total_fee, tlos;
+                aux_alculate_total_fee(owner, payment, remaining, total_fee, tlos);
                 action(
                     permission_level{owner,"active"_n},
                     get_self(),
                     "swapdeposit"_n,
-                    std::make_tuple(owner, get_self(), total_fee, string("order fee"))
+                    std::make_tuple(owner, get_self(), total_fee, string("future order fee for ") + tlos.to_string())
                 ).send();
 
                 // create order entry
@@ -765,8 +770,7 @@ namespace vapaee {
 
             sellorders selltable(get_self(), scope.value);
             asset return_amount;
-            asset return_fee;
-            
+            asset return_fee;            
 
             for (int i=0; i<orders.size(); i++) {
                 auto itr = selltable.find(orders[i]);

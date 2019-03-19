@@ -10,3 +10,5 @@
 ./load_tokens.sh
 
 ./claim_tokens.sh
+
+./test_exchange.sh
