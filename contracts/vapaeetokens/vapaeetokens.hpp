@@ -104,8 +104,14 @@ CONTRACT vapaeetokens : public eosio::contract {
         ACTION addtoken (name contract, const symbol_code & symbol, uint8_t precision, name ram_payer) {
             PRINT("\nACTION vapaeetokens.addtoken()\n");
             vapaee::token::exchange e;
-            e.action_addtoken(contract, symbol, precision, ram_payer);
+            e.action_add_token(contract, symbol, precision, ram_payer);
         };
+        
+        ACTION updatetoken (const symbol_code & sym_code, string appname, string website, string logo, string logolg, bool verified) {
+            PRINT("\nACTION vapaeetokens.updatetoken()\n");
+            vapaee::token::exchange e;
+            e.action_update_token_info(sym_code, appname, website, logo, logolg, verified);
+        };        
 
         ACTION cancel(name owner, name type, const symbol_code & token_a, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
             PRINT("\nACTION vapaeetokens.cancel()\n");
@@ -131,8 +137,6 @@ CONTRACT vapaeetokens : public eosio::contract {
             vapaee::token::exchange e;
             e.action_swapdeposit(from, to, quantity, memo);
         };
-
-
 
         HANDLER htransfer(name from, name to, asset quantity, string  memo ) {
             PRINT("\nHANDLER vapaeetokens.htransfer()\n");
@@ -182,7 +186,29 @@ CONTRACT vapaeetokens : public eosio::contract {
             PRINT("\nACTION vapaeetokens.configfee()\n");
             vapaee::token::exchange e;
             e.action_configfee(action, fee);
-        };        
+        };
+        
+        // debugin ----------
+        ACTION droptokens () {
+            PRINT("\nACTION vapaeetokens.droptokens()\n");
+            vapaee::token::exchange e;
+            e.action_droptokens();
+        };
+
+        ACTION cancelall () {
+            PRINT("\nACTION vapaeetokens.cancelall()\n");
+            vapaee::token::exchange e;
+            e.action_cancel_all_orders();
+        };
+
+        ACTION returnall () {
+            PRINT("\nACTION vapaeetokens.returnall()\n");
+            vapaee::token::exchange e;
+            e.action_return_all_deposits();
+        };
+
+
+
 
     public:
         // STAKE-ACTOINS  ------------------------------------------------------------------------------------------------------

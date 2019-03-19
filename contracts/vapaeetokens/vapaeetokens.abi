@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Mar 18 22:07:00 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Mar 19 11:57:34 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -205,6 +205,11 @@
             ]
         },
         {
+            "name": "droptokens",
+            "base": "",
+            "fields": []
+        },
+        {
             "name": "feeconfig_table",
             "base": "",
             "fields": [
@@ -325,6 +330,26 @@
                 {
                     "name": "contract",
                     "type": "name"
+                },
+                {
+                    "name": "appname",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "logo",
+                    "type": "string"
+                },
+                {
+                    "name": "logolg",
+                    "type": "string"
+                },
+                {
+                    "name": "verified",
+                    "type": "bool"
                 }
             ]
         },
@@ -627,6 +652,36 @@
             ]
         },
         {
+            "name": "updatetoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sym_code",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "appname",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "logo",
+                    "type": "string"
+                },
+                {
+                    "name": "logolg",
+                    "type": "string"
+                },
+                {
+                    "name": "verified",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
             "name": "user_stakes_table",
             "base": "",
             "fields": [
@@ -741,6 +796,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "droptokens",
+            "type": "droptokens",
+            "ricardian_contract": ""
+        },
+        {
             "name": "issue",
             "type": "issue",
             "ricardian_contract": ""
@@ -798,6 +858,11 @@
         {
             "name": "unstaketime",
             "type": "unstaketime",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "updatetoken",
+            "type": "updatetoken",
             "ricardian_contract": ""
         },
         {

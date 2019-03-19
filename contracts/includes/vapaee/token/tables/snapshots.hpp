@@ -1,6 +1,6 @@
 #include <vapaee/token/tables/_aux.hpp>
 
-        // TABLE stats (currency) -----------
+        // TABLE snapshots -----------
         // auxiliar structure to query the real snapshot table on other contract. Holds an amount of TLOS of each account.
         TABLE snapshot_table {
             name account;
