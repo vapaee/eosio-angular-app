@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Mar 19 11:57:34 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Mar 19 17:06:54 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -91,6 +91,11 @@
                     "type": "uint64[]"
                 }
             ]
+        },
+        {
+            "name": "cancelall",
+            "base": "",
+            "fields": []
         },
         {
             "name": "claim",
@@ -191,6 +196,16 @@
                 {
                     "name": "amount",
                     "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "depusers_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
                 }
             ]
         },
@@ -316,6 +331,28 @@
             ]
         },
         {
+            "name": "ordertables_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "table",
+                    "type": "name"
+                },
+                {
+                    "name": "sell",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "pay",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "orders",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
             "name": "reg_token_table",
             "base": "",
             "fields": [
@@ -388,6 +425,11 @@
                     "type": "name"
                 }
             ]
+        },
+        {
+            "name": "returnall",
+            "base": "",
+            "fields": []
         },
         {
             "name": "sell_order_table",
@@ -771,6 +813,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "cancelall",
+            "type": "cancelall",
+            "ricardian_contract": ""
+        },
+        {
             "name": "claim",
             "type": "claim",
             "ricardian_contract": ""
@@ -823,6 +870,11 @@
         {
             "name": "restake",
             "type": "restake",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "returnall",
+            "type": "returnall",
             "ricardian_contract": ""
         },
         {
@@ -901,6 +953,13 @@
             "key_types": []
         },
         {
+            "name": "depusers",
+            "type": "depusers_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "feeconfig",
             "type": "feeconfig_table",
             "index_type": "i64",
@@ -910,6 +969,13 @@
         {
             "name": "locks",
             "type": "locks_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "ordertables",
+            "type": "ordertables_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
