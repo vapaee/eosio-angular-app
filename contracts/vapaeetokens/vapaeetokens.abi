@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Mar 20 09:46:41 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Mar 20 16:47:59 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -225,11 +225,59 @@
             "fields": []
         },
         {
+            "name": "earnings_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "feeconfig_table",
             "base": "",
             "fields": [
                 {
                     "name": "fee",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "history_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "date",
+                    "type": "uint64"
+                },
+                {
+                    "name": "buyer",
+                    "type": "name"
+                },
+                {
+                    "name": "seller",
+                    "type": "name"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "buyfee",
+                    "type": "asset"
+                },
+                {
+                    "name": "sellfee",
                     "type": "asset"
                 }
             ]
@@ -960,8 +1008,22 @@
             "key_types": []
         },
         {
+            "name": "earnings",
+            "type": "earnings_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "feeconfig",
             "type": "feeconfig_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "history",
+            "type": "history_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

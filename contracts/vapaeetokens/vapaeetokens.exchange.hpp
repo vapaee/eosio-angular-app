@@ -33,6 +33,15 @@ namespace vapaee {
             return (ram_payer == get_self()) ? same_payer : ram_payer;
         }
 
+        name aux_get_scope_for_tokens(const symbol_code & a, const symbol_code & b) {
+            string a_sym_str = a.to_string();
+            string b_sym_str = b.to_string();
+            string scope_str = a_sym_str + "." + b_sym_str;
+            scope_str = aux_to_lowercase(scope_str); 
+            name scope(scope_str);
+            return scope;
+        }        
+
         void aux_substract_deposits(name owner, const asset & amount, name ram_payer) {
             PRINT("vapaee::token::exchange::aux_substract_deposits()\n");
             PRINT(" owner: ", owner.to_string(), "\n");
@@ -257,8 +266,8 @@ namespace vapaee {
             require_auth(owner);            
 
             // create scope for the orders table
-            name scope_buy = aux_get_scope_for_tokens(total, price);
-            name scope_sell = aux_get_scope_for_tokens(price, total);            
+            name scope_buy = aux_get_scope_for_tokens(total.symbol.code(), price.symbol.code());
+            name scope_sell = aux_get_scope_for_tokens(price.symbol.code(), total.symbol.code());            
 
             PRINT(" scope_buy: ", scope_buy.to_string(), "\n");
             PRINT(" scope_sell: ", scope_sell.to_string(), "\n");
@@ -283,15 +292,6 @@ namespace vapaee {
             aux_add_earnings(quantity);
 
             PRINT("vapaee::token::exchange::aux_convert_deposits_to_earnings() ...\n");
-        }
-
-        void aux_get_scope_for_tokens(const symbol_code & a, const symbol_code & b) {
-            string a_sym_str = a.to_string();
-            string b_sym_str = b.to_string();
-            string scope_str = a_sym_str + "." + b_sym_str;
-            scope_str = aux_to_lowercase(scope_str); 
-            name scope(scope_str);
-            return scope;
         }
 
         name aux_get_history_scope_for_symbols(const symbol_code & A, const symbol_code & B) {
@@ -326,30 +326,52 @@ namespace vapaee {
             PRINT(" buyfee: ", buyfee.to_string(), "\n");
             PRINT(" sellfee: ", sellfee.to_string(), "\n");
             
-            name tmp_name:
-            asset tmp_asset:
+            name tmp_name;
+            asset tmp_asset;
+            asset tmp_pay;
             symbol_code A = amount.symbol.code();
             symbol_code B = price.symbol.code();
             name scope = aux_get_history_scope_for_symbols(A, B);
             if (scope == aux_get_scope_for_tokens(B, A)) {
+                // swap names
                 tmp_name = buyer; buyer = seller; seller = tmp_name;
-                ESTA_SIN_TERMINAR
 
-            } 
+                // swap fees
+                tmp_asset = buyfee; buyfee = sellfee; buyfee = tmp_asset;
 
-            history table(get_self(), scope);
+                // swap amount / payment
+                tmp_asset = amount;
+                tmp_pay = price;
+                tmp_pay.amount = amount.amount * ((double)price.amount / (double) pow(10.0, price.symbol.precision()));
+                amount = tmp_pay;
+
+                // swap price / inverse
+                price = vapaee::utils::inverse(price, tmp_asset.symbol);
+
+                PRINT(" -> scope: ", scope.to_string(), "\n");
+                PRINT(" -> buyer: ", buyer.to_string(), "\n");
+                PRINT(" -> seller: ", seller.to_string(), "\n");
+                PRINT(" -> amount: ", amount.to_string(), "\n");
+                PRINT(" -> price: ", price.to_string(), "\n");
+                PRINT(" -> buyfee: ", buyfee.to_string(), "\n");
+                PRINT(" -> sellfee: ", sellfee.to_string(), "\n");
+
+            }
+
+            history table(get_self(), scope.value);
             table.emplace(get_self(), [&](auto & a){
                 a.id = table.available_primary_key();
                 a.date = current_time();
-                a.buyer = ;
-                a.seller = ;
-                a.amount = ;
-                a.price = ;
-                a.buyfee = ;
-                a.sellfee = ;
+                a.buyer = buyer;
+                a.seller = seller;
+                a.amount = amount;
+                a.price = price;
+                a.buyfee = buyfee;
+                a.sellfee = sellfee;
             });
 
-            
+
+
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history() ...\n");
         }
 
@@ -379,6 +401,8 @@ namespace vapaee {
             asset current_inverse;
             asset current_total;
             asset buyer_fee;
+            name buyer;
+            name seller = owner;
             asset inverse = vapaee::utils::inverse(price, total.symbol);
             sell_order_table order;
 
@@ -406,6 +430,7 @@ namespace vapaee {
                     // transaction !!!
                     current_price = b_ptr->price;   // TLOS
                     buyer_fee = b_ptr->fee;
+                    buyer = b_ptr->owner;
                     PRINT("   b_ptr->total: ", b_ptr->total.to_string(), " > remaining: ", remaining.to_string()," ?\n");
                     if (b_ptr->total > remaining) { // CNT
                         // buyer wants more that the user is selling -> reduces buyer order amount
@@ -474,7 +499,7 @@ namespace vapaee {
                     aux_convert_deposits_to_earnings(total_fee);
 
                     // saving the transaction in history
-                    aux_register_transaction_in_history(buyer, seller, amount, price, buyfee, sellfee);
+                    aux_register_transaction_in_history(buyer, seller, current_total, current_price, buyer_fee, total_fee);
                     
                 } else {
                     break;

@@ -32,7 +32,7 @@ namespace vapaee {
             double A_amount = (double)A.amount;
             double unit = (double)pow(10.0, A.symbol.precision());
             double result = unit / A_amount;
-            int128_t amount = (int128_t) (result * unit);
+            int64_t amount = (int64_t) (result * unit);
             asset inv = asset(amount, B);
             // print("  A_amount: ", std::to_string(A_amount), "\n");
             // print("  unit: ", std::to_string(unit), "\n");     
