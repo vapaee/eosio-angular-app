@@ -32,4 +32,4 @@ show_balance alice
 #show_balance kate
 show_balance vapaeetokens
 
-show_table vapaeetokens vapaeetokens locks
+show_table vapaeetokens vapaeetokens ordertables

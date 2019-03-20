@@ -5,3 +5,5 @@
 #include "tables/feeconfig.hpp"
 #include "tables/depusers.hpp"
 #include "tables/ordertables.hpp"
+#include "tables/earnings.hpp"
+#include "tables/history.hpp"

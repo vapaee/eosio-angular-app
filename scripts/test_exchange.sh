@@ -27,21 +27,23 @@ cleos push action eosio.token transfer  '["alice","vapaeetokens","100.0000 TLOS"
 ### 
 ### sleep 1
 ### 
-### echo "-- 3 same orders --"
-### cleos push action vapaeetokens order '["alice","buy", "5.0000 CNT", "0.2000 TLOS", "1.0000 TLOS"]' -p alice
-### cleos push action vapaeetokens order '["alice","buy","10.0000 CNT", "0.1000 TLOS", "1.0000 TLOS"]' -p alice
-### cleos push action vapaeetokens order '["alice","buy", "2.5000 CNT", "0.4000 TLOS", "1.0000 TLOS"]' -p alice
-### 
-### echo "-- 1 buy and overflows --"
-### cleos push action vapaeetokens order '["bob","sell", "5.0000 CNT", "0.4000 TLOS", "5.0000 CNT"]' -p bob
-### cleos push action vapaeetokens cancel '["bob", "sell", "CNT", "TLOS", [0]]' -p bob
-### cleos push action vapaeetokens cancel '["alice", "sell", "TLOS", "CNT", [0,1]]' -p alice
-
+echo "-- 3 same orders --"
 cleos push action vapaeetokens order '["alice","buy", "5.0000 CNT", "0.2000 TLOS", "1.0000 TLOS"]' -p alice
 cleos push action vapaeetokens order '["alice","buy","10.0000 CNT", "0.1000 TLOS", "1.0000 TLOS"]' -p alice
 cleos push action vapaeetokens order '["alice","buy", "2.5000 CNT", "0.4000 TLOS", "1.0000 TLOS"]' -p alice
 
-cleos push action vapaeetokens order '["bob","sell",  "7.5000 CNT", "0.1000 TLOS", "7.5000 CNT"]' -p bob
+echo "-- 1 buy and overflows --"
+cleos push action vapaeetokens order '["bob","sell", "5.0000 CNT", "0.4000 TLOS", "5.0000 CNT"]' -p bob
+### cleos push action vapaeetokens cancel '["bob", "sell", "CNT", "TLOS", [0]]' -p bob
+### cleos push action vapaeetokens cancel '["alice", "sell", "TLOS", "CNT", [0,1]]' -p alice
+
+### echo "-- same 3 orders --"
+### cleos push action vapaeetokens order '["alice","buy", "5.0000 CNT", "0.2000 TLOS", "1.0000 TLOS"]' -p alice
+### cleos push action vapaeetokens order '["alice","buy","10.0000 CNT", "0.1000 TLOS", "1.0000 TLOS"]' -p alice
+### cleos push action vapaeetokens order '["alice","buy", "2.5000 CNT", "0.4000 TLOS", "1.0000 TLOS"]' -p alice
+### 
+### echo "-- 1 buy consumes 2 sell orders --"
+### cleos push action vapaeetokens order '["bob","sell",  "7.5000 CNT", "0.1000 TLOS", "7.5000 CNT"]' -p bob
 
 
 

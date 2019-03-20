@@ -26,3 +26,4 @@ cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpe
 cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraax", "vpeworkeraay", "0.0001 ACORN", ""]' -p vpeworkeraax@active
 cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraay", "vpeworkeraaz", "0.0001 ACORN", ""]' -p vpeworkeraay@active
 cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaz", "vpeworkeraaa", "0.0001 ACORN", ""]' -p vpeworkeraaz@active
+cleos --url https://telos.eos.barcelona push action acornaccount open '["viterbotelos", "4,ACORN", "viterbotelos"]' -p viterbotelos@active

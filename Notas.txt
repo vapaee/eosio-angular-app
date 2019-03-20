@@ -7,15 +7,7 @@
 -- TODO --
 
 
-- modificar la tabla tokens:
-  "name": "Viitasphere Token"
-  "web": "http://www.website.com"
-  "logo": "https://raw.githubusercontent.com/eosasia/eos-dapps/master/telos/logos/viitasphere.png"
-  "logo_lg": "https://raw.githubusercontent.com/eosasia/eos-dapps/master/telos/logos/viitasphere-lg.png"
-  "symbol": "VIITA"
-  "contract": "viitasphere1"
-  "precision": 4
-  "verified": true
+
 
 - debug
   - action_return_all_deposits
@@ -29,8 +21,8 @@
   - historial de las tablas (xxx.zzz)
     - buyer, seller, price, amount, payment, fee, date
   - own: por cada depósito, dice cuanto pertenece al contrato
-
-
+- me falta resolver el problema de desuscribir al usuario que ya no tiene depósitos: depusers depuserstable(get_self(), get_self().value);
+ 
 
 - Subasta
   - tengo que poder vender M (de los N XXX tokens depositados) cada T tiempo al mejor postor que page con ZZZ, hasta agotar stock.
