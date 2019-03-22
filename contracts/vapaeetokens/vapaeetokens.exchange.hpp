@@ -298,31 +298,36 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::aux_get_history_scope_for_symbols()\n");
             PRINT(" A: ", A.to_string(), "\n");
             PRINT(" B: ", B.to_string(), "\n");
+            name scope;
 
             // if TLOS is one of them is the base token
             if (B.to_string() == string("TLOS")) {
-                return aux_get_scope_for_tokens(A, B);
+                scope = aux_get_scope_for_tokens(A, B);
             }
             if (A.to_string() == string("TLOS")) {
-                return aux_get_scope_for_tokens(B, A);
+                scope = aux_get_scope_for_tokens(B, A);
             }
 
             // alfabetic
             if (A.to_string() < B.to_string()) {
-                return aux_get_scope_for_tokens(A, B);
+                scope = aux_get_scope_for_tokens(A, B);
             } else {
-                return aux_get_scope_for_tokens(B, A);
+                scope = aux_get_scope_for_tokens(B, A);
             }
+
+            PRINT(" ->scope: ", scope.to_string(), "\n");
             
             PRINT("vapaee::token::exchange::aux_get_history_scope_for_symbols() ...\n");
+            return scope;
         }
 
-        void aux_register_transaction_in_history(name buyer, name seller, asset amount, asset price, asset buyfee, asset sellfee) {
+        void aux_register_transaction_in_history(name buyer, name seller, asset amount, asset price, asset payment, asset buyfee, asset sellfee) {
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history()\n");
             PRINT(" buyer: ", buyer.to_string(), "\n");
             PRINT(" seller: ", seller.to_string(), "\n");
             PRINT(" amount: ", amount.to_string(), "\n");
             PRINT(" price: ", price.to_string(), "\n");
+            PRINT(" payment: ", payment.to_string(), "\n");
             PRINT(" buyfee: ", buyfee.to_string(), "\n");
             PRINT(" sellfee: ", sellfee.to_string(), "\n");
             
@@ -431,6 +436,8 @@ namespace vapaee {
                     current_price = b_ptr->price;   // TLOS
                     buyer_fee = b_ptr->fee;
                     buyer = b_ptr->owner;
+                    PRINT("           buyer:", buyer.to_string() ,"\n");
+                    PRINT("           current_price:", current_price.to_string() ,"\n");
                     PRINT("   b_ptr->total: ", b_ptr->total.to_string(), " > remaining: ", remaining.to_string()," ?\n");
                     if (b_ptr->total > remaining) { // CNT
                         // buyer wants more that the user is selling -> reduces buyer order amount
@@ -495,11 +502,25 @@ namespace vapaee {
                     PRINT("   charging fee ", total_fee.to_string(), " to ", owner.to_string(),"\n");
 
                     // convert deposits to earnings
-                    aux_convert_deposits_to_earnings(buyer_fee);
-                    aux_convert_deposits_to_earnings(total_fee);
+                    action(
+                        permission_level{get_self(),"active"_n},
+                        get_self(),
+                        "deps2earn"_n,
+                        std::make_tuple(buyer_fee)
+                    ).send();
+                    PRINT("   converting fee ", buyer_fee.to_string(), " to earnings\n");
+
+                    action(
+                        permission_level{get_self(),"active"_n},
+                        get_self(),
+                        "deps2earn"_n,
+                        std::make_tuple(total_fee)
+                    ).send();
+                    PRINT("   converting fee ", total_fee.to_string(), " to earnings\n");
 
                     // saving the transaction in history
-                    aux_register_transaction_in_history(buyer, seller, current_total, current_price, buyer_fee, total_fee);
+                    current_inverse = vapaee::utils::inverse(inverse, price.symbol);
+                    aux_register_transaction_in_history(buyer, seller, current_total, current_inverse, payment, buyer_fee, total_fee);
                     
                 } else {
                     break;
@@ -563,7 +584,17 @@ namespace vapaee {
             }
             
             PRINT("vapaee::token::exchange::aux_generate_sell_order() ...\n");
-        }        
+        }
+        
+        void action_convert_deposits_to_earnings(const asset & quantity) {
+            PRINT("vapaee::token::exchange::action_convert_deposits_to_earnings()\n");
+            PRINT(" quantity: ", quantity.to_string(), "\n");
+            
+            require_auth(get_self());
+
+            aux_convert_deposits_to_earnings(quantity);
+            PRINT("vapaee::token::exchange::action_convert_deposits_to_earnings() ...\n");
+        }
 
         void action_order(name owner, name type, const asset & total, const asset & price, const asset & payment) {
             PRINT("vapaee::token::exchange::action_order()\n");
@@ -604,7 +635,7 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::action_withdraw() ...\n");
         }
 
-        void action_configfee(name action, const asset & fee) {
+        void action_configfee(name action, const asset & fee, uint64_t proirity) {
             PRINT("vapaee::token::exchange::action_configfee()\n");
             PRINT(" action: ", action.to_string(), "\n");
             PRINT(" fee: ", fee.to_string(), "\n");
@@ -612,10 +643,12 @@ namespace vapaee {
             require_auth(get_self());
 
             feeconfig feetable(get_self(), get_self().value);
-            auto itr = feetable.find(fee.symbol.code().raw());
+            auto index = feetable.template get_index<"symbol"_n>();
+            auto itr = index.find(fee.symbol.code().raw());
 
-            if (itr == feetable.end()) {
+            if (itr == index.end()) {
                 feetable.emplace( get_self(), [&]( auto& a ){
+                    a.priority = proirity;
                     a.fee = fee;
                 });
                 PRINT("  feeconfig.emplace() ", fee.to_string(), "\n");
@@ -623,6 +656,7 @@ namespace vapaee {
                 if (action == "update"_n) {
                     PRINT("  feeconfig.modify() ", fee.to_string(), "\n");
                     feetable.modify(*itr, get_self(), [&](auto& a){
+                        a.priority = proirity;
                         a.fee = fee;
                     });
                 }

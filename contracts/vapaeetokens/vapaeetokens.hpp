@@ -173,19 +173,24 @@ CONTRACT vapaeetokens : public eosio::contract {
             e.action_cancel(owner, type, token_a, token_p, orders);
         };
         //*/
+
+        ACTION deps2earn(const asset & quantity) {
+            PRINT("\nACTION vapaeetokens.deps2earn()\n");
+            vapaee::token::exchange e;
+            e.action_convert_deposits_to_earnings(quantity);
+        };
         
         ACTION dotick (name caller) {
             PRINT("\nACTION vapaeetokens.dotick()\n");
             require_auth( caller );
             vapaee::token::exchange e;
             e.aux_try_to_unlock(caller);
-        };
-        
+        };        
 
-        ACTION configfee(name action, const asset & fee) {
+        ACTION configfee(name action, const asset & fee, uint64_t priority) {
             PRINT("\nACTION vapaeetokens.configfee()\n");
             vapaee::token::exchange e;
-            e.action_configfee(action, fee);
+            e.action_configfee(action, fee, priority);
         };
         
         // debugin ----------

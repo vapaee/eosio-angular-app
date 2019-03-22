@@ -33,3 +33,5 @@ show_balance alice
 show_balance vapaeetokens
 
 show_table vapaeetokens vapaeetokens ordertables
+show_table vapaeetokens vapaeetokens earnings
+show_table vapaeetokens cnt.tlos history

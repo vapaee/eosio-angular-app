@@ -11,6 +11,7 @@ cleos push action snapsnapsnap add '["kate",9999999,1]' -p kate@active
 # register TLOS & ACORN token
 echo "-- register TLOS --" 
 cleos push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
 echo "-- register ACORN --" 
 cleos push action vapaeetokens addtoken '["eosio.token","ACORN",4,"vapaeetokens"]' -p vapaeetokens@active
 

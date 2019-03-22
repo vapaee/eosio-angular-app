@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Wed Mar 20 16:47:59 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Mar 22 16:41:34 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -150,6 +150,10 @@
                 {
                     "name": "fee",
                     "type": "asset"
+                },
+                {
+                    "name": "priority",
+                    "type": "uint64"
                 }
             ]
         },
@@ -200,6 +204,16 @@
             ]
         },
         {
+            "name": "deps2earn",
+            "base": "",
+            "fields": [
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "depusers_table",
             "base": "",
             "fields": [
@@ -238,6 +252,10 @@
             "name": "feeconfig_table",
             "base": "",
             "fields": [
+                {
+                    "name": "priority",
+                    "type": "uint64"
+                },
                 {
                     "name": "fee",
                     "type": "asset"
@@ -883,6 +901,11 @@
         {
             "name": "create",
             "type": "create",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "deps2earn",
+            "type": "deps2earn",
             "ricardian_contract": ""
         },
         {
