@@ -12,11 +12,12 @@ namespace vapaee {
     class exchange {
         name _self;
         name _code;
+        uint8_t internal_precision;
     
     public:
         
-        exchange():_self(vapaee::token::contract),_code(vapaee::token::contract){}
-        exchange(name code):_self(vapaee::token::contract),_code(code){}
+        exchange():_self(vapaee::token::contract),_code(vapaee::token::contract),internal_precision(8){}
+        exchange(name code):_self(vapaee::token::contract),_code(code),internal_precision(8){}
 
         inline name get_self() const { return _self; }
         inline name get_code() const { return _code; }
@@ -40,7 +41,49 @@ namespace vapaee {
             scope_str = aux_to_lowercase(scope_str); 
             name scope(scope_str);
             return scope;
-        }        
+        }
+        
+        asset aux_extend_asset(const asset & quantity) {
+            asset extended = quantity;
+            uint64_t amount = quantity.amount;
+            uint8_t precision = quantity.symbol.precision();
+            symbol_code sym_code = quantity.symbol.code();
+            
+            // no extension
+            if (internal_precision <= precision) return quantity;
+
+            // extension
+            uint8_t extension = internal_precision - precision;
+            uint64_t multiplier = pow(10, extension);
+            amount = amount * multiplier;
+
+            extended.amount = amount;
+            extended.symbol = symbol(sym_code, internal_precision);
+            return extended;
+        }
+        
+        asset aux_get_real_asset(const asset & quantity) {
+            asset real = quantity;
+            uint64_t amount = quantity.amount;
+            uint8_t precision = quantity.symbol.precision();
+            symbol_code sym_code = quantity.symbol.code();         
+
+            tokens tokenstable(get_self(), get_self().value);
+            auto tk_itr = tokenstable.find(quantity.symbol.code().raw());
+            precision = tk_itr->precision;
+
+            // no extension
+            if (internal_precision <= precision) return quantity;
+
+            // extension
+            uint8_t extension = internal_precision - precision;
+            uint64_t divider = pow(10, extension);
+            amount = (uint64_t) ((double)amount / (double)divider);
+
+            real.amount = amount;
+            real.symbol = symbol(sym_code, precision);
+            return real;
+        }
 
         void aux_substract_deposits(name owner, const asset & amount, name ram_payer) {
             PRINT("vapaee::token::exchange::aux_substract_deposits()\n");
@@ -255,13 +298,12 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::aux_try_to_unlock() ...\n");
         }
 
-        void aux_generate_order(name owner, name type, asset total, asset price, asset payment, name ram_payer) {
+        void aux_generate_order(name owner, name type, asset total, asset price, name ram_payer) {
             PRINT("vapaee::token::exchange::aux_generate_order()\n");
             PRINT(" owner: ", owner.to_string(), "\n");
             PRINT(" type: ", type.to_string(), "\n");
             PRINT(" total: ", total.to_string(), "\n");
             PRINT(" price: ", price.to_string(), "\n");
-            PRINT(" payment: ", payment.to_string(), "\n");
 
             require_auth(owner);            
 
@@ -273,10 +315,11 @@ namespace vapaee {
             PRINT(" scope_sell: ", scope_sell.to_string(), "\n");
             
             if (type == "sell"_n) {
-                aux_generate_sell_order(owner, scope_sell, scope_buy, total, price, payment, ram_payer);
+                aux_generate_sell_order(owner, scope_sell, scope_buy, total, price, ram_payer);
             } else if (type == "buy"_n) {
                 asset inverse = vapaee::utils::inverse(price, total.symbol);
-                aux_generate_sell_order(owner, scope_buy, scope_sell, payment, inverse, total, ram_payer);
+                asset payment = vapaee::utils::payment(total, price);
+                aux_generate_sell_order(owner, scope_buy, scope_sell, payment, inverse, ram_payer);
             } else {
                 eosio_assert(false, (string("type must be 'sell' or 'buy' in lower case, got: ") + type.to_string()).c_str());
             }
@@ -335,8 +378,9 @@ namespace vapaee {
             asset tmp_asset;
             asset tmp_pay;
             symbol_code A = amount.symbol.code();
-            symbol_code B = price.symbol.code();
+            symbol_code B = payment.symbol.code();
             name scope = aux_get_history_scope_for_symbols(A, B);
+            PRINT(" -> scope: ", scope.to_string(), "\n");
             if (scope == aux_get_scope_for_tokens(B, A)) {
                 // swap names
                 tmp_name = buyer; buyer = seller; seller = tmp_name;
@@ -348,18 +392,20 @@ namespace vapaee {
                 tmp_asset = amount;
                 tmp_pay = price;
                 tmp_pay.amount = amount.amount * ((double)price.amount / (double) pow(10.0, price.symbol.precision()));
-                amount = tmp_pay;
+                amount = payment;
+                payment = tmp_asset;
+                
 
                 // swap price / inverse
                 price = vapaee::utils::inverse(price, tmp_asset.symbol);
 
-                PRINT(" -> scope: ", scope.to_string(), "\n");
                 PRINT(" -> buyer: ", buyer.to_string(), "\n");
                 PRINT(" -> seller: ", seller.to_string(), "\n");
                 PRINT(" -> amount: ", amount.to_string(), "\n");
                 PRINT(" -> price: ", price.to_string(), "\n");
                 PRINT(" -> buyfee: ", buyfee.to_string(), "\n");
                 PRINT(" -> sellfee: ", sellfee.to_string(), "\n");
+                PRINT(" -> payment: ", payment.to_string(), "\n");
 
             }
 
@@ -371,6 +417,7 @@ namespace vapaee {
                 a.seller = seller;
                 a.amount = amount;
                 a.price = price;
+                a.payment = payment;
                 a.buyfee = buyfee;
                 a.sellfee = sellfee;
             });
@@ -380,14 +427,13 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history() ...\n");
         }
 
-        void aux_generate_sell_order(name owner, name scope_buy, name scope_sell, asset total, asset price, asset quantity, name ram_payer) {
+        void aux_generate_sell_order(name owner, name scope_buy, name scope_sell, asset total, asset price, name ram_payer) {
             PRINT("vapaee::token::exchange::aux_generate_sell_order()\n");
             PRINT(" owner: ", owner.to_string(), "\n");
             PRINT(" scope_buy: ", scope_buy.to_string(), "\n");
             PRINT(" scope_sell: ", scope_sell.to_string(), "\n");
             PRINT(" total: ", total.to_string(), "\n");            // CNT
             PRINT(" price: ", price.to_string(), "\n");
-            PRINT(" quantity: ", quantity.to_string(), "\n");
             
             sellorders buytable(get_self(), scope_buy.value);
             sellorders selltable(get_self(), scope_sell.value);
@@ -418,12 +464,12 @@ namespace vapaee {
             auto ptk_itr = tokenstable.find(price.symbol.code().raw());
             eosio_assert(atk_itr != tokenstable.end(), (string("Token ") + total.symbol.code().to_string() + " not registered registered").c_str());
             eosio_assert(ptk_itr != tokenstable.end(), (string("Token ") + price.symbol.code().to_string() + " not registered registered").c_str());
-            eosio_assert(atk_itr->precision == total.symbol.precision(), aux_error_1(total, atk_itr->precision).c_str());
-            eosio_assert(ptk_itr->precision == price.symbol.precision(), aux_error_1(price, ptk_itr->precision).c_str());
-            eosio_assert(quantity.symbol == price.symbol || quantity.symbol == total.symbol , (string("quantity token symbol ") + price.symbol.code().to_string() + " is different from total and price").c_str());
+            // eosio_assert(atk_itr->precision == total.symbol.precision(), aux_error_1(total, atk_itr->precision).c_str());
+            // eosio_assert(ptk_itr->precision == price.symbol.precision(), aux_error_1(price, ptk_itr->precision).c_str());
+            eosio_assert(price.symbol != total.symbol, (string("price token symbol ") + price.symbol.code().to_string() + " MUST be different from total").c_str());
 
-            uint64_t total_unit = pow(10.0, atk_itr->precision);
-            uint64_t price_unit = pow(10.0, ptk_itr->precision);            
+            uint64_t total_unit = pow(10.0, total.symbol.precision());
+            uint64_t price_unit = pow(10.0, price.symbol.precision());            
 
             // iterate over a list or buy order from the maximun price down
             for (auto b_ptr = buy_index.begin(); b_ptr != buy_index.end(); b_ptr = buy_index.begin()) {
@@ -477,9 +523,9 @@ namespace vapaee {
                         permission_level{owner,"active"_n},
                         get_self(),
                         "swapdeposit"_n,
-                        std::make_tuple(owner, b_ptr->owner, current_total, string("exchange made for ") + payment.to_string())
+                        std::make_tuple(owner, buyer, current_total, string("exchange made for ") + payment.to_string())
                     ).send();
-                    PRINT("   transfer ", current_total.to_string(), " to ", b_ptr->owner.to_string(),"\n");
+                    PRINT("   transfer ", current_total.to_string(), " to ", buyer.to_string(),"\n");
                         
                     // transfer to seller TLOS
                     action(
@@ -519,7 +565,11 @@ namespace vapaee {
                     PRINT("   converting fee ", total_fee.to_string(), " to earnings\n");
 
                     // saving the transaction in history
-                    current_inverse = vapaee::utils::inverse(inverse, price.symbol);
+                    current_inverse = vapaee::utils::inverse(current_price, payment.symbol);
+                    PRINT("   - payment:         ", payment.to_string(), " to earnings\n");
+                    PRINT("   - inverse:         ", inverse.to_string(), " to earnings\n");
+                    PRINT("   - current_price:   ", current_price.to_string(), " to earnings\n");
+                    PRINT("   - current_inverse: ", current_inverse.to_string(), " to earnings\n");
                     aux_register_transaction_in_history(buyer, seller, current_total, current_inverse, payment, buyer_fee, total_fee);
                     
                 } else {
@@ -596,16 +646,15 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::action_convert_deposits_to_earnings() ...\n");
         }
 
-        void action_order(name owner, name type, const asset & total, const asset & price, const asset & payment) {
+        void action_order(name owner, name type, const asset & total, const asset & price) {
             PRINT("vapaee::token::exchange::action_order()\n");
             PRINT(" owner: ", owner.to_string(), "\n");
             PRINT(" type: ", type.to_string(), "\n");      
             PRINT(" total: ", total.to_string(), "\n");      
             PRINT(" price: ", price.to_string(), "\n");      
-            PRINT(" payment: ", payment.to_string(), "\n");
             require_auth(owner);
 
-            aux_generate_order(owner, type, total, price, payment, owner);
+            aux_generate_order(owner, type, total, price, owner);
 
             PRINT("vapaee::token::exchange::action_order() ...\n");      
         }
@@ -617,7 +666,8 @@ namespace vapaee {
 
             // substract or remove deposit entry
             require_auth(owner);
-            aux_substract_deposits(owner, quantity, owner);
+            asset extended = aux_extend_asset(quantity);
+            aux_substract_deposits(owner, extended, owner);
 
             // send tokens
             tokens tokenstable(get_self(), get_self().value);
@@ -752,7 +802,7 @@ namespace vapaee {
 
             eosio_assert( quantity.is_valid(), "invalid quantity" );
             eosio_assert( quantity.amount > 0, "must transfer positive quantity" );
-            eosio_assert( quantity.symbol.precision() == st.precision, "symbol precision mismatch" );
+            eosio_assert( quantity.symbol.precision() == internal_precision, "symbol precision mismatch" );
             eosio_assert( memo.size() <= 256, "memo has more than 256 bytes" );
             auto ram_payer = has_auth( to ) ? to : from;
 
@@ -803,6 +853,8 @@ namespace vapaee {
                 PRINT(" receiver: ", receiver.to_string(), "\n");
                 eosio_assert(is_account(receiver), "receiver is not a valid account");
                 PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
+                quantity = aux_extend_asset(quantity);
+                PRINT(" quantity extended: ", quantity.to_string(), "\n");
                 aux_add_deposits(receiver, quantity, get_self());
             }
 
@@ -947,7 +999,6 @@ namespace vapaee {
             
             PRINT("vapaee::token::exchange::action_cancel_all_orders() ...\n");
         }
-
 
         string aux_error_1(const asset & amount, uint8_t precision) {
             return string("Token ") +

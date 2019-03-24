@@ -11,16 +11,30 @@ cleos push action snapsnapsnap add '["kate",9999999,1]' -p kate@active
 # register TLOS & ACORN token
 echo "-- register TLOS --" 
 cleos push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
-cleos push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
+echo "-- register VIITA --" 
+cleos push action vapaeetokens addtoken '["eosio.token","VIITA",4,"vapaeetokens"]' -p vapaeetokens@active
+echo "-- register VIICT --" 
+cleos push action vapaeetokens addtoken '["eosio.token","VIICT",0,"vapaeetokens"]' -p vapaeetokens@active
+echo "-- register QBE --" 
+cleos push action vapaeetokens addtoken '["eosio.token","QBE",4,"vapaeetokens"]' -p vapaeetokens@active
 echo "-- register ACORN --" 
 cleos push action vapaeetokens addtoken '["eosio.token","ACORN",4,"vapaeetokens"]' -p vapaeetokens@active
+echo "-- register EDNA --" 
+cleos push action vapaeetokens addtoken '["eosio.token","EDNA",4,"vapaeetokens"]' -p vapaeetokens@active
+echo "-- register TEACH --" 
+cleos push action vapaeetokens addtoken '["eosio.token","TEACH",4,"vapaeetokens"]' -p vapaeetokens@active
+echo "-- register ROBO --" 
+cleos push action vapaeetokens addtoken '["eosio.token","ROBO",4,"vapaeetokens"]' -p vapaeetokens@active
+echo "-- register VIITA --" 
+cleos push action vapaeetokens addtoken '["eosio.token","VIITA",4,"vapaeetokens"]' -p vapaeetokens@active
+
 
 echo "-- creating CNT token --" 
 cleos push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active
 echo "-- creating BOX token --" 
 cleos push action vapaeetokens create '["vapaeetokens","500000000.0000 BOX"]' -p vapaeetokens@active
 echo "-- creating VPE token --" 
-cleos push action vapaeetokens create '["vapaeetokens","1000000.0000 VPE"]' -p vapaeetokens@active
+cleos push action vapaeetokens create '["vapaeetokens","1000000.000000 VPE"]' -p vapaeetokens@active
 
 # ratio 1:1
 echo "-- set setsnapshot for CNT --" 

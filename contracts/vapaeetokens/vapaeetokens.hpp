@@ -120,10 +120,10 @@ CONTRACT vapaeetokens : public eosio::contract {
         };
 
         // "bob", "buy", "5.0000 CNT", "0.2000 TLOS", "1.0000 TLOS"
-        ACTION order(name owner, name type, const asset & total, const asset & price, const asset & payment) {
+        ACTION order(name owner, name type, const asset & total, const asset & price) {
             PRINT("\nACTION vapaeetokens.order()\n");
             vapaee::token::exchange e;
-            e.action_order(owner, type, total, price, payment);
+            e.action_order(owner, type, total, price);
         };
 
         ACTION withdraw(name owner, const asset & quantity) {

@@ -42,6 +42,21 @@ namespace vapaee {
             // print("vapaee::utils::inverse()\n");
             return inv;
         }
+
+        static asset payment(const asset &total, const asset &price ) {
+            print("vapaee::utils::payment()\n");
+            print(" total: ", total.to_string(), "\n");
+            print(" price: ", price.to_string(), "\n");
+            double T_amount = (double)total.amount;
+            double unit = (double)pow(10.0, total.symbol.precision());
+            double T_real = T_amount / unit;
+            int64_t amount = (int64_t) (T_real * price.amount);
+            asset pay = asset(amount, price.symbol);
+            
+            print("  pay: ", pay.to_string(), "\n");
+            print("vapaee::utils::payment() ...\n");
+            return pay;
+        }        
         
 
         // trim from start

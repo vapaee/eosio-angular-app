@@ -43,3 +43,26 @@ for (auto p = table.begin(); p != table.end(); p = table.begin()) {  // <------ 
 -- Cannot charge RAM to other accounts during notify.
 resulta que implementé un handler para manejar una transferencia que viene con parámetros en el memo y así poder crear una orden de compra.
 Resulta que no puedo cargar con RAM al usuario, si registro ese evento lo tengo que garpar desde el contrato.
+- modificar el código de la biblioteca de eosio para que tire un error con más datos
+  /usr/opt/eosio.cdt/1.4.1/include/eosiolib/name.hpp
+      constexpr explicit name( std::string_view str )
+      :value(0)
+      {
+         if( str.size() > 13 ) {
+            eosio_assert( false, (std::string("string is too long to be a valid name: ") + std::string(str)).c_str() );
+         }
+
+         auto n = std::min( str.size(), 12u );
+         for( decltype(n) i = 0; i < n; ++i ) {
+            value <<= 5;
+            value |= char_to_value( str[i] );
+         }
+         value <<= ( 4 + 5*(12 - n) );
+         if( str.size() == 13 ) {
+            uint64_t v = char_to_value( str[12] );
+            if( v > 0x0Full ) {
+               eosio_assert(false, (std::string("thirteenth character in name cannot be a letter that comes after j") + std::string(str)).c_str());
+            }
+            value |= v;
+         }
+      }
