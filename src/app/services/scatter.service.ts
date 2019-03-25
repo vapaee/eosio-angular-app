@@ -585,7 +585,7 @@ export class ScatterService {
         return this._connected;
     }
 
-    getTableRows(contract, scope, table, tkey, lowerb, upperb, limit, ktype, ipos) {
+    getTableRows(contract, scope, table, tkey, lowerb, upperb, limit, ktype, ipos): Promise<any> {
         console.log("ScatterService.getTableRows()");
         // https://github.com/EOSIO/eosjs-api/blob/master/docs/api.md#eos.getTableRows
         return new Promise<any>((resolve, reject) => {

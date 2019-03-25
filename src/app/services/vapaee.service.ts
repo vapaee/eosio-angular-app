@@ -75,46 +75,30 @@ export class VapaeeService {
     }
     // --------------------------------------------------------------
     // API
-    getTokens() {
+    getTokenStats(token): Promise<any> {
+        return this.utils.getTable("stat", {contract:token.contract, scope:token.symbol}).then(result => {
+            token.stat = result.rows[0];
+            return token;
+        });
+    }
+
+    getTokens(extended: boolean = true) {
         console.log("Vapaee.getTokens()");
 
-        return Promise.all<any>([
-            this.utils.getTable("tokens"),
-            this.utils.getTable("ordertables"),
-            this.utils.getTable("earnings"),
-        ]).then(result => {
-            
+        return this.utils.getTable("tokens").then(result => {
             var data = {
-                tokens:result[0].rows,
-                ordertables:result[1].rows,
-                earnings:result[2].rows,
-            };
-            /*
+                tokens: result.rows
+            }
+
+            if (!extended) return data;
+
+            var priomises = [];
             for (var i in data.tokens) {
-                data.tokens[i].slugid = this.decodeSlug(data.tokens[i].slugid);
-                var key = "id-" + data.tokens[i].id
-                data.map[key] = Object.assign({}, data.tokens[i]);
-                data.tokens[i] = data.map[key];
+                // console.log(data.tokens[i]);
+                priomises.push(this.getTokenStats(data.tokens[i]));
             }
 
-            for (var i in data.ordertables) {
-                Object.assign(data.map["id-" + data.ordertables[i].id], data.ordertables[i]);
-                data.ordertables[i] = data.map["id-" + data.ordertables[i].id];
-            }
-
-            for (var i in data.earnings) {
-                Object.assign(data.map["id-" + data.earnings[i].id], data.earnings[i]);
-                data.earnings[i] = data.map["id-" + data.earnings[i].id];
-            }
-
-            for (var i in data.tokens) {
-                var key = "id-" + data.tokens[i].id
-                this.tokens[data.map[key].slugid.str] = data.map[key];
-            }
-            */
-
-            console.log("getTokens() ----------> ", result, data);
-            return data;
+            return Promise.all<any>(priomises);
         });
 
     }    

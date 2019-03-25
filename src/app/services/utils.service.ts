@@ -231,7 +231,7 @@ export class Utils {
             limit?:number, 
             key_type?:string, 
             index_position?:string
-        } = {}) {
+        } = {}): Promise<any> {
 
         var _p = Object.assign({
             contract: this.contract, 
