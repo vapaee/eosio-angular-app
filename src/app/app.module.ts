@@ -23,8 +23,14 @@ import { RegisterPage } from './pages/register/register.page';
 import { ScatterService } from './services/scatter.service';
 import { BGBoxService } from './services/bgbox.service';
 import { CntService } from './services/cnt.service';
+import { VapaeeService } from './services/vapaee.service';
 
 import { CntRootPage } from './pages-cnt/root/cntroot.page';
+import { VpeRootPage } from './pages-vpe/root/vpe-root.page';
+import { VpeProfilePage } from './pages-vpe/profile/profile.page';
+import { TradePage } from './pages-vpe/trade/trade.page';
+import { TokensPage } from './pages-vpe/tokens/tokens.page';
+import { VpeHomePage } from './pages-vpe/home/home.page';
 import { ProfilePage } from './pages-cnt/profile/profile.page';
 import { InventoryPage } from './pages-cnt/inventory/inventory.page';
 import { CardsPage } from './pages-cnt/cards/cards.page';
@@ -45,7 +51,12 @@ import { AlbumsPage } from './pages-cnt/albums/albums.page';
         EosioAccountComponent,
         LoadingOverall,
         CntRootPage,
+        VpeRootPage,
         ProfilePage,
+        VpeProfilePage,
+        TradePage,
+        TokensPage,
+        VpeHomePage,
         InventoryPage,
         CardsPage,
         AlbumsPage
@@ -62,6 +73,7 @@ import { AlbumsPage } from './pages-cnt/albums/albums.page';
     providers: [
         ScatterService,
         BGBoxService,
+        VapaeeService,
         CntService,
         HttpClient,
         EosioTokenMathService

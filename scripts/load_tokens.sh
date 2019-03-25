@@ -11,22 +11,28 @@ cleos push action snapsnapsnap add '["kate",9999999,1]' -p kate@active
 # register TLOS & ACORN token
 echo "-- register TLOS --" 
 cleos push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io/", "/assets/logos/telos.png", "/assets/logos/telos.png", true]' -p vapaeetokens@active
 echo "-- register VIITA --" 
 cleos push action vapaeetokens addtoken '["eosio.token","VIITA",4,"vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["VIITA", "Viitasphere", "https://viitasphere.com/", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png", true]' -p vapaeetokens@active
 echo "-- register VIICT --" 
 cleos push action vapaeetokens addtoken '["eosio.token","VIICT",0,"vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["VIICT", "Viitasphere", "https://viitasphere.com/", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png", false]' -p vapaeetokens@active
 echo "-- register QBE --" 
 cleos push action vapaeetokens addtoken '["eosio.token","QBE",4,"vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["QBE", "Viitasphere", "", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png", true]' -p vapaeetokens@active
 echo "-- register ACORN --" 
 cleos push action vapaeetokens addtoken '["eosio.token","ACORN",4,"vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["ACORN", "Viitasphere", "http://acorns.fun/", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png", true]' -p vapaeetokens@active
 echo "-- register EDNA --" 
 cleos push action vapaeetokens addtoken '["eosio.token","EDNA",4,"vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["EDNA", "EDNA", "https://github.com/EDNA-LIFE", "/assets/logos/edna.png", "/assets/logos/edna-lg.png", true]' -p vapaeetokens@active
 echo "-- register TEACH --" 
 cleos push action vapaeetokens addtoken '["eosio.token","TEACH",4,"vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["TEACH", "Teachology", "http://teachology.io/", "/assets/logos/teach.svg", "/assets/logos/teach-lg.png", true]' -p vapaeetokens@active
 echo "-- register ROBO --" 
 cleos push action vapaeetokens addtoken '["eosio.token","ROBO",4,"vapaeetokens"]' -p vapaeetokens@active
-echo "-- register VIITA --" 
-cleos push action vapaeetokens addtoken '["eosio.token","VIITA",4,"vapaeetokens"]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://proxibots.io/", "/assets/logos/proxibots.png", "/assets/logos/proxibots-lg.png", true]' -p vapaeetokens@active
 
 
 echo "-- creating CNT token --" 

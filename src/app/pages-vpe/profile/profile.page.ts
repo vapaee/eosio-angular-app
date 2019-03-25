@@ -10,11 +10,11 @@ import { Profile } from 'src/app/services/utils.service';
 
 
 @Component({
-    selector: 'profile-page',
+    selector: 'vpe-profile-page',
     templateUrl: './profile.page.html',
     styleUrls: ['./profile.page.scss', '../common.page.scss']
 })
-export class ProfilePage implements OnInit, OnDestroy {
+export class VpeProfilePage implements OnInit, OnDestroy {
 
     private subscriber: Subscriber<Profile>;
    

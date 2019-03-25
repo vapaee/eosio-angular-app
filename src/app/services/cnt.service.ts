@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ScatterService } from './scatter.service';
-import { BGBoxService, Profile } from './bgbox.service';
+import { BGBoxService } from './bgbox.service';
 import BigNumber from 'bignumber.js';
+import { Profile } from './utils.service';
 
 @Injectable()
 export class CntService {
@@ -56,7 +57,7 @@ export class CntService {
             key_type: "i64",
             index_position: "2"
         }            
-        this.bgbox.getTable("apps", params).then(result => {
+        this.bgbox.utils.getTable("apps", params).then(result => {
             if (result.rows.length > 0) {
                 this.cntAuthorId = result.rows[0].id;
             }
@@ -160,7 +161,7 @@ export class CntService {
     
 
     private updateLogState() {
-        console.log("CntService.updateLogState()");
+        console.log("CntService.updateLogState()", [this]);
         this.loginState = "no-scatter";
         this.scatter.waitConnected.then(() => {
             this.loginState = "no-logged";

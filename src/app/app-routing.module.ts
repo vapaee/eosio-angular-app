@@ -12,15 +12,31 @@ import { CardsPage } from './pages-cnt/cards/cards.page';
 import { InventoryPage } from './pages-cnt/inventory/inventory.page';
 import { AlbumsPage } from './pages-cnt/albums/albums.page';
 import { ProfilePage } from './pages-cnt/profile/profile.page';
+import { VpeRootPage } from './pages-vpe/root/vpe-root.page';
+import { VpeProfilePage } from './pages-vpe/profile/profile.page';
+import { TradePage } from './pages-vpe/trade/trade.page';
+import { TokensPage } from './pages-vpe/tokens/tokens.page';
+import { VpeHomePage } from './pages-vpe/home/home.page';
 
 const routes: Routes = [
-  { path: '',                            data: { state: "root" }, redirectTo: '/eos/home', pathMatch: 'full' },
+  { path: '',                            data: { state: "root" }, redirectTo: '/exchange/home', pathMatch: 'full' },
   { path: 'cnt',                         data: { state: "root" }, component: CntRootPage,
     children: [
       { path: 'cards',                   data: { state: "cards" }, component: CardsPage },
       { path: 'inventory/:profile',      data: { state: "inventory" }, component: InventoryPage },
       { path: 'albums',                  data: { state: "albums" }, component: AlbumsPage },
       { path: 'profile/:profile',        data: { state: "profile" }, component: ProfilePage }
+    ]
+  },
+  { path: 'exchange',                    data: { state: "root" }, component: VpeRootPage,
+    children: [
+      { path: '',                        data: { state: "root" }, redirectTo: '/exchange/home', pathMatch: 'full' },
+      { path: 'home',                    data: { state: "home" }, component: VpeHomePage },
+      { path: 'trade/:scope',            data: { state: "trade" }, component: TradePage },
+      { path: 'tokens',                  data: { state: "tokens" }, component: TokensPage, children: [
+          { path: ':symbol',             data: { state: "edit" }, component: TokensPage }
+      ] },
+      { path: 'profile/:profile',        data: { state: "profile" }, component: VpeProfilePage }
     ]
   },
   { path: ':network',                    data: { state: "root" }, component: RootPage,
