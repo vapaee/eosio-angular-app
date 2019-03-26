@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ScatterService } from './scatter.service';
-import { Utils } from './utils.service';
+import { Utils, Token } from './utils.service';
 
 @Injectable()
 export class VapaeeService {
@@ -87,7 +87,7 @@ export class VapaeeService {
 
         return this.utils.getTable("tokens").then(result => {
             var data = {
-                tokens: result.rows
+                tokens: <Token[]>result.rows
             }
 
             if (!extended) return data;
@@ -98,7 +98,9 @@ export class VapaeeService {
                 priomises.push(this.getTokenStats(data.tokens[i]));
             }
 
-            return Promise.all<any>(priomises);
+            return Promise.all<any>(priomises).then(result => {
+                return data;
+            });
         });
 
     }    

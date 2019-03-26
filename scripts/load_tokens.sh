@@ -12,7 +12,7 @@ cleos push action snapsnapsnap add '["kate",9999999,1]' -p kate@active
 echo "-- register TLOS --" 
 cleos push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
 cleos push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
-cleos push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io/", "/assets/logos/telos.png", "/assets/logos/telos.png", true]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io/", "/assets/logos/telos.png", "/assets/logos/telos-lg.png", true]' -p vapaeetokens@active
 echo "-- register VIITA --" 
 cleos push action vapaeetokens addtoken '["eosio.token","VIITA",4,"vapaeetokens"]' -p vapaeetokens@active
 cleos push action vapaeetokens updatetoken '["VIITA", "Viitasphere", "https://viitasphere.com/", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png", true]' -p vapaeetokens@active

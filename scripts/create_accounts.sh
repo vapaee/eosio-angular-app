@@ -52,5 +52,52 @@ cleos push action eosio.token issue '["bob", "10.0000 ACORN", "memo ACORN"]' -p 
 cleos push action eosio.token issue '["tom", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
 cleos push action eosio.token issue '["kate", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
 
+echo "-------- eosio.token (VIITA) ---------"
+cleos push action eosio.token create '[ "eosio", "10000000000.0000 VIITA"]' -p eosio.token@active
+cleos push action eosio.token issue '["alice", "10.0000 VIITA", "memo VIITA"]' -p eosio@active
+cleos push action eosio.token issue '["bob", "10.0000 VIITA", "memo VIITA"]' -p eosio@active
+cleos push action eosio.token issue '["tom", "10.0000 VIITA", "memo VIITA"]' -p eosio@active
+cleos push action eosio.token issue '["kate", "10.0000 VIITA", "memo VIITA"]' -p eosio@active
+
+
+echo "-------- eosio.token (QBE) ---------"
+cleos push action eosio.token create '[ "eosio", "100000000.0000 QBE"]' -p eosio.token@active
+cleos push action eosio.token issue '["alice", "10.0000 QBE", "memo QBE"]' -p eosio@active
+cleos push action eosio.token issue '["bob", "10.0000 QBE", "memo QBE"]' -p eosio@active
+cleos push action eosio.token issue '["tom", "10.0000 QBE", "memo QBE"]' -p eosio@active
+cleos push action eosio.token issue '["kate", "10.0000 QBE", "memo QBE"]' -p eosio@active
+
+
+echo "-------- eosio.token (CNT) ---------"
+cleos push action eosio.token create '[ "eosio", "500000000.0000 CNT"]' -p eosio.token@active
+cleos push action eosio.token issue '["alice", "10.0000 CNT", "memo CNT"]' -p eosio@active
+cleos push action eosio.token issue '["bob", "10.0000 CNT", "memo CNT"]' -p eosio@active
+cleos push action eosio.token issue '["tom", "10.0000 CNT", "memo CNT"]' -p eosio@active
+cleos push action eosio.token issue '["kate", "10.0000 CNT", "memo CNT"]' -p eosio@active
+
+
+echo "-------- eosio.token (EDNA) ---------"
+cleos push action eosio.token create '[ "eosio", "1300000000.0000 EDNA"]' -p eosio.token@active
+cleos push action eosio.token issue '["alice", "10.0000 EDNA", "memo EDNA"]' -p eosio@active
+cleos push action eosio.token issue '["bob", "10.0000 EDNA", "memo EDNA"]' -p eosio@active
+cleos push action eosio.token issue '["tom", "10.0000 EDNA", "memo EDNA"]' -p eosio@active
+cleos push action eosio.token issue '["kate", "10.0000 EDNA", "memo EDNA"]' -p eosio@active
+
+
+echo "-------- eosio.token (TEACH) ---------"
+cleos push action eosio.token create '[ "eosio", "10000000000.0000 TEACH"]' -p eosio.token@active
+cleos push action eosio.token issue '["alice", "10.0000 TEACH", "memo TEACH"]' -p eosio@active
+cleos push action eosio.token issue '["bob", "10.0000 TEACH", "memo TEACH"]' -p eosio@active
+cleos push action eosio.token issue '["tom", "10.0000 TEACH", "memo TEACH"]' -p eosio@active
+cleos push action eosio.token issue '["kate", "10.0000 TEACH", "memo TEACH"]' -p eosio@active
+
+
+echo "-------- eosio.token (ROBO) ---------"
+cleos push action eosio.token create '[ "eosio", "1000000000.0000 ROBO"]' -p eosio.token@active
+cleos push action eosio.token issue '["alice", "10.0000 ROBO", "memo ROBO"]' -p eosio@active
+cleos push action eosio.token issue '["bob", "10.0000 ROBO", "memo ROBO"]' -p eosio@active
+cleos push action eosio.token issue '["tom", "10.0000 ROBO", "memo ROBO"]' -p eosio@active
+cleos push action eosio.token issue '["kate", "10.0000 ROBO", "memo ROBO"]' -p eosio@active
+
 
 # snapshot

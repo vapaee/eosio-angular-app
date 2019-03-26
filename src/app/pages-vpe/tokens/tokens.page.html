@@ -1,7 +1,26 @@
-<div class="container margin-top">
-    <div class="card text-white bg-dark">
+<div class="container">
+    <div class="card text-white bg-dark margin-top">
         <div class="card-body">
-            <h1></h1>
+            <h1>Tokens</h1>
         </div>
     </div>
+
+    <div class="card-deck">
+        <div class="row">
+            <div class="col-sm-12 col-md-6 col-lg-4" *ngFor="let token of tokens">
+                <div class="card text-white bg-dark margin-top">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            <img style="height:20px; width: 20px;" [src]="token.logo">
+                            {{token.appname}}
+                        </h4>
+                        <p class="card-text">{{token.stat ? token.stat.max_supply : ('0 ' + token.symbol)}}</p>
+                        <p class="card-text"><a [href]="token.website" target="_blank"><small class="text-muted">{{token.website}} &nbsp;</small></a></p>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>

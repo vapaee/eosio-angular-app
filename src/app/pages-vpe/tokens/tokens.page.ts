@@ -5,6 +5,7 @@ import { ScatterService } from 'src/app/services/scatter.service';
 import { BGBoxService } from 'src/app/services/bgbox.service';
 import { CntService } from 'src/app/services/cnt.service';
 import { VapaeeService } from 'src/app/services/vapaee.service';
+import { Token } from 'src/app/services/utils.service';
 
 
 @Component({
@@ -13,6 +14,8 @@ import { VapaeeService } from 'src/app/services/vapaee.service';
     styleUrls: ['./tokens.page.scss', '../common.page.scss']
 })
 export class TokensPage implements OnInit, OnDestroy {
+
+    tokens: Token[];
    
     constructor(
         public app: AppService,
@@ -29,7 +32,8 @@ export class TokensPage implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.vapaee.getTokens().then(data => {
-            console.log("TokensPage.ngOnInit()", [data]);
+            console.log("TokensPage.ngOnInit() ----->", [data]);
+            this.tokens = data.tokens;
         });
 
     }

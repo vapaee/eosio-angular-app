@@ -2,6 +2,24 @@ import BigNumber from "bignumber.js";
 import Eos from 'eosjs';
 import { Scatter, ScatterService } from "./scatter.service";
 
+
+export interface Token {
+    symbol: string,
+    precision: number,
+    contract: string,
+    appname: string,
+    website: string,
+    logo: string,
+    logolg: string,
+    verified: boolean,
+    stat: {
+        supply: string,
+        max_supply: string,
+        issuer?: string,
+        owner?: string,
+        issuers?: string[]
+    }
+}
 export interface SlugId {
     low?: string;
     str?: string;
