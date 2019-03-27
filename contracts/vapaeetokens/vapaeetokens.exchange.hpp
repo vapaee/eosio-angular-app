@@ -608,11 +608,13 @@ namespace vapaee {
                 ).send();
 
                 // create order entry
+                inverse = vapaee::utils::inverse(price, remaining.symbol);
                 selltable.emplace( ram_payer, [&]( auto& a ) {
                     a.id = id;
                     a.owner = owner;
                     a.price = price;       // CNT
-                    a.total = payment;    // TLOS 
+                    a.inverse = inverse;   // TLOS 
+                    a.total = payment;     // TLOS 
                     a.selling = remaining; // CNT
                     a.fee = total_fee;
                 });

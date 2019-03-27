@@ -5,15 +5,15 @@
         </div>
     </div>
     <div class="card text-white bg-dark margin-top">
-        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-scatter'}">
+        <div class="card-body" [ngClass]="{'d-none':vapaee.loginState != 'no-scatter'}">
             <div class="pull-right">
                 <span class="btn btn-sm btn-secondary" (click)="scatter.connectApp()">retry</span>
             </div>
             <span>Scatter not detected</span>
         </div>
-        <div class="card-body" [ngClass]="{'d-none':cnt.loginState != 'no-logged'}">
+        <div class="card-body" [ngClass]="{'d-none':vapaee.loginState != 'no-logged'}">
             <div class="pull-right">
-                <span class="btn btn-sm btn-secondary" (click)="cnt.login()">
+                <span class="btn btn-sm btn-secondary" (click)="vapaee.login()">
                     {{local.string.LoginWScatter}}
                 </span>
             </div>
@@ -21,9 +21,14 @@
         </div>
         <div class="card-body" [ngClass]="{'d-none':!scatter.logged}">
             <div class="pull-right">
-                <span class="btn btn-sm btn-secondary margin-left" (click)="scatter.logout()">Logout from Scatter</span>
+                <span class="btn btn-sm btn-secondary margin-left" (click)="vapaee.logout()">Logout from Scatter</span>
             </div>
             <span>Logged as '{{scatter.logged ? scatter.account.name : 'guest'}}'</span>
         </div>       
+    </div>
+    <div class="card text-white bg-dark">
+        <div class="card-body">
+            {{vapaee.loginState|json}}
+        </div>
     </div>
 </div>

@@ -2,6 +2,8 @@ import BigNumber from "bignumber.js";
 import Eos from 'eosjs';
 import { Scatter, ScatterService } from "./scatter.service";
 
+// vapaee exchange -------------------
+
 
 export interface Token {
     symbol: string,
@@ -20,6 +22,10 @@ export interface Token {
         issuers?: string[]
     }
 }
+
+// -------------------
+
+
 export interface SlugId {
     low?: string;
     str?: string;

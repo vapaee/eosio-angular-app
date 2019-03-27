@@ -7,6 +7,7 @@ import { CntService } from 'src/app/services/cnt.service';
 import { Subscriber } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Profile } from 'src/app/services/utils.service';
+import { VapaeeService } from 'src/app/services/vapaee.service';
 
 
 @Component({
@@ -16,7 +17,7 @@ import { Profile } from 'src/app/services/utils.service';
 })
 export class VpeProfilePage implements OnInit, OnDestroy {
 
-    private subscriber: Subscriber<Profile>;
+    private subscriber: Subscriber<string>;
    
     constructor(
         public app: AppService,
@@ -24,9 +25,9 @@ export class VpeProfilePage implements OnInit, OnDestroy {
         public scatter: ScatterService,
         public route: ActivatedRoute,
         public bgbox: BGBoxService,
-        public cnt: CntService,
+        public vapaee: VapaeeService,
     ) {
-        this.subscriber = new Subscriber<Profile>(this.onCntCurrentProfileChange.bind(this));
+        this.subscriber = new Subscriber<string>(this.onCntCurrentProfileChange.bind(this));
     }
 
     ngOnDestroy() {
@@ -36,22 +37,19 @@ export class VpeProfilePage implements OnInit, OnDestroy {
     ngOnInit() {
         console.log("ProfilePage.ngOnInit()");
         // this.cnt.updateLogState();
-        this.cnt.onCurrentProfileChange.subscribe(this.subscriber);
-        var profile = this.route.snapshot.paramMap.get('profile');
-        if (profile != "guest") {
-            this.cnt.fetchProfile(profile).then(this.cnt.setCurrentProfile.bind(this.cnt));
-        }
-        
+        this.vapaee.onCurrentAccountChange.subscribe(this.subscriber);
+        var profile = this.route.snapshot.paramMap.get('profile');       
     }
 
     onCntCurrentProfileChange(profile: Profile) {
-        var url = "/cnt/profile/" + profile.slugid.str;
+        var url = "/exchange/profile/";
+        if (profile) {
+            url += "profile.slugid.str";
+        } else {
+            url += "guest";
+        };
         console.log("ProfilePage.onCntCurrentProfileChange()", [profile], " --> ", url);
         this.app.navigate(url);
-    }
-
-    selectProfile(user) {
-        this.cnt.selectProfile(user);
     }
 
 }

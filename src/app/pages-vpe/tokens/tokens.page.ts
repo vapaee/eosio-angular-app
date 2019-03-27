@@ -15,7 +15,7 @@ import { Token } from 'src/app/services/utils.service';
 })
 export class TokensPage implements OnInit, OnDestroy {
 
-    tokens: Token[];
+    
    
     constructor(
         public app: AppService,
@@ -27,14 +27,15 @@ export class TokensPage implements OnInit, OnDestroy {
     ) {
     }
 
+    get tokens(): Token[] {
+        return this.vapaee.tokens;
+    }
+
     ngOnDestroy() {
     }
 
     ngOnInit() {
-        this.vapaee.getTokens().then(data => {
-            console.log("TokensPage.ngOnInit() ----->", [data]);
-            this.tokens = data.tokens;
-        });
+
 
     }
 }

@@ -6,6 +6,7 @@
             uint64_t id;
             name owner;
             asset price; // symbol_code_P - how much P per A unit
+            asset inverse; // symbol_code_A - inverse price 
             asset total; // symbol_code_P - how much P you want
             asset selling; // symbol_code_A - how much A you are selling
             asset fee;

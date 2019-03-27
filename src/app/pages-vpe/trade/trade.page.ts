@@ -4,6 +4,9 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 import { ScatterService } from 'src/app/services/scatter.service';
 import { BGBoxService } from 'src/app/services/bgbox.service';
 import { CntService } from 'src/app/services/cnt.service';
+import { ActivatedRoute } from '@angular/router';
+import { Token } from 'src/app/services/utils.service';
+import { VapaeeService } from 'src/app/services/vapaee.service';
 
 
 @Component({
@@ -12,6 +15,11 @@ import { CntService } from 'src/app/services/cnt.service';
     styleUrls: ['./trade.page.scss', '../common.page.scss']
 })
 export class TradePage implements OnInit, OnDestroy {
+
+    scope:string;
+    comodity:Token;
+    currency:Token;
+    
    
     constructor(
         public app: AppService,
@@ -19,7 +27,27 @@ export class TradePage implements OnInit, OnDestroy {
         public scatter: ScatterService,
         public bgbox: BGBoxService,
         public cnt: CntService,
+        public vapaee: VapaeeService,
+        public route: ActivatedRoute
+
     ) {
+        this.init();
+    }
+
+    async init() {
+        this.scope = this.route.snapshot.paramMap.get('scope');
+        var com:string = this.scope.split(".")[0];
+        var cur:string = this.scope.split(".")[1];        
+        this.comodity = await this.vapaee.getToken(com);
+        this.currency = await this.vapaee.getToken(cur);
+        this.vapaee.getSellOrders(this.comodity, this.currency),
+        this.vapaee.getBuyOrders(this.comodity, this.currency)
+        console.log("ORDERS:", this.orders);
+    }
+
+    get orders() {
+        var scope = this.vapaee.scopes[this.scope];
+        return scope ? scope.orders : {sell:[], buy:[]};
     }
 
     ngOnDestroy() {

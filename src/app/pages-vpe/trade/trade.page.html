@@ -1,7 +1,46 @@
 <div class="container margin-top">
     <div class="card text-white bg-dark">
         <div class="card-body">
-            <h1>Trade</h1>
+            <!--
+            <h1>Trade ({{scope}})</h1>
+            -->
         </div>
+        <hr>
+        <!--
+        <div><h4>orders</h4><pre>{{orders|json}}</pre></div>
+        --->
+        <div *ngFor="let order of orders.sell">
+            <div class="card">
+                <div class="card-body">
+                    <span><b>id: </b> {{order.id}}</span><br>
+                    <span><b>owner: </b> {{order.owner}}</span><br>
+                    <span><b>price: </b> {{order.price.toString()}}</span><br>
+                    <span><b>inverse: </b> {{order.inverse.toString()}}</span><br>
+                    <span><b>total: </b> {{order.total.toString()}}</span><br>
+                    <span><b>deposit: </b> {{order.deposit.toString()}}</span><br>
+                    <span><b>telos: </b> {{order.telos.toString()}}</span><br>
+                    <span><b>fee: </b> {{order.fee.toString()}}</span><br>
+                </div>                
+            </div>
+        </div>
+        <hr>
+        <div *ngFor="let order of orders.buy">
+                <div class="card">
+                    <div class="card-body">
+                        <span><b>id: </b> {{order.id}}</span><br>
+                        <span><b>owner: </b> {{order.owner}}</span><br>
+                        <span><b>price: </b> {{order.price.toString()}}</span><br>
+                        <span><b>inverse: </b> {{order.inverse.toString()}}</span><br>
+                        <span><b>total: </b> {{order.total.toString()}}</span><br>
+                        <span><b>deposit: </b> {{order.deposit.toString()}}</span><br>
+                        <span><b>telos: </b> {{order.telos.toString()}}</span><br>
+                        <span><b>fee: </b> {{order.fee.toString()}}</span><br>
+                    </div>                
+                </div>
+            </div>                
+        <hr>
+        <div><h4>comodity</h4><pre>{{comodity|json}}</pre></div>
+        <hr>
+        <div><h4>currency</h4><pre>{{currency|json}}</pre></div>
     </div>
 </div>
