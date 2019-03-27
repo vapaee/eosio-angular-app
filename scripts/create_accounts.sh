@@ -36,6 +36,7 @@ cleos set account permission appserver active '{"threshold": 1,"keys": [{"key": 
 echo "-------- eosio.token (TLOS) ---------"
 cd /var/www/eosio-angular-app/contracts/_examples/eosio.contracts/eosio.token
 if [[ src/eosio.token.cpp -nt eosio.token.wasm ]]; then
+    ## if [ ! -f /tmp/foo.txt ]; then
     eosio-cpp -o eosio.token.wasm src/eosio.token.cpp --abigen -I include
 fi
 cleos set contract eosio.token $PWD -p eosio.token@active
@@ -46,11 +47,11 @@ cleos push action eosio.token issue '["tom", "0.1234 TLOS", "memo 0 TLOS"]' -p e
 cleos push action eosio.token issue '["kate", "1.0000 TLOS", "memo 1 TLOS"]' -p eosio@active
 
 echo "-------- eosio.token (ACORN) ---------"
-cleos push action eosio.token create '[ "eosio", "1000000000.0000 ACORN"]' -p eosio.token@active
-cleos push action eosio.token issue '["alice", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
-cleos push action eosio.token issue '["bob", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
-cleos push action eosio.token issue '["tom", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
-cleos push action eosio.token issue '["kate", "10.0000 ACORN", "memo ACORN"]' -p eosio@active
+cleos push action eosio.token create '[ "eosio", "461168601842738.0000 ACORN"]' -p eosio.token@active
+cleos push action eosio.token issue '["alice", "100.0000 ACORN", "memo ACORN"]' -p eosio@active
+cleos push action eosio.token issue '["bob", "100.0000 ACORN", "memo ACORN"]' -p eosio@active
+cleos push action eosio.token issue '["tom", "100.0000 ACORN", "memo ACORN"]' -p eosio@active
+cleos push action eosio.token issue '["kate", "100.0000 ACORN", "memo ACORN"]' -p eosio@active
 
 echo "-------- eosio.token (VIITA) ---------"
 cleos push action eosio.token create '[ "eosio", "10000000000.0000 VIITA"]' -p eosio.token@active
