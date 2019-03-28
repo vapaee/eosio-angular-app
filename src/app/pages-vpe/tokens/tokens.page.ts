@@ -6,6 +6,7 @@ import { BGBoxService } from 'src/app/services/bgbox.service';
 import { CntService } from 'src/app/services/cnt.service';
 import { VapaeeService } from 'src/app/services/vapaee.service';
 import { Token } from 'src/app/services/utils.service';
+import { Subscriber } from 'rxjs';
 
 
 @Component({
@@ -16,7 +17,7 @@ import { Token } from 'src/app/services/utils.service';
 export class TokensPage implements OnInit, OnDestroy {
 
     
-   
+    
     constructor(
         public app: AppService,
         public local: LocalStringsService,
@@ -25,11 +26,13 @@ export class TokensPage implements OnInit, OnDestroy {
         public cnt: CntService,
         public vapaee: VapaeeService
     ) {
+        
     }
 
     get tokens(): Token[] {
         return this.vapaee.tokens;
     }
+
 
     ngOnDestroy() {
     }

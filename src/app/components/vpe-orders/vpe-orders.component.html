@@ -1,0 +1,50 @@
+<div class="row">
+    <div class="col-sm-6">
+        <table class="table right-aligned complete">
+            <thead>
+                <tr class="text-center">
+                    <th>sum</th>
+                    <th>total</th>
+                    <th>amount</th>
+                    <th>price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let order of orders.sell">
+                    <td>{{order.telos.toString()}}</td>
+                    <td>{{order.telos.toString()}}</td>
+                    <td>{{order.total.toString()}}</td>
+                    <td>{{order.price.toString()}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-6">
+        <table class="table right-aligned complete">
+            <thead>
+                <tr class="text-center">
+                    <th>price</th>
+                    <th>amount</th>
+                    <th>total</th>
+                    <th>sum</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let order of orders.buy">
+                    <td>{{order.price.toString()}}</td>
+                    <td>{{order.total.toString()}}</td>
+                    <td>{{order.telos.toString()}}</td>
+                    <td>{{order.telos.toString()}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>    
+
+
+
+<!--- 
+<div class="text-left margin-top-xxxl">
+    <pre>{{orders.sell|json}}</pre>
+</div>  
+-->

@@ -7,6 +7,7 @@ import { CntService } from 'src/app/services/cnt.service';
 import { ActivatedRoute } from '@angular/router';
 import { Token } from 'src/app/services/utils.service';
 import { VapaeeService } from 'src/app/services/vapaee.service';
+import { Subscriber } from 'rxjs';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class TradePage implements OnInit, OnDestroy {
     scope:string;
     comodity:Token;
     currency:Token;
-    
+    private subscriber: Subscriber<string>;
    
     constructor(
         public app: AppService,
@@ -31,8 +32,8 @@ export class TradePage implements OnInit, OnDestroy {
         public route: ActivatedRoute
 
     ) {
-        this.init();
-    }
+        this.subscriber = new Subscriber<string>(this.onStateChange.bind(this));
+    }      
 
     async init() {
         this.scope = this.route.snapshot.paramMap.get('scope');
@@ -47,12 +48,26 @@ export class TradePage implements OnInit, OnDestroy {
 
     get orders() {
         var scope = this.vapaee.scopes[this.scope];
-        return scope ? scope.orders : {sell:[], buy:[]};
+        return scope ? scope.orders : {sell:[],buy:[]};
+    }
+
+    get tokens() {
+        return this.vapaee.tokens;
     }
 
     ngOnDestroy() {
+        this.subscriber.unsubscribe();
     }
 
     ngOnInit() {
+        this.init();
+        this.app.onStateChange.subscribe(this.subscriber);
     }
+
+    onStateChange(state:string) {
+        console.log("TradePage.onStateChange("+state+")");
+        if (state == "trade") {
+            this.init();
+        }
+    } 
 }

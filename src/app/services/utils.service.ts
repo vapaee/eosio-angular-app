@@ -14,6 +14,7 @@ export interface Token {
     logo: string,
     logolg: string,
     verified: boolean,
+    scope: string,
     stat: {
         supply: string,
         max_supply: string,

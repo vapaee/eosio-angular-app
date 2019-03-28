@@ -21,7 +21,7 @@ cleos push action vapaeetokens addtoken '["eosio.token","VIICT",0,"vapaeetokens"
 cleos push action vapaeetokens updatetoken '["VIICT", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png", false]' -p vapaeetokens@active
 echo "-- register QBE --" 
 cleos push action vapaeetokens addtoken '["eosio.token","QBE",4,"vapaeetokens"]' -p vapaeetokens@active
-cleos push action vapaeetokens updatetoken '["QBE", "Qubicles", "", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png", true]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png", true]' -p vapaeetokens@active
 echo "-- register ACORN --" 
 cleos push action vapaeetokens addtoken '["eosio.token","ACORN",4,"vapaeetokens"]' -p vapaeetokens@active
 cleos push action vapaeetokens updatetoken '["ACORN", "ACORN", "http://acorns.fun", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png", true]' -p vapaeetokens@active

@@ -1,14 +1,68 @@
-<div class="container margin-top">
+<div class="container-fluid margin-top">
     <div class="card text-white bg-dark">
-        <div class="card-body">
-            <!--
-            <h1>Trade ({{scope}})</h1>
-            -->
+        <div class="card-body padding">
+            <div class="row">
+                <div class="col-sm-4 col-md-3  col-padding-right margin-top">
+                    &nbsp;
+                </div>
+                <div class="col-sm-8 col-md-9 col-padding-left margin-top">
+                    <h1>
+                        <img style="height:40px; width: 40px; margin-top:-6px" [src]="comodity ? comodity.logo : '#'">
+                        Trade
+                        <small class="text-muted">({{scope}})</small>
+                    </h1>
+                </div>
+            </div>
         </div>
-        <hr>
+    </div>
+    <div class="row">
+        <div class="col-sm-4 col-md-3  col-padding-right">
+            <div class="card text-white bg-dark margin-top">
+                <div class="card-body padding">
+                    <vpe-tokens [tokens]="tokens"></vpe-tokens>
+                </div>
+            </div>
+            <div class="card text-white bg-dark margin-top">
+                <div class="card-body padding">
+                    <vpe-wallet></vpe-wallet>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8 col-md-9 col-padding-left">
+            <div class="card text-white bg-dark margin-top">
+                <div class="card-body padding">
+                    <vpe-chart></vpe-chart>
+                </div>
+            </div>
+            <div class="card text-white bg-dark margin-top">
+                <div class="card-body padding">
+                    <vpe-order-editor></vpe-order-editor>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8 col-md-9 col-padding-right">
+                    <div class="card text-white bg-dark margin-top">
+                        <div class="card-body padding">
+                            <vpe-orders [orders]="orders"></vpe-orders>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 col-md-3 col-padding-left">
+                    <div class="card text-white bg-dark margin-top">
+                        <div class="card-body padding">
+                            <vpe-history></vpe-history>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
         <!--
-        <div><h4>orders</h4><pre>{{orders|json}}</pre></div>
-        --->
         <div *ngFor="let order of orders.sell">
             <div class="card">
                 <div class="card-body">
@@ -39,8 +93,8 @@
                 </div>
             </div>                
         <hr>
+     
         <div><h4>comodity</h4><pre>{{comodity|json}}</pre></div>
         <hr>
         <div><h4>currency</h4><pre>{{currency|json}}</pre></div>
-    </div>
-</div>
+           --->

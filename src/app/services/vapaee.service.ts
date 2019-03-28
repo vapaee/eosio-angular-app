@@ -255,9 +255,9 @@ export class VapaeeService {
             }
 
             for (var i in data.tokens) {
+                data.tokens[i].scope = data.tokens[i].symbol.toLowerCase() + ".tlos";
                 if (data.tokens[i].symbol == "TLOS") {
                     this.telos = data.tokens[i];
-                    break;
                 }
             }            
 
@@ -319,11 +319,13 @@ export class Asset {
 export interface TableMap {
     [key: string]: {
         scope: string,
-        orders: {
-            sell: Order[],
-            buy: Order[]
-        }
+        orders: TokenOrders
     };
+}
+
+export interface TokenOrders {
+    sell:Order[],
+    buy:Order[]
 }
 
 export interface Order {
