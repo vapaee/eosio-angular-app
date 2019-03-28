@@ -412,7 +412,7 @@ namespace vapaee {
             history table(get_self(), scope.value);
             table.emplace(get_self(), [&](auto & a){
                 a.id = table.available_primary_key();
-                a.date = current_time();
+                a.date = time_point_sec(now());
                 a.buyer = buyer;
                 a.seller = seller;
                 a.amount = amount;

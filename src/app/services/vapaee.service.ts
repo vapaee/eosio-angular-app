@@ -18,9 +18,9 @@ export class VapaeeService {
     public tokens: Token[];
     public scopes: TableMap;
     public utils: Utils;
-    public logged: String;
     public current: String;
     public contract:string;   
+    public deposits: any;
     public onLoggedAccountChange:Subject<String> = new Subject();
     public onCurrentAccountChange:Subject<String> = new Subject();
     vapaeetokens:string = "vapaeetokens";
@@ -34,13 +34,12 @@ export class VapaeeService {
         private scatter: ScatterService
         ) {
         this.scopes = {};
-        this.logged = null;
         this.current = null;
         this.contract = this.vapaeetokens;
         this.scatter.onLogggedStateChange.subscribe(this.onLoggedChange.bind(this));
         this.updateLogState();
         this.utils = new Utils(this.contract, this.scatter);
-        this.getTokens().then(data => {
+        this.fetchTokens().then(data => {
             this.tokens = data.tokens;
             this.tokens.sort(function(a:Token, b:Token){
                 if(a.appname < b.appname) return -1;
@@ -49,6 +48,10 @@ export class VapaeeService {
             });
             this.setReady();
         });        
+    }
+
+    get logged() {
+        return this.scatter.logged ? this.scatter.account.name : null;
     }
 
     // --
@@ -66,28 +69,24 @@ export class VapaeeService {
     onLogout() {
         console.log("VapaeeService.onLogout()");
         this.resetCurrentAccount(null);
-        this.logged = null;
         this.updateLogState();
         this.onLoggedAccountChange.next(this.logged);
     }
     
     onLogin(name:string) {
         console.log("VapaeeService.onLogin()", name);
-        this.logged = name;
         this.resetCurrentAccount(name);
+        this.getDeposits();
         this.updateLogState();
         this.onLoggedAccountChange.next(this.logged);
     }
 
     onLoggedChange() {
         if (this.scatter.logged) {
-            var trigger = this.scatter.account.name != this.logged;
-            if (!this.logged) this.onLogin(this.scatter.account.name);
-            console.log(trigger, " ------> this.onLoggedAccountChange.next(this.logged)");
-            if (trigger) this.onLoggedAccountChange.next(this.logged);
-            this.onLogout();
+            this.onLogin(this.scatter.account.name);
+            this.onLoggedAccountChange.next(this.logged);
         } else {
-            if (this.logged) this.onLogout();
+            this.onLogout();
         }
     }
 
@@ -123,18 +122,75 @@ export class VapaeeService {
             return this.getTokenNow(sym);
         });
     }
+
+    async getDeposits(): Promise<any> {
+        console.log("VapaeeService.getDeposits()");
+        return this.waitReady.then(async _ => {
+            this.deposits = [];
+            if (this.logged) {
+                var result = await this.fetchDeposits(this.logged);
+                console.log("*************************", result);
+                for (var i in result.rows) {
+                    this.deposits.push(new Asset(result.rows[i].amount, this));
+                }
+            }
+            console.log("this.deposits ---------------->", this.deposits);
+            return this.deposits;
+        });
+    }
+
+    async getTransactionHistory(comodity:Token, currency:Token, force:boolean = false): Promise<any> {
+        var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
+        if (comodity == this.telos) {
+            scope = currency.symbol.toLowerCase() + "." + comodity.symbol.toLowerCase();
+        }
+        var aux = null;
+        var result = null;
+        aux = this.waitReady.then(async _ => {
+            var history = await this.fetchHistory(scope);
+            console.log("-------------");
+            console.log("History crudo:", history);
+            this.scopes[scope] = this.auxCreateScope(scope);
+            this.scopes[scope].history = [];
+
+            for (var i=0; i < history.rows.length; i++) {
+                var transaction:HistoryTx = {
+                    id: history.rows[i].id,
+                    amount: new Asset(history.rows[i].amount, this),
+                    payment: new Asset(history.rows[i].payment, this),
+                    buyfee: new Asset(history.rows[i].buyfee, this),
+                    sellfee: new Asset(history.rows[i].sellfee, this),
+                    price: new Asset(history.rows[i].price, this),
+                    buyer: history.rows[i].buyer,
+                    seller: history.rows[i].seller,
+                    date: new Date(history.rows[i].date)
+                }
+
+                this.scopes[scope].history.push(transaction);
+            }
+
+            console.log("History final:", this.scopes[scope].history);
+            console.log("-------------");
+            return history;
+        });
+
+        if (this.scopes[scope] && !force) {
+            result = this.scopes[scope].history;
+        } else {
+            result = aux;
+        }
+        return result;
+    }
+
     async getSellOrders(comodity:Token, currency:Token, force:boolean = false): Promise<any> {
         var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
         var aux = null;
         var result = null;
         aux = this.waitReady.then(async _ => {
-            var orders = await this.getOrders(scope);
+            var orders = await this.fetchOrders(scope);
             console.log("-------------");
             console.log("Sell crudo:", orders);
-            this.scopes[scope] = this.scopes[scope] || {
-                scope: scope,
-                orders: { sell: [], buy: [] }
-            };
+            this.scopes[scope] = this.auxCreateScope(scope);
             this.scopes[scope].orders.sell = [];
             for (var i=0; i < orders.rows.length; i++) {
                 var order:Order = {
@@ -182,13 +238,10 @@ export class VapaeeService {
         var aux = null;
         var result = null;
         aux = this.waitReady.then(async _ => {
-            var orders = await this.getOrders(invere_scope);
+            var orders = await this.fetchOrders(invere_scope);
             console.log("-------------");
             console.log("Buy crudo:", orders);
-            this.scopes[scope] = this.scopes[scope] || {
-                scope: scope,
-                orders: { sell: [], buy: [] }
-            };
+            this.scopes[scope] = this.auxCreateScope(scope);
             this.scopes[scope].orders.buy = [];
             for (var i=0; i < orders.rows.length; i++) {
                 var order:Order = {
@@ -232,22 +285,44 @@ export class VapaeeService {
     }    
     //
     // --------------------------------------------------------------
-    // Fetch Aux functions
-    private getOrders(scope): Promise<any> {
+    // Aux functions
+
+    private auxCreateScope(scope:string) {
+        return this.scopes[scope] || {
+            scope: scope,
+            orders: { sell: [], buy: [] },
+            history: []
+        };        
+    }
+
+    private fetchDeposits(account): Promise<any> {
+        return this.utils.getTable("deposits", {scope:account}).then(result => {
+            return result;
+        });
+    }
+
+
+    private fetchOrders(scope): Promise<any> {
         return this.utils.getTable("sellorders", {scope:scope}).then(result => {
             return result;
         });
     }
 
-    private getTokenStats(token): Promise<any> {
+    private fetchHistory(scope): Promise<any> {
+        return this.utils.getTable("history", {scope:scope}).then(result => {
+            return result;
+        });
+    }
+
+    private fetchTokenStats(token): Promise<any> {
         return this.utils.getTable("stat", {contract:token.contract, scope:token.symbol}).then(result => {
             token.stat = result.rows[0];
             return token;
         });
     }
 
-    private getTokens(extended: boolean = true) {
-        console.log("Vapaee.getTokens()");
+    private fetchTokens(extended: boolean = true) {
+        console.log("Vapaee.fetchTokens()");
 
         return this.utils.getTable("tokens").then(result => {
             var data = {
@@ -266,7 +341,7 @@ export class VapaeeService {
             var priomises = [];
             for (var i in data.tokens) {
                 // console.log(data.tokens[i]);
-                priomises.push(this.getTokenStats(data.tokens[i]));
+                priomises.push(this.fetchTokenStats(data.tokens[i]));
             }
 
             return Promise.all<any>(priomises).then(result => {
@@ -305,8 +380,22 @@ export class Asset {
         console.assert(!!this.token, "ERROR: string malformed of token not foun:", text)
     }
 
-    toString(): string {
-        return "" + this.amount + " " + this.token.symbol.toUpperCase();
+    valueToString(decimals:number = -1): string {
+        var parts = ("" + this.amount).split(".");
+        var integer = parts[0];
+        var precision = this.token.precision;
+        var decimal = (parts.length==2 ? parts[1] : "");
+        if (decimals != -1) {
+            precision = decimals;
+        }
+        for (var i=decimal.length; i<precision; i++) {
+            decimal += "0";
+        }
+        return integer + "." + decimal;
+    }
+
+    toString(decimals:number = -1): string {
+        return this.valueToString(decimals) + " " + this.token.symbol.toUpperCase();
     }
 
     inverse(token: Token): Asset {
@@ -319,7 +408,8 @@ export class Asset {
 export interface TableMap {
     [key: string]: {
         scope: string,
-        orders: TokenOrders
+        orders: TokenOrders,
+        history: HistoryTx[]
     };
 }
 
@@ -328,18 +418,25 @@ export interface TokenOrders {
     buy:Order[]
 }
 
-export interface Order {
-    id?: number;
+export interface HistoryTx {
+    id: number;
     price: Asset;
-    inverse?: Asset;
+    amount: Asset;
+    payment: Asset;
+    buyfee: Asset;
+    sellfee: Asset;
+    buyer: string;
+    seller: string;
+    date: Date;
+}
+
+export interface Order {
+    id: number;
+    price: Asset;
+    inverse: Asset;
     total: Asset;
-    deposit?: Asset;
+    deposit: Asset;
     telos: Asset;
     fee: Asset;
-    owner?: string;
-
-    // price: "1.10000000 TLOS", total: "7.70000000 TLOS", selling: "7.00000000 CNT"
-    // price: OK
-    // total: selling
-    // telos: total o selling. Ha que fijarse
+    owner: string;
 }

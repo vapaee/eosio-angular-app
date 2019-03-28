@@ -66,3 +66,7 @@ Resulta que no puedo cargar con RAM al usuario, si registro ese evento lo tengo 
             value |= v;
          }
       }
+- el datatype time no se debe usar para representar el tiempo. Hay dos variantes que se pueden usar:
+  time_point_sec y time_point. El segundo soporta milisegundos y el primero sólo segundos
+  time_point_sec date = time_point_sec(now());
+  

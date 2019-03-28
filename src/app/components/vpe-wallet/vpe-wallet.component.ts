@@ -9,6 +9,7 @@ import { EventEmitter } from '@angular/core';
 })
 export class VpeWalletComponent implements OnChanges {
 
+    @Input() public deposits: any[];
     constructor() {
         
     }

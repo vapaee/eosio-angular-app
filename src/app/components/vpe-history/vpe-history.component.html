@@ -1,13 +1,21 @@
-<div class="card">
-    <div class="card-header">
-        <div class="text-xl">history</div>
-    </div>
-    <div class="card-body">
-        transaction history
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table right-aligned complete">
+            <thead>
+                <tr>
+                    <th>date</th>
+                    <th>price</th>
+                    <th>amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let tx of history">
+                    <td>{{tx.date | date : "HH:mm:ss"}}</td>
+                    <td>{{tx.price.valueToString(8)}}</td>
+                    <td>{{tx.amount.valueToString(8)}}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
-<!-- 
-<div class="text-left margin-top-xxxl">
-    <pre>{{account|json}}</pre>
-</div>
--->
+

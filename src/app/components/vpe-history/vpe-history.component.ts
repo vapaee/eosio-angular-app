@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
+import { HistoryTx } from 'src/app/services/vapaee.service';
 
 
 @Component({
@@ -9,6 +10,7 @@ import { EventEmitter } from '@angular/core';
 })
 export class VpeHistoryComponent implements OnChanges {
 
+    @Input() public history: HistoryTx[];
     constructor() {
         
     }

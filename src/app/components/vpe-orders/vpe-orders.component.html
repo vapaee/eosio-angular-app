@@ -11,10 +11,10 @@
             </thead>
             <tbody>
                 <tr *ngFor="let order of orders.sell">
-                    <td>{{order.telos.toString()}}</td>
-                    <td>{{order.telos.toString()}}</td>
-                    <td>{{order.total.toString()}}</td>
-                    <td>{{order.price.toString()}}</td>
+                    <td>{{order.telos.valueToString()}}</td>
+                    <td>{{order.telos.valueToString()}}</td>
+                    <td>{{order.total.valueToString(8)}}</td>
+                    <td>{{order.price.valueToString(8)}}</td>
                 </tr>
             </tbody>
         </table>
@@ -31,20 +31,12 @@
             </thead>
             <tbody>
                 <tr *ngFor="let order of orders.buy">
-                    <td>{{order.price.toString()}}</td>
-                    <td>{{order.total.toString()}}</td>
-                    <td>{{order.telos.toString()}}</td>
-                    <td>{{order.telos.toString()}}</td>
+                    <td>{{order.price.valueToString(8)}}</td>
+                    <td>{{order.total.valueToString(8)}}</td>
+                    <td>{{order.telos.valueToString()}}</td>
+                    <td>{{order.telos.valueToString()}}</td>
                 </tr>
             </tbody>
         </table>
     </div>
-</div>    
-
-
-
-<!--- 
-<div class="text-left margin-top-xxxl">
-    <pre>{{orders.sell|json}}</pre>
-</div>  
--->
+</div>

@@ -41,9 +41,20 @@ export class TradePage implements OnInit, OnDestroy {
         var cur:string = this.scope.split(".")[1];        
         this.comodity = await this.vapaee.getToken(com);
         this.currency = await this.vapaee.getToken(cur);
-        this.vapaee.getSellOrders(this.comodity, this.currency),
-        this.vapaee.getBuyOrders(this.comodity, this.currency)
+        this.vapaee.getSellOrders(this.comodity, this.currency);
+        this.vapaee.getBuyOrders(this.comodity, this.currency);
+        this.vapaee.getTransactionHistory(this.comodity, this.currency);
+        this.vapaee.getDeposits();
         console.log("ORDERS:", this.orders);
+    }
+
+    get deposits() {
+        return this.vapaee.deposits;
+    }
+
+    get history() {
+        var scope = this.vapaee.scopes[this.scope];
+        return scope ? scope.history : [];
     }
 
     get orders() {

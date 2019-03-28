@@ -323,14 +323,18 @@ export class ScatterService {
     resetIdentity() {
         console.log("ScatterService.resetIdentity()");
         this.error = "";
-        // this.eos = null;
+        var trigger = false;
         if (this.lib) {
+            if (this.lib.identity) {
+                trigger = true;
+            }
             this.lib.identity = null;
             if (!this.lib.forgotten) {
                 this.lib.forgotten = true;
                 this.lib.forgetIdentity();
             }
         }
+        if (trigger) this.onLogggedStateChange.next(true);
     }
 
     private resetPromises() {
@@ -439,6 +443,7 @@ export class ScatterService {
         this.queryAccountData(this.account.name).then(account => {
             this.account.data = account;
             console.log("this.account: " , [this.account]);
+            this.onLogggedStateChange.next(true);
         });
     }
 
