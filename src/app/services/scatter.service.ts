@@ -323,18 +323,14 @@ export class ScatterService {
     resetIdentity() {
         console.log("ScatterService.resetIdentity()");
         this.error = "";
-        var trigger = false;
         if (this.lib) {
-            if (this.lib.identity) {
-                trigger = true;
-            }
             this.lib.identity = null;
             if (!this.lib.forgotten) {
                 this.lib.forgotten = true;
                 this.lib.forgetIdentity();
             }
         }
-        if (trigger) this.onLogggedStateChange.next(true);
+        this.onLogggedStateChange.next(true);
     }
 
     private resetPromises() {

@@ -50,8 +50,13 @@ export class VapaeeService {
         });        
     }
 
+    // getters ------------
     get logged() {
         return this.scatter.logged ? this.scatter.account.name : null;
+    }
+
+    get account() {
+        return this.scatter.logged ? this.scatter.account : {};
     }
 
     // --
@@ -82,15 +87,16 @@ export class VapaeeService {
     }
 
     onLoggedChange() {
+        console.log("VapaeeService.onLoggedChange()");
         if (this.scatter.logged) {
             this.onLogin(this.scatter.account.name);
-            this.onLoggedAccountChange.next(this.logged);
         } else {
             this.onLogout();
         }
     }
 
     resetCurrentAccount(profile:String) {
+        console.log("VapaeeService.resetCurrentAccount() current:", this.current, "next:", profile);
         if (this.current != profile) {
             this.current = profile;
             this.onCurrentAccountChange.next(this.current);
@@ -129,12 +135,10 @@ export class VapaeeService {
             this.deposits = [];
             if (this.logged) {
                 var result = await this.fetchDeposits(this.logged);
-                console.log("*************************", result);
                 for (var i in result.rows) {
                     this.deposits.push(new Asset(result.rows[i].amount, this));
                 }
             }
-            console.log("this.deposits ---------------->", this.deposits);
             return this.deposits;
         });
     }
@@ -168,6 +172,12 @@ export class VapaeeService {
 
                 this.scopes[scope].history.push(transaction);
             }
+
+            this.scopes[scope].history.sort(function(a:HistoryTx, b:HistoryTx){
+                if(a.date < b.date) return 1;
+                if(a.date > b.date) return -1;
+                return 0;
+            });            
 
             console.log("History final:", this.scopes[scope].history);
             console.log("-------------");
@@ -214,8 +224,8 @@ export class VapaeeService {
 
 
             this.scopes[scope].orders.sell.sort(function(a:Order, b:Order){
-                if(a.price.amount < b.price.amount) return 1;
-                if(a.price.amount > b.price.amount) return -1;
+                if(a.price.amount > b.price.amount) return 1;
+                if(a.price.amount < b.price.amount) return -1;
                 return 0;
             });
 

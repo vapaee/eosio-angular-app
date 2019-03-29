@@ -27,7 +27,8 @@ export class VpeProfilePage implements OnInit, OnDestroy {
         public bgbox: BGBoxService,
         public vapaee: VapaeeService,
     ) {
-        this.subscriber = new Subscriber<string>(this.onCntCurrentProfileChange.bind(this));
+        this.subscriber = new Subscriber<string>(this.onCntCurrentAccountChange.bind(this));
+        this.onCntCurrentAccountChange('guest');
     }
 
     ngOnDestroy() {
@@ -41,14 +42,15 @@ export class VpeProfilePage implements OnInit, OnDestroy {
         var profile = this.route.snapshot.paramMap.get('profile');       
     }
 
-    onCntCurrentProfileChange(profile: Profile) {
+    onCntCurrentAccountChange(account: string) {
+        console.log("VaeProfilePage.onCntCurrentAccountChange() ----------------->", account);
         var url = "/exchange/profile/";
-        if (profile) {
-            url += "profile.slugid.str";
+        if (account) {
+            url += account;
         } else {
             url += "guest";
         };
-        console.log("ProfilePage.onCntCurrentProfileChange()", [profile], " --> ", url);
+        console.log("accountPage.onCntCurrentAccountChange()", [account], " --> ", url);
         this.app.navigate(url);
     }
 

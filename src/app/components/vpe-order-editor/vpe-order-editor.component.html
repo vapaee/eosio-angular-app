@@ -1,13 +1,17 @@
-<div class="card">
-    <div class="card-header">
-        <div class="text-xl">order editor</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div [hidden]="!vapaee.logged" class="pull-right">
+            <small class="text-muted" (click)="vapaee.login()">
+                {{local.string.LoggedAs}} '{{vapaee.account.name}}'
+            </small>            
+        </div>
+        <div class="text-md">{{local.string.OrderForm}}</div>
     </div>
-    <div class="card-body">
-        fields and buttones for order editor
+    <div class="col-sm-12">
+        <div [hidden]="vapaee.logged" class="pull-left margin-top">
+            <span class="btn btn-sm btn-secondary" (click)="vapaee.login()">
+                {{local.string.LoginWScatter}}
+            </span>
+        </div>
     </div>
 </div>
-<!-- 
-<div class="text-left margin-top-xxxl">
-    <pre>{{account|json}}</pre>
-</div>
--->

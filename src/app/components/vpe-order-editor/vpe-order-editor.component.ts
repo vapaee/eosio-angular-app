@@ -1,5 +1,7 @@
 import { Component, Input, OnChanges, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
+import { VapaeeService } from 'src/app/services/vapaee.service';
+import { LocalStringsService } from 'src/app/services/common/common.services';
 
 
 @Component({
@@ -9,7 +11,10 @@ import { EventEmitter } from '@angular/core';
 })
 export class VpeOrderEditorComponent implements OnChanges {
 
-    constructor() {
+    constructor(
+        public vapaee: VapaeeService,
+        public local: LocalStringsService
+        ) {
         
     }
 

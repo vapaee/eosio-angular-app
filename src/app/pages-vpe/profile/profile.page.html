@@ -17,18 +17,18 @@
                     {{local.string.LoginWScatter}}
                 </span>
             </div>
-            <span>You are not logged in</span>
+            <span>{{local.string.NotLogged}}</span>
         </div>
-        <div class="card-body" [ngClass]="{'d-none':!scatter.logged}">
+        <div class="card-body" [ngClass]="{'d-none':!vapaee.logged}">
             <div class="pull-right">
                 <span class="btn btn-sm btn-secondary margin-left" (click)="vapaee.logout()">Logout from Scatter</span>
             </div>
-            <span>Logged as '{{scatter.logged ? scatter.account.name : 'guest'}}'</span>
+            <span>{{local.string.LoggedAs}} '{{vapaee.logged ? vapaee.account.name : 'guest'}}'</span>
         </div>       
     </div>
-    <div class="card text-white bg-dark">
+    <!-- div class="card text-white bg-dark">
         <div class="card-body">
             {{vapaee.loginState|json}}
         </div>
-    </div>
+    </div -->
 </div>

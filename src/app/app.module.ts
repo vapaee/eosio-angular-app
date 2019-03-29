@@ -4,6 +4,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { CommonServicesModule } from './services/common/common.module';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
+
 // perfect scrollbar
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
@@ -90,7 +92,8 @@ import { VpeOrderEditorComponent } from './components/vpe-order-editor/vpe-order
         AppRoutingModule,
         HttpClientModule,
         CommonServicesModule,
-        PerfectScrollbarModule
+        PerfectScrollbarModule,
+        Ng2SearchPipeModule
     ],
     providers: [
         ScatterService,

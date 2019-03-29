@@ -1,12 +1,27 @@
 <div class="row">
     <div class="col-sm-12">
-        <table class="table right-aligned complete">
+        <div [hidden]="!vapaee.logged" class="pull-right">
+            <small class="text-muted" (click)="vapaee.login()">
+                {{local.string.LoggedAs}} '{{vapaee.account.name}}'
+            </small>            
+        </div>
+        <div class="text-md">{{local.string.wallet}}</div>
+    </div>
+    <div class="col-sm-12">
+        <div [hidden]="vapaee.logged" class="pull-left margin-top">
+            <span class="btn btn-sm btn-secondary" (click)="vapaee.login()">
+                {{local.string.LoginWScatter}}
+            </span>
+        </div>    
+        <table class="table complete">
             <tbody>
                 <tr *ngFor="let deposit of deposits">
-                    <td>{{deposit.toString(8)}}</td>
+                    <td>
+                        <img [src]="deposit.token.logo" style="width: 20px; height: 20px; margin-top:-1px">
+                        {{deposit.toString(8)}}
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
-
