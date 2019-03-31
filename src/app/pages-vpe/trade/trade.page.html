@@ -8,7 +8,7 @@
                 <div class="col-sm-8 col-md-9 col-padding-left margin-top">
                     <h1>
                         <img style="height:40px; width: 40px; margin-top:-6px" [src]="comodity ? comodity.logo : '#'">
-                        Trade
+                        {{local.string.Trade}}
                         <small class="text-muted">({{scope}})</small>
                     </h1>
                 </div>
@@ -16,17 +16,6 @@
         </div>
     </div>
     <div class="row">
-
-
-
-        <div class="col-sm-12">
-            <div class="card text-white bg-dark margin-top">
-                <div class="card-body padding">
-                    <vpe-order-editor></vpe-order-editor>
-                </div>
-            </div>  
-        </div>
-    <!--
         <div class="col-sm-4 col-md-3  col-padding-right">
             <div class="card text-white bg-dark margin-top">
                 <div class="card-body padding">
@@ -47,7 +36,7 @@
             </div>
             <div class="card text-white bg-dark margin-top">
                 <div class="card-body padding">
-                    <vpe-order-editor></vpe-order-editor>
+                    <vpe-order-editor></vpe-order-editor>              
                 </div>
             </div>
             <div class="row">
@@ -68,46 +57,5 @@
             </div>
         </div>
     </div>
-    -->
 
 </div>
-
-
-
-
-        <!--
-        <div *ngFor="let order of orders.sell">
-            <div class="card">
-                <div class="card-body">
-                    <span><b>id: </b> {{order.id}}</span><br>
-                    <span><b>owner: </b> {{order.owner}}</span><br>
-                    <span><b>price: </b> {{order.price.toString()}}</span><br>
-                    <span><b>inverse: </b> {{order.inverse.toString()}}</span><br>
-                    <span><b>total: </b> {{order.total.toString()}}</span><br>
-                    <span><b>deposit: </b> {{order.deposit.toString()}}</span><br>
-                    <span><b>telos: </b> {{order.telos.toString()}}</span><br>
-                    <span><b>fee: </b> {{order.fee.toString()}}</span><br>
-                </div>                
-            </div>
-        </div>
-        <hr>
-        <div *ngFor="let order of orders.buy">
-                <div class="card">
-                    <div class="card-body">
-                        <span><b>id: </b> {{order.id}}</span><br>
-                        <span><b>owner: </b> {{order.owner}}</span><br>
-                        <span><b>price: </b> {{order.price.toString()}}</span><br>
-                        <span><b>inverse: </b> {{order.inverse.toString()}}</span><br>
-                        <span><b>total: </b> {{order.total.toString()}}</span><br>
-                        <span><b>deposit: </b> {{order.deposit.toString()}}</span><br>
-                        <span><b>telos: </b> {{order.telos.toString()}}</span><br>
-                        <span><b>fee: </b> {{order.fee.toString()}}</span><br>
-                    </div>                
-                </div>
-            </div>                
-        <hr>
-     
-        <div><h4>comodity</h4><pre>{{comodity|json}}</pre></div>
-        <hr>
-        <div><h4>currency</h4><pre>{{currency|json}}</pre></div>
-           --->

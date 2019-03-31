@@ -16,8 +16,6 @@
 
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav ml-auto">
-                
-                
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('home')}">
                     <a class="nav-link" routerLink="{{'/exchange/home'}}" >{{local.string.Home}}</a>
                 </li>
@@ -28,13 +26,13 @@
                     <a class="nav-link" [routerLink]="'/exchange/tokens'" >{{local.string.Tokens}}</a>
                 </li>
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('profile')}">
-                    <a class="nav-link" [routerLink]="'/exchange/profile/' + cnt.current.slugid.str" >{{local.string.Profile}}</a>
+                    <a class="nav-link" [routerLink]="'/exchange/profile/' + vapaee.current" >{{local.string.Profile}}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link cursor-pointer" (click)="debug()">DEBUG</a>
                 </li>
-                <li class="nav-item dropdown" dropdown>
-                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="language">{{local.string.Language}} <span class="caret"></span></a>
+                <li class="nav-item dropdown" ngbDropdown>
+                    <a ngbDropdownToggle class="nav-link dropdown-toggle cursor-pointer" data-toggle="dropdown" id="language">{{local.string.Language}} <span class="caret"></span></a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="language">
                         <span class="cursor-pointer dropdown-item" (click)="local.setLocal('en_US')">English</span>
                         <span class="cursor-pointer dropdown-item" (click)="local.setLocal('es_ES')">Español</span>

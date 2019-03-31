@@ -1,9 +1,9 @@
 <div class="row">
     <div class="col-sm-12">
         <div [hidden]="!vapaee.logged" class="pull-right">
-            <small class="text-muted" (click)="vapaee.login()">
-                {{local.string.LoggedAs}} '{{vapaee.account.name}}'
-            </small>            
+            <small class="text-muted cursor-pointer" [routerLink]="'/exchange/profile/' + vapaee.current">
+                {{local.string.LoggedAs}} '{{vapaee.logged}}'
+            </small>
         </div>
         <div class="text-md">{{local.string.wallet}}</div>
     </div>

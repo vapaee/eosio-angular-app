@@ -19,6 +19,7 @@ export class VapaeeService {
     public scopes: TableMap;
     public utils: Utils;
     public current: String;
+    public default: String;
     public contract:string;   
     public deposits: any;
     public onLoggedAccountChange:Subject<String> = new Subject();
@@ -34,7 +35,8 @@ export class VapaeeService {
         private scatter: ScatterService
         ) {
         this.scopes = {};
-        this.current = null;
+        this.default = 'guest';
+        this.current = this.default;
         this.contract = this.vapaeetokens;
         this.scatter.onLogggedStateChange.subscribe(this.onLoggedChange.bind(this));
         this.updateLogState();
@@ -73,7 +75,7 @@ export class VapaeeService {
 
     onLogout() {
         console.log("VapaeeService.onLogout()");
-        this.resetCurrentAccount(null);
+        this.resetCurrentAccount(this.default);
         this.updateLogState();
         this.onLoggedAccountChange.next(this.logged);
     }
@@ -123,6 +125,7 @@ export class VapaeeService {
         }
         return null;
     }
+
     async getToken(sym:string): Promise<Token> {
         return this.waitReady.then(_ => {
             return this.getTokenNow(sym);
@@ -310,7 +313,6 @@ export class VapaeeService {
             return result;
         });
     }
-
 
     private fetchOrders(scope): Promise<any> {
         return this.utils.getTable("sellorders", {scope:scope}).then(result => {
