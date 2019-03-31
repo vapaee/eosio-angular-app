@@ -6,8 +6,10 @@
 # cleos wallet import
 # dev: 5J1astpVJcAJVGX8PGWN9KCcHU5DMszi4gJgCEpWc5DxmpTsKqp
 
-cleos create account eosio gqydoobuhege EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio eosio.token EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
+cleos create account eosio eosio.trail EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
+
+cleos create account eosio gqydoobuhege EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio cardsntokens EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio vapaeetokens EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio snapsnapsnap EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
@@ -33,6 +35,13 @@ cleos set account permission boardgamebox active '{"threshold": 1,"keys": [{"key
 cleos set account permission appserver active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"appserver","permission":"eosio.code"},"weight":1}]}' owner -p appserver
 
 # eosio.token
+echo "-------- eosio.token (TLOS) ---------"
+cd /var/www/eosio-angular-app/contracts/_examples/eosio.contracts/eosio.trail
+if [[ src/eosio.trail.cpp -nt eosio.trail.wasm ]]; then
+    ## if [ ! -f /tmp/foo.txt ]; then
+    eosio-cpp -o eosio.trail.wasm src/eosio.trail.cpp --abigen -I include
+fi
+cleos set contract eosio.trail $PWD -p eosio.trail@active
 echo "-------- eosio.token (TLOS) ---------"
 cd /var/www/eosio-angular-app/contracts/_examples/eosio.contracts/eosio.token
 if [[ src/eosio.token.cpp -nt eosio.token.wasm ]]; then
