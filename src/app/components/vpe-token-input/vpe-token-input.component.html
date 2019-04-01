@@ -2,6 +2,7 @@
     <input
         type="text"
         class="form-control form-control-sm"
+        [ngClass]="{'disabled': disabled}"
         (ngModelChange)="onChange(ctrl,$event)"
         (blur)="onBlur(ctrl,$event)"
         #ctrl="ngModel"

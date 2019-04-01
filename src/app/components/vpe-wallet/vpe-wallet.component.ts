@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
-import { VapaeeService } from 'src/app/services/vapaee.service';
+import { VapaeeService, Asset } from 'src/app/services/vapaee.service';
 import { LocalStringsService } from 'src/app/services/common/common.services';
 
 
@@ -11,7 +11,7 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 })
 export class VpeWalletComponent implements OnChanges {
 
-    @Input() public deposits: any[];
+    @Input() public deposits: Asset[];
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService

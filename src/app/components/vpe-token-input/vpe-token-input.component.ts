@@ -14,7 +14,8 @@ export class VpeTokenInputComponent implements OnChanges {
     @Input() public asset: Asset;
     @Input() public placeholder: string;
     @Input() public precision: number;
-    @Output() change: EventEmitter<any> = new EventEmitter();
+    @Input() public disabled: boolean;
+    @Output() valueChange: EventEmitter<any> = new EventEmitter();
     public text: string;
     constructor(
         public vapaee: VapaeeService
@@ -54,7 +55,7 @@ export class VpeTokenInputComponent implements OnChanges {
             this.text = this.asset.toString(precision).split(" ")[0];
             if (this.text != this.prev) {
                 this.prev = this.text;
-                this.change.emit(this.asset);
+                this.valueChange.emit(this.asset);
             }    
         }
     }

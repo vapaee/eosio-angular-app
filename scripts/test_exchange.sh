@@ -96,3 +96,6 @@ cleos push action vapaeetokens order '["bob" , "sell", "3.00000000 CNT", "1.3000
 
 # cleos push action eosio.token transfer '["alice","vapaeetokens","8.0000 ACORN","deposit"]' -p alice@active
 # cleos push action eosio.token transfer '["bob","vapaeetokens","3.0000 ACORN","deposit"]' -p bob@active
+
+# ------------------------------------------------------------------------------------------------------
+# cleos push action vapaeetokens order '["alice", "buy", "1.00000000 CNT", "1.00000000 TLOS"]' -p alice

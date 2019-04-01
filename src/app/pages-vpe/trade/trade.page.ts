@@ -6,7 +6,7 @@ import { BGBoxService } from 'src/app/services/bgbox.service';
 import { CntService } from 'src/app/services/cnt.service';
 import { ActivatedRoute } from '@angular/router';
 import { Token } from 'src/app/services/utils.service';
-import { VapaeeService } from 'src/app/services/vapaee.service';
+import { VapaeeService, Asset } from 'src/app/services/vapaee.service';
 import { Subscriber } from 'rxjs';
 
 
@@ -48,7 +48,7 @@ export class TradePage implements OnInit, OnDestroy {
         console.log("ORDERS:", this.orders);
     }
 
-    get deposits() {
+    get deposits(): Asset[] {
         return this.vapaee.deposits;
     }
 

@@ -21,7 +21,7 @@ export class VapaeeService {
     public current: String;
     public default: String;
     public contract:string;   
-    public deposits: any;
+    public deposits: Asset[];
     public onLoggedAccountChange:Subject<String> = new Subject();
     public onCurrentAccountChange:Subject<String> = new Subject();
     vapaeetokens:string = "vapaeetokens";
@@ -117,6 +117,18 @@ export class VapaeeService {
     }
 
     // --------------------------------------------------------------
+    createOrder(type:string, amount:Asset, price:Asset) {
+        // "alice", "buy", "2.50000000 CNT", "0.40000000 TLOS"
+        // name owner, name type, const asset & total, const asset & price
+        return this.utils.excecute("order", {
+            owner:  this.scatter.account.name,
+            type: type,
+            total: amount.toString(8),
+            price: price.toString(8)
+        });
+    }
+
+    // --------------------------------------------------------------
     getTokenNow(sym:string): Token {
         for (var i in this.tokens) {
             if (this.tokens[i].symbol.toUpperCase() == sym.toUpperCase()) {
@@ -135,13 +147,14 @@ export class VapaeeService {
     async getDeposits(): Promise<any> {
         console.log("VapaeeService.getDeposits()");
         return this.waitReady.then(async _ => {
-            this.deposits = [];
+            var deposits: Asset[] = [];
             if (this.logged) {
                 var result = await this.fetchDeposits(this.logged);
                 for (var i in result.rows) {
-                    this.deposits.push(new Asset(result.rows[i].amount, this));
+                    deposits.push(new Asset(result.rows[i].amount, this));
                 }
             }
+            this.deposits = deposits;
             return this.deposits;
         });
     }
