@@ -389,7 +389,7 @@ export class Asset {
         this.token = vapaee.getTokenNow(sym);
         var amount_str = text.split(" ")[0];
         this.amount = new BigNumber(amount_str);
-        console.assert(!!this.token, "ERROR: string malformed of token not foun:", text)
+        console.assert(!!this.token, "ERROR: string malformed of token not found:", text)
     }
 
     valueToString(decimals:number = -1): string {
@@ -403,7 +403,14 @@ export class Asset {
         for (var i=decimal.length; i<precision; i++) {
             decimal += "0";
         }
+        if (decimal.length > precision) {
+            decimal = decimal.substr(0, precision);
+        }
         return integer + "." + decimal;
+    }
+
+    get str () {
+        return this.toString();
     }
 
     toString(decimals:number = -1): string {

@@ -1,0 +1,14 @@
+<div class="input-group">
+    <input
+        type="text"
+        class="form-control form-control-sm"
+        (ngModelChange)="onChange(ctrl,$event)"
+        (blur)="onBlur(ctrl,$event)"
+        #ctrl="ngModel"
+        [(ngModel)]="text"
+        onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46"
+        placeholder="{{placeholder}}">
+    <div class="input-group-append">
+        <span class="input-group-text form-control-sm padding-xs">{{asset ? asset.token.symbol : ' '}}</span>
+    </div>
+</div>

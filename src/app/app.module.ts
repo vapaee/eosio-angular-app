@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { CommonServicesModule } from './services/common/common.module';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
@@ -52,6 +53,7 @@ import { VpeWalletComponent } from './components/vpe-wallet/vpe-wallet.component
 import { VpeChartComponent } from './components/vpe-chart/vpe-chart.component';
 import { VpeTokensComponent } from './components/vpe-tokens/vpe-tokens.component';
 import { VpeOrderEditorComponent } from './components/vpe-order-editor/vpe-order-editor.component';
+import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-input.component';
 
 @NgModule({
     declarations: [
@@ -72,6 +74,7 @@ import { VpeOrderEditorComponent } from './components/vpe-order-editor/vpe-order
         VpeChartComponent,
         VpeTokensComponent,
         VpeOrderEditorComponent,
+        VpeTokenInputComponent,
         LoadingOverall,
         CntRootPage,
         VpeRootPage,
@@ -93,7 +96,8 @@ import { VpeOrderEditorComponent } from './components/vpe-order-editor/vpe-order
         HttpClientModule,
         CommonServicesModule,
         PerfectScrollbarModule,
-        Ng2SearchPipeModule
+        Ng2SearchPipeModule,
+        FormsModule
     ],
     providers: [
         ScatterService,

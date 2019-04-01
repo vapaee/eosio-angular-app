@@ -35,7 +35,7 @@ cleos set account permission boardgamebox active '{"threshold": 1,"keys": [{"key
 cleos set account permission appserver active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"appserver","permission":"eosio.code"},"weight":1}]}' owner -p appserver
 
 # eosio.token
-echo "-------- eosio.token (TLOS) ---------"
+echo "-------- eosio.trail (Voting system) ---------"
 cd /var/www/eosio-angular-app/contracts/_examples/eosio.contracts/eosio.trail
 if [[ src/eosio.trail.cpp -nt eosio.trail.wasm ]]; then
     ## if [ ! -f /tmp/foo.txt ]; then
