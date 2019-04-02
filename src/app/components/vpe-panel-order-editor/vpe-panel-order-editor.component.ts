@@ -6,11 +6,11 @@ import { Token } from 'src/app/services/utils.service';
 
 
 @Component({
-    selector: 'vpe-order-editor',
-    templateUrl: './vpe-order-editor.component.html',
-    styleUrls: ['./vpe-order-editor.component.scss']
+    selector: 'vpe-panel-order-editor',
+    templateUrl: './vpe-panel-order-editor.component.html',
+    styleUrls: ['./vpe-panel-order-editor.component.scss']
 })
-export class VpeOrderEditorComponent implements OnChanges {
+export class VpePanelOrderEditorComponent implements OnChanges {
 
     price: Asset;
     amount: Asset;

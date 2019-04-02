@@ -1,22 +1,21 @@
 import { Component, Input, OnChanges, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
-import { VapaeeService, Asset } from 'src/app/services/vapaee.service';
+import { HistoryTx, VapaeeService } from 'src/app/services/vapaee.service';
 import { LocalStringsService } from 'src/app/services/common/common.services';
 
 
 @Component({
-    selector: 'vpe-wallet',
-    templateUrl: './vpe-wallet.component.html',
-    styleUrls: ['./vpe-wallet.component.scss']
+    selector: 'vpe-panel-history',
+    templateUrl: './vpe-panel-history.component.html',
+    styleUrls: ['./vpe-panel-history.component.scss']
 })
-export class VpeWalletComponent implements OnChanges {
+export class VpePanelHistoryComponent implements OnChanges {
 
-    @Input() public deposits: Asset[];
+    @Input() public history: HistoryTx[];
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService
-        ) {
-        
+    ) {
     }
 
     ngOnChanges() {

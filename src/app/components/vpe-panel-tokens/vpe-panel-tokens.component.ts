@@ -7,11 +7,11 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 
 
 @Component({
-    selector: 'vpe-tokens',
-    templateUrl: './vpe-tokens.component.html',
-    styleUrls: ['./vpe-tokens.component.scss']
+    selector: 'vpe-panel-tokens',
+    templateUrl: './vpe-panel-tokens.component.html',
+    styleUrls: ['./vpe-panel-tokens.component.scss']
 })
-export class VpeTokensComponent implements OnChanges {
+export class VpePanelTokensComponent implements OnChanges {
 
     @Input() public tokens: Token[];
     token_filter:string;
@@ -20,7 +20,7 @@ export class VpeTokensComponent implements OnChanges {
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService
-        ) {
+    ) {
         this.token_filter = "";
     }
     

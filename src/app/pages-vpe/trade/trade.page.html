@@ -17,42 +17,18 @@
     </div>
     <div class="row">
         <div class="col-sm-4 col-md-3  col-padding-right">
-            <div class="card text-white bg-dark margin-top">
-                <div class="card-body padding">
-                    <vpe-tokens [tokens]="tokens"></vpe-tokens>
-                </div>
-            </div>
-            <div class="card text-white bg-dark margin-top">
-                <div class="card-body padding">
-                    <vpe-wallet [deposits]="deposits"></vpe-wallet>
-                </div>
-            </div>
+            <vpe-panel-tokens [tokens]="tokens"></vpe-panel-tokens>
+            <vpe-panel-wallet [deposits]="deposits"></vpe-panel-wallet>
         </div>
         <div class="col-sm-8 col-md-9 col-padding-left">
-            <div class="card text-white bg-dark margin-top">
-                <div class="card-body padding">
-                    <vpe-chart></vpe-chart>
-                </div>
-            </div>
-            <div class="card text-white bg-dark margin-top">
-                <div class="card-body padding">
-                    <vpe-order-editor [deposits]="deposits" [comodity]="comodity" [currency]="currency"></vpe-order-editor>              
-                </div>
-            </div>
+            <vpe-panel-chart></vpe-panel-chart>
+            <vpe-panel-order-editor [deposits]="deposits" [comodity]="comodity" [currency]="currency"></vpe-panel-order-editor>
             <div class="row">
                 <div class="col-sm-8 col-md-9 col-padding-right">
-                    <div class="card text-white bg-dark margin-top">
-                        <div class="card-body padding">
-                            <vpe-orders [orders]="orders"></vpe-orders>
-                        </div>
-                    </div>
+                    <vpe-panel-orders [orders]="orders"></vpe-panel-orders>
                 </div>
                 <div class="col-sm-4 col-md-3 col-padding-left">
-                    <div class="card text-white bg-dark margin-top">
-                        <div class="card-body padding">
-                            <vpe-history [history]="history"></vpe-history>
-                        </div>
-                    </div>
+                    <vpe-panel-history [history]="history"></vpe-panel-history>
                 </div>
             </div>
         </div>

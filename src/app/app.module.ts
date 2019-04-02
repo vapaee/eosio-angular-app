@@ -47,12 +47,13 @@ import { AlbumsPage } from './pages-cnt/albums/albums.page';
 
 import { IdenticonComponent } from './components/identicon/identicon.component';
 import { EosioAccountComponent } from './components/eosio-account/eosio-account.component';
-import { VpeOrdersComponent } from './components/vpe-orders/vpe-orders.component';
-import { VpeHistoryComponent } from './components/vpe-history/vpe-history.component';
-import { VpeWalletComponent } from './components/vpe-wallet/vpe-wallet.component';
-import { VpeChartComponent } from './components/vpe-chart/vpe-chart.component';
-import { VpeTokensComponent } from './components/vpe-tokens/vpe-tokens.component';
-import { VpeOrderEditorComponent } from './components/vpe-order-editor/vpe-order-editor.component';
+import { VpePanelComponent } from './components/vpe-panel/vpe-panel.component';
+import { VpePanelOrdersComponent } from './components/vpe-panel-orders/vpe-panel-orders.component';
+import { VpePanelHistoryComponent } from './components/vpe-panel-history/vpe-panel-history.component';
+import { VpePanelWalletComponent } from './components/vpe-panel-wallet/vpe-panel-wallet.component';
+import { VpePanelChartComponent } from './components/vpe-panel-chart/vpe-panel-chart.component';
+import { VpePanelTokensComponent } from './components/vpe-panel-tokens/vpe-panel-tokens.component';
+import { VpePanelOrderEditorComponent } from './components/vpe-panel-order-editor/vpe-panel-order-editor.component';
 import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-input.component';
 
 @NgModule({
@@ -68,12 +69,13 @@ import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-i
         AccountPage,
         IdenticonComponent,
         EosioAccountComponent,
-        VpeOrdersComponent,
-        VpeHistoryComponent,
-        VpeWalletComponent,
-        VpeChartComponent,
-        VpeTokensComponent,
-        VpeOrderEditorComponent,
+        VpePanelComponent,
+        VpePanelOrdersComponent,
+        VpePanelHistoryComponent,
+        VpePanelWalletComponent,
+        VpePanelChartComponent,
+        VpePanelTokensComponent,
+        VpePanelOrderEditorComponent,
         VpeTokenInputComponent,
         LoadingOverall,
         CntRootPage,

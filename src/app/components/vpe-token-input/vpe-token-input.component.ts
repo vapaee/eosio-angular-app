@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { Asset, VapaeeService } from 'src/app/services/vapaee.service';
+import { LocalStringsService } from 'src/app/services/common/common.services';
 
 
 @Component({
@@ -18,7 +19,8 @@ export class VpeTokenInputComponent implements OnChanges {
     @Output() valueChange: EventEmitter<any> = new EventEmitter();
     public text: string;
     constructor(
-        public vapaee: VapaeeService
+        public vapaee: VapaeeService,
+        public local: LocalStringsService
     ) {
         this.precision = -1;
     }

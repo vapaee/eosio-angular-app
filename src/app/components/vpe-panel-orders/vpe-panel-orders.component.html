@@ -1,0 +1,44 @@
+<vpe-panel [title]="local.string.orders">
+    <div class="row">
+        <div class="col-sm-6">
+            <table class="table right-aligned complete">
+                <thead>
+                    <tr class="text-center">
+                        <th>{{local.string.price}}</th>
+                        <th>{{local.string.amount}}</th>
+                        <th>{{local.string.total}}</th>
+                        <th>{{local.string.sum}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let order of orders.sell">
+                        <td>{{order.price.valueToString(8)}}</td>
+                        <td>{{order.total.valueToString(8)}}</td>
+                        <td>{{order.telos.valueToString()}}</td>
+                        <td>{{order.sum.valueToString()}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-6">
+            <table class="table right-aligned complete">
+                <thead>
+                    <tr class="text-center">
+                        <th>{{local.string.price}}</th>
+                        <th>{{local.string.amount}}</th>
+                        <th>{{local.string.total}}</th>
+                        <th>{{local.string.sum}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let order of orders.buy">
+                        <td>{{order.price.valueToString(8)}}</td>
+                        <td>{{order.total.valueToString(8)}}</td>
+                        <td>{{order.telos.valueToString()}}</td>
+                        <td>{{order.sum.valueToString()}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</vpe-panel>

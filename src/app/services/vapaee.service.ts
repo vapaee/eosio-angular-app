@@ -224,6 +224,7 @@ export class VapaeeService {
                     price: new Asset(orders.rows[i].price, this),
                     inverse: new Asset(orders.rows[i].inverse, this),
                     total: new Asset(orders.rows[i].selling, this),
+                    sum: new Asset(orders.rows[i].selling, this),
                     deposit: new Asset(orders.rows[i].total, this),
                     telos: new Asset(orders.rows[i].selling, this),
                     fee: new Asset(orders.rows[i].fee, this),
@@ -244,6 +245,13 @@ export class VapaeeService {
                 if(a.price.amount < b.price.amount) return -1;
                 return 0;
             });
+
+            var sum = new BigNumber(0);
+            for (var j in this.scopes[scope].orders.sell) {
+                var order = this.scopes[scope].orders.sell[j];
+                sum = sum.plus(order.telos.amount);
+                order.sum = new Asset(sum, order.telos.token);
+            }
 
             console.log("Sell final:", this.scopes[scope].orders.sell);
             console.log("-------------");
@@ -275,6 +283,7 @@ export class VapaeeService {
                     price: new Asset(orders.rows[i].inverse, this),
                     inverse: new Asset(orders.rows[i].price, this),
                     total: new Asset(orders.rows[i].total, this),
+                    sum: new Asset(orders.rows[i].total, this),
                     deposit: new Asset(orders.rows[i].selling, this),
                     telos: new Asset(orders.rows[i].selling, this),
                     fee: new Asset(orders.rows[i].fee, this),
@@ -296,6 +305,13 @@ export class VapaeeService {
                 if(a.price.amount > b.price.amount) return -1;
                 return 0;
             });
+
+            var sum = new BigNumber(0);
+            for (var j in this.scopes[scope].orders.buy) {
+                var order = this.scopes[scope].orders.buy[j];
+                sum = sum.plus(order.telos.amount);
+                order.sum = new Asset(sum, order.telos.token);
+            }            
 
             console.log("Buy final:", this.scopes[scope].orders.buy);
             console.log("-------------");
@@ -467,6 +483,7 @@ export interface Order {
     price: Asset;
     inverse: Asset;
     total: Asset;
+    sum: Asset;
     deposit: Asset;
     telos: Asset;
     fee: Asset;
