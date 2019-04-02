@@ -52,6 +52,10 @@ export class TradePage implements OnInit, OnDestroy {
         return this.vapaee.deposits;
     }
 
+    get balances(): Asset[] {
+        return this.vapaee.balances;
+    }
+
     get history() {
         var scope = this.vapaee.scopes[this.scope];
         return scope ? scope.history : [];

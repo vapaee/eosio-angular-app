@@ -12,6 +12,7 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 export class VpePanelWalletComponent implements OnChanges {
 
     @Input() public deposits: Asset[];
+    @Input() public balances: Asset[];
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService

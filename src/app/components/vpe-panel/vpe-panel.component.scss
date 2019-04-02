@@ -2,3 +2,19 @@
     display: flex;
     flex-direction: column;
 }
+
+label.title {
+    border-radius: 0px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background-color: #535960;
+    padding: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: white;
+    font-weight: bold;
+}
+
+i.tiny {
+    font-size: 10px;
+}

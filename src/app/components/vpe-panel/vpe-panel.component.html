@@ -1,5 +1,8 @@
 <div class="card text-white bg-dark margin-top">
-    <label>{{title | titlecase}}</label>
+    <label class="title">
+        <i class="tiny material-icons">brightness_1</i>
+        {{title | titlecase}}
+    </label>
     <div class="card-body padding">
         <ng-content></ng-content>
     </div>

@@ -22,6 +22,7 @@ export class VapaeeService {
     public default: String;
     public contract:string;   
     public deposits: Asset[];
+    public balances: Asset[];
     public onLoggedAccountChange:Subject<String> = new Subject();
     public onCurrentAccountChange:Subject<String> = new Subject();
     vapaeetokens:string = "vapaeetokens";
@@ -84,6 +85,7 @@ export class VapaeeService {
         console.log("VapaeeService.onLogin()", name);
         this.resetCurrentAccount(name);
         this.getDeposits();
+        this.getBalances();
         this.updateLogState();
         this.onLoggedAccountChange.next(this.logged);
     }
@@ -156,6 +158,18 @@ export class VapaeeService {
             }
             this.deposits = deposits;
             return this.deposits;
+        });
+    }
+
+    async getBalances(): Promise<any> {
+        console.log("VapaeeService.getBalances()");
+        return this.waitReady.then(async _ => {
+            var balances: Asset[];
+            if (this.logged) {
+                balances = await this.fetchBalances(this.logged);
+            }
+            this.balances = balances;
+            return this.balances;
         });
     }
 
@@ -343,6 +357,26 @@ export class VapaeeService {
         });
     }
 
+    private async fetchBalances(account): Promise<any> {
+        return this.waitReady.then(async _ => {
+            var contracts = {};
+            var balances = [];
+            for (var i in this.tokens) {
+                contracts[this.tokens[i].contract] = true;
+            }
+            for (var contract in contracts) {
+                var result = await this.utils.getTable("accounts", {
+                    contract:contract,
+                    scope:this.scatter.account.name
+                });
+                for (var i in result.rows) {
+                    balances.push(new Asset(result.rows[i].balance, this));
+                }
+            }
+            return balances;
+        });
+    }
+
     private fetchOrders(scope): Promise<any> {
         return this.utils.getTable("sellorders", {scope:scope}).then(result => {
             return result;
@@ -435,7 +469,11 @@ export class Asset {
         if (decimal.length > precision) {
             decimal = decimal.substr(0, precision);
         }
-        return integer + "." + decimal;
+        if (precision == 0) {
+            return integer;
+        } else {
+            return integer + "." + decimal;
+        }
     }
 
     get str () {

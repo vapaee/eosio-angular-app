@@ -3,6 +3,8 @@
     "Cards": "Cards",
     "Buy": "Buy",
     "Sell": "Sell",
+    "balances":"balances",
+    "deposits":"deposits",
     "sum": "sum",
     "total": "total",
     "amount": "amount",
