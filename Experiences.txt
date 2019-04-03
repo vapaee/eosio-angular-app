@@ -69,4 +69,11 @@ Resulta que no puedo cargar con RAM al usuario, si registro ese evento lo tengo 
 - el datatype time no se debe usar para representar el tiempo. Hay dos variantes que se pueden usar:
   time_point_sec y time_point. El segundo soporta milisegundos y el primero sólo segundos
   time_point_sec date = time_point_sec(now());
-  
+- FC Exception encountered while processing chain.push_transaction
+  Cuando tenés que mandar un mensaje de un contrato a otro te va a pasar de tener problemas con los permisos.
+  Para eso necesitás crearle un tipo de permiso nuevo al contrato (eosio.code) además de los que ya trae (owner y active).
+  Implementé un par de contratos específicos para probar ese tema en la carpeta _examples: appserver y appplugin
+  --- solution ---------
+  https://eosio.stackexchange.com/a/1711/2452
+  cleos set account permission appserver active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"appserver","permission":"eosio.code"},"weight":1}]}' owner -p appserver
+

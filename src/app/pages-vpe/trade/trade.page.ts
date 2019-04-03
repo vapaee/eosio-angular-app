@@ -20,7 +20,7 @@ export class TradePage implements OnInit, OnDestroy {
     scope:string;
     comodity:Token;
     currency:Token;
-    private subscriber: Subscriber<string>;
+    private onStateSubscriber: Subscriber<string>;
    
     constructor(
         public app: AppService,
@@ -32,7 +32,7 @@ export class TradePage implements OnInit, OnDestroy {
         public route: ActivatedRoute
 
     ) {
-        this.subscriber = new Subscriber<string>(this.onStateChange.bind(this));
+        this.onStateSubscriber = new Subscriber<string>(this.onStateChange.bind(this));
     }      
 
     async init() {
@@ -41,6 +41,9 @@ export class TradePage implements OnInit, OnDestroy {
         var cur:string = this.scope.split(".")[1];        
         this.comodity = await this.vapaee.getToken(com);
         this.currency = await this.vapaee.getToken(cur);
+
+        
+
         this.vapaee.getSellOrders(this.comodity, this.currency);
         this.vapaee.getBuyOrders(this.comodity, this.currency);
         this.vapaee.getTransactionHistory(this.comodity, this.currency);
@@ -71,12 +74,12 @@ export class TradePage implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subscriber.unsubscribe();
+        this.onStateSubscriber.unsubscribe();
     }
 
     ngOnInit() {
         this.init();
-        this.app.onStateChange.subscribe(this.subscriber);
+        this.app.onStateChange.subscribe(this.onStateSubscriber);
     }
 
     onStateChange(state:string) {

@@ -1,44 +1,48 @@
 <vpe-panel [title]="local.string.orders">
     <div class="row">
         <div class="col-sm-6">
-            <table class="table right-aligned complete">
-                <thead>
-                    <tr class="text-center">
-                        <th>{{local.string.price}}</th>
-                        <th>{{local.string.amount}}</th>
-                        <th>{{local.string.total}}</th>
-                        <th>{{local.string.sum}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let order of orders.sell">
-                        <td>{{order.price.valueToString(8)}}</td>
-                        <td>{{order.total.valueToString(8)}}</td>
-                        <td>{{order.telos.valueToString()}}</td>
-                        <td>{{order.sum.valueToString()}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="row margin-top">
+                <div class="nowrap text-bold text-sm col-sm-3 col-padding-right">{{local.string.price | titlecase}}</div>
+                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-right col-padding-left">{{local.string.amount | titlecase}}</div>
+                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-right col-padding-left">{{local.string.total | titlecase}}</div>
+                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-left">{{local.string.sum | titlecase}}</div>
+            </div>
+            <div class="row margin-top">
+                <div class="col-sm-12">
+                    <perfect-scrollbar style="max-height: 250px; max-width: 100%">
+                        <div class="row margin-bottom" 
+                            *ngFor="let order of orders.sell"               
+                        >
+                            <div class="nowrap col-sm-3 col-padding-right">{{order.price.valueToString(8)}}</div>
+                            <div class="nowrap col-sm-3 text-right col-padding-right col-padding-left">{{order.total.valueToString(8)}}</div>
+                            <div class="nowrap col-sm-3 text-right col-padding-right col-padding-left">{{order.telos.valueToString()}}</div>
+                            <div class="nowrap col-sm-3 text-right padding-right-lg ">{{order.sum.valueToString()}}</div>
+                        </div>
+                    </perfect-scrollbar>
+                </div>
+            </div>
         </div>
         <div class="col-sm-6">
-            <table class="table right-aligned complete">
-                <thead>
-                    <tr class="text-center">
-                        <th>{{local.string.price}}</th>
-                        <th>{{local.string.amount}}</th>
-                        <th>{{local.string.total}}</th>
-                        <th>{{local.string.sum}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let order of orders.buy">
-                        <td>{{order.price.valueToString(8)}}</td>
-                        <td>{{order.total.valueToString(8)}}</td>
-                        <td>{{order.telos.valueToString()}}</td>
-                        <td>{{order.sum.valueToString()}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="row margin-top">
+                <div class="nowrap text-bold text-sm col-sm-3 col-padding-right">{{local.string.price | titlecase}}</div>
+                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-right col-padding-left">{{local.string.amount | titlecase}}</div>
+                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-right col-padding-left">{{local.string.total | titlecase}}</div>
+                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-left">{{local.string.sum | titlecase}}</div>
+            </div>
+            <div class="row margin-top">
+                <div class="col-sm-12">
+                    <perfect-scrollbar style="max-height: 250px; max-width: 100%">
+                        <div class="row margin-bottom" 
+                            *ngFor="let order of orders.buy"             
+                        >
+                            <div class="nowrap col-sm-3 col-padding-right">{{order.price.valueToString(8)}}</div>    
+                            <div class="nowrap col-sm-3 text-right col-padding-right col-padding-left">{{order.total.valueToString(8)}}</div>
+                            <div class="nowrap col-sm-3 text-right col-padding-right col-padding-left">{{order.telos.valueToString()}}</div>
+                            <div class="nowrap col-sm-3 text-right padding-right-lg ">{{order.sum.valueToString()}}</div>
+                        </div>
+                    </perfect-scrollbar>
+                </div>
+            </div>
         </div>
     </div>
 </vpe-panel>

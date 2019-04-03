@@ -518,7 +518,9 @@ table.table-inverse td, table.table-inverse th, table.table-inverse thead th {
 .flex-no-grow { flex-grow: 0; }
 
 
-
+.text-bold {
+    font-weight: bold;
+}
 // Insiprado en https://mdbootstrap.com/utilities/bootstrap-text/
 .text-xxxl-left, .text-xxl-left, .text-xl-left, .text-lg-left, .text-md-left, .text-sm-left, .text-xs-left {
     text-align: left;

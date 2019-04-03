@@ -25,6 +25,7 @@ export class VapaeeService {
     public balances: Asset[];
     public onLoggedAccountChange:Subject<String> = new Subject();
     public onCurrentAccountChange:Subject<String> = new Subject();
+    public onHistoryChange:Subject<String> = new Subject();
     vapaeetokens:string = "vapaeetokens";
     
     
@@ -127,10 +128,14 @@ export class VapaeeService {
             type: type,
             total: amount.toString(8),
             price: price.toString(8)
+        }).then(async result => {
+            var _ = await this.updateTrade(amount.token, price.token);
+            return result;
         });
     }
 
     // --------------------------------------------------------------
+    // Getters 
     getTokenNow(sym:string): Token {
         for (var i in this.tokens) {
             if (this.tokens[i].symbol.toUpperCase() == sym.toUpperCase()) {
@@ -171,6 +176,15 @@ export class VapaeeService {
             this.balances = balances;
             return this.balances;
         });
+    }
+
+    async updateTrade(comodity:Token, currency:Token): Promise<any> {
+        return Promise.all([
+            this.getTransactionHistory(comodity, currency, true),
+            this.getSellOrders(comodity, currency, true),
+            this.getBuyOrders(comodity, currency, true),
+            this.getDeposits()
+        ])
     }
 
     async getTransactionHistory(comodity:Token, currency:Token, force:boolean = false): Promise<any> {
@@ -219,6 +233,9 @@ export class VapaeeService {
         } else {
             result = aux;
         }
+
+        this.onHistoryChange.next(result);
+
         return result;
     }
 

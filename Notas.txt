@@ -1,28 +1,58 @@
 
 
 
--- Bibliotecas --
-Meterial icons
-https://materializecss.com
 
 
 -- TODO --
-- debug
-  - action_return_all_deposits
-  - action_cancel_all_orders
-- Summary
-  - cuanta guita ES del banco (comisiones, depósitos a nombre de vapaeetokens)
-  - lista de las cuentas que tienen al menos un depósito
-  - lista de todas las tablas (xxx.zzz)
-    - total depositado
-    - total transacciones
-  - historial de las tablas (xxx.zzz)
-    - buyer, seller, price, amount, payment, fee, date
-  - own: por cada depósito, dice cuanto pertenece al contrato
-- me falta resolver el problema de desuscribir al usuario que ya no tiene depósitos: depusers depuserstable(get_self(), get_self().value);
- 
+- contrato vapaeetokens
+  - agregar total depositado a la tabla ordertables
+  - agregar el typo de transacción "sell" o "buy" a la tabla history
+  - me falta resolver el problema de desuscribir al usuario que ya no tiene depósitos: depusers depuserstable(get_self(), get_self().value);
+- website
+  - General
+    - hacer una solución específica para vpe-panel-tokens de tabla con scroll donde el header está fijo
+    - replicar solucón para
+      - órdenes (compra y venta)
+      - history
+  - Trade
+    - tokens panel
+      - volumen diario
+      - precio actual
+      - porcentage de cambio 24%
+    - manejar errores cuando se genera una órden
+    - tengo que tocar cualquier orden y el precio de la órden en el formulario debería setearse con ese valor
+    - history
+      - hay que agregar el tipo de transacción "buy" o "sell"
+      - scrollbar
+    - listar las órdenes propias en el panel de "orden form"
+    - panel de órdenes
+      - título de "órdenes de compra" y "órdenes de ventas"
+      - scrollbars
+    - Gráfica
+    - Timezone: que el usuario elija su timezone para mostrar mejor los horarios de las transacciones en el historial
+    - cuando se genera una transacción, el historial se actualiza y debería resaltarse temporalmente la reciente transacción.
+  - Profile
+    - scatter / login state
+    - depósitos
+      - deposit / withdraw
+    - balances
+    - órdenes vigentes
+  - ambientar todo para deployar en vapaee.io ?
+    - home page (logo, textos, lista de tokens más relevantes)
+    - comprar dominio
+    - resolver https
+    - PWA?
 
-- Subasta
+
+
+
+
+
+
+
+
+-- TODO (futuro) vapaeetokens --
+- Subasta: Implementar en el contrato la Subasta
   - tengo que poder vender M (de los N XXX tokens depositados) cada T tiempo al mejor postor que page con ZZZ, hasta agotar stock.
     auction1(owner, receiver, "N.0000 XXX", "ZZZ", "M.0000 XXX", interval_time)
     auction2(owner, receiver, "N.0000 XXX", "ZZZ", total_time)
@@ -44,23 +74,6 @@ https://materializecss.com
     - Si el primero ya está vencido, lo ejecuta y agenda el siguiente si no está agendado ya.
     - si el primero no está vencido, se fija si está agendado comparando timer con next.
       Si timer < next => reagendar y actualizar timer
-- UI
-  - zzzzzzzz
-- Hostirial de transacciones
-  - tabla {
-      uint64_t id;
-      uint64_t date;
-      name buyer;
-      name seller;
-      asset amount;
-      asset price;
-      asset buyfee;
-      asset sellfee;
-  }  
-  
-- DoTick:
-  - es una action que cualqueira puede ejecutar (porque no requiere auth).
-  - es agendada por el handler de transfer.
 
 
 
@@ -86,154 +99,19 @@ telostest push action vapaeetokens setsnapshot '["setsnapshot",1,"CNT",0,0,10000
 
 
 
-
-
-
-
-
-
-
-https://askubuntu.com/questions/289559/how-can-i-create-a-windows-bootable-usb-stick-using-ubuntu
-"CNT Token Airdrop - Cards & Tokens: user made trading cards, albums and games !! please visit us at http://cardsandtokens.com"
-
-
-
----------------------------------------------------------------------
----------------------------------------------------------------------
--- Exchange ---------------------------------------------------------
----------------------------------------------------------------------
-cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|5.0000 CNT|0.2000 TLOS"]' -p alice
-cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|10.0000 CNT|0.1000 TLOS"]' -p alice
-cleos push action eosio.token transfer '["alice", "vapaeetokens", "1.0000 TLOS", "buy|2.5000 CNT|0.4000 TLOS"]' -p alice
-
-# compra toda la primer orden
-cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "2.5000 CNT", "sell|2.5000 CNT|0.4000 TLOS"]' -p bob
-# compra toda la primer orden y la desborda -> crea sell order
-cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "5.0000 CNT", "sell|5.0000 CNT|0.4000 TLOS"]' -p bob
-# compra toda la primer orden y parte de la segunda -> elimina buyorder y decrementa la otra
-cleos push action vapaeetokens transfer '["bob", "vapaeetokens", "5.0000 CNT", "sell|5.0000 CNT|0.2000 TLOS"]' -p bob
-
--
-cleos push action vapaeetokens transfer '["alice", "vapaeetokens", "5.0000 CNT",  "sell|5.0000 CNT|0.2000 TLOS"]' -p alice
-cleos push action vapaeetokens transfer '["alice", "vapaeetokens", "10.0000 CNT", "sell|10.0000 CNT|0.1000 TLOS"]' -p alice
-cleos push action vapaeetokens transfer '["alice", "vapaeetokens", "2.5000 CNT",  "sell|2.5000 CNT|0.4000 TLOS"]' -p alice
-
-
-cleos push action eosio.token transfer '["bob", "vapaeetokens", "2.5000 TLOS", "buy|6.2500 CNT|0.4000 TLOS"]' -p bob
----------------------------------------------------------------------
----------------------------------------------------------------------
----------------------------------------------------------------------
----------------------------------------------------------------------
-
-{"symbol":"TLOSEOS","type":"LIMIT","side":"SELL","orgin":"scatter", "price":"0.02900000", "account":"eosaccount"}
-
-4251.5708 QBE
-
-/cnt
-/cnt/cards
-/cnt/inventory/:publisher
-/cnt/albums
-/cnt/profile/:publisher
-/cnt/deploy/card/:card_id
-/cnt/deploy/album/:album_id/:publisher
-
----------------------------------------------------------------------
----------------------------------------------------------------------
----------------------------------------------------------------------
----------------------------------------------------------------------
----------------------------------------------------------------------
-
-// los datos del usuario vienen en crudo. Esta función procesa esos datos y sustituye referencias por ID con instancias reales
-proccessData()
-
-// los datos (cartas, albums) que pertenecen exclusivamente al usuario, esta función los deja globalmente disponibles por slug
-userdata_to_global(table)
-
-// dado un id retorna el copy y le adjunta su colectible y edition (objetos que la complementan en info)
-getCopyById(id:number)
-
-// función auxiliar privada que dados dos slots determina si lo que debe hacerse es un (replace, putin, putout, swap o move)
-determineAction(from:number, fromi:number, to:number, toi:number)
-
-// intercambia el contenido de dos slots localmente en lainterface web (no en backend)
-swapLocaly(from, fromi, to, toi)
-
-// manda hacer el swap a backend y dependiendo de si es exitoso mantienen o revierte los cambios locales previamente hechos
-swapSlots(from_slug, fromi, to_slug, toi, action)
-
-// segunda parte del claim dailyprice (cosa que coloca una carta que anda flotando de vuelta a un slot)
-claimDailyPrizePart2(r:any, targetimg: Element)
-
-// inicia una animación donde deja una carta flotando en el aire mientras ejecuta en backend un random select
-claimDailyPrize(img:HTMLElement)
-
-// obtiene desde el backend la cantidad de tiempo que el usuario logueado debe esperar para poder ejecutar el daily price
-getDailyPrizeCountdown()
-
-// 
-fetchCard(slug:string)
-updateCollectibleVotes(slug:string, votes:number)
-fetchAlbum(slug:string)
-getUserInventory(slug)
-getAllInstances(table, name, params?)
-getAllCards()
-getAllSpecs()
-getAllAlbums()
-getCardBySlug(slug)
-getAlbumCollectionBySlug(slug)
-updateCollectionSteemPoints(coll_id)
-calculateCollectionPoints(coll_id)
-getCollectionStats(coll_id)
-getAlbumCompleteBySlug(slug)
-getJSON(file)
-getCornerCardSize()
-getCenterCardSize()
-deployCard(card, img:HTMLElement)
-deployToCenter(data, img:HTMLElement)
-deployFromCenterToSlot(data, img:HTMLElement)
-deployAlbum(card, img:HTMLElement)
-closeCard()
-createCard(model:any, deploy:any, preview:any)
-
-
-
-
-
-
-https://get-scatter.com/docs/setting-up-for-web-apps
-https://get-scatter.com/docs/examples-interaction-flow
-https://medium.com/coinmonks/how-to-use-eosjs-api-1-770b037b22ad
-
-
-cleos wallet unlock
-"PW5KG6YzAowdzRaNWEH1PterYoYUCPpBpMYxNN3EctcECw1Ke5vgS" (home)
-"PW5KVpRdxvAWfAYVD62sNWqyVN7R4fohFQC7VVgYpXKNrbRCTYRBv" (im)
-
-
--- grupo de developers EOSIO --
-https://t.me/HelloTelos/45546
-
-
-
 -------- TELOS SNAPSHOTS --------
 telostest get table snapsnapsnap 1 snapshots --lower viterbotelos
 telosmain get table snapshots.tf 1 snapshots --lower viterbotelos
-
 cleos --url https://telos.eos.barcelona get table snapshots.tf 1 snapshots --lower geytinzygige
 
 
 
----- TODO ----
-- box.action_new_app al final hay que ejecutar un evento dirigido al account de la app para verificar que es una app (y tiene handler para el evento)
-- generar un inline event al account de la aplicación involucrada después de realizado cada uno de los eventos de bgbox para que maneje los detalles
-- pasar en limpio el scatter:
-  - que se pueda ejecutar cualquier función en cualquier momento y si no está logueado que haga las dos cosas juntas (loguearse y ejecutar transacción)
-  - la librería no debería tratar de conectarse sólo una vez al principio sino cada N segundos
-  
 
 
 
---------- Casos de uso Basico -----------
+
+-- TODO futuro (contrato BG-BOX) ---
+--------- Casos de uso Basico (BG-BOX) -----------
 -- All --
 - Register author 
 
@@ -258,7 +136,7 @@ De esta manera el BG-Box se encarga con las reglas de Items y Containers Genéri
 Por ejemplo, se pueden exigir comisiones por cada evento, cumplir con mínimos o máximos, disparar otras acciones como cobrar impuesto, etc.
 
 
---------- Casos de uso Medio -----------
+--------- Casos de uso Medio (BG-BOX) -----------
 -- market 
   -- order units                               // creates an order to buy or sell any amount of owning copies of the same card
   -- cancel order                              // cancel previously created order
@@ -267,113 +145,3 @@ Por ejemplo, se pueden exigir comisiones por cada evento, cumplir con mínimos o
     por lo general vos podés hacer una carta y para esa carta va a decir que vos tenés el 100% y el resto del mundo 0%.
     pero pueden haber varias partes productoras de un mismo contenido y se arregla de antemano dividir el authorship en partes A% B% y C% dependiendo de la participación de cada uno.
   - cada vez que hay una compra o venta de un item con multimple authorship hay que dividir las ganancias respentado los porcentajes A% B% y C%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------
-BG-Box es capaz de recibir registros de publisher como apps.
-Cada app tiene un inventario por defecto donde recibir las transferencias de items asociados a esa app (sólo si tiene espacio).
-BG-Box es capaz de recibir registros de item_spec asociados a una app (cartas a cnt, torretas a turretdefence, unit a war_game ).
-BG-Box es capaz de recibir registros de item_asset asociados a una item_spec
-    ("100 viter.telos-card-telosvenezuela", "1000000 turretdefence.turrets", "10000 war_game.soldier","10000 war_game.tank").
-Hay que poner en BG-Box un accounts que tenga un balance de tipo item_asset
-Hay que crear en VapaeeTokens una tabla de perfiles
-Se queda la implementación de accounts en C&T porque será una implementación concreta de item
-
-Cada vez que alguien transfiera unidaades en C&T se ejecutará a BG-Box el mismo transfer para que mueva los items de inventarios
-
-
-En BG-Box tenés:
-- lista de todas las app registradas con prefix como id y self como scope.
-- lista de todos los item_spec registrados con id autogenerado con segundo index un name. El scope es self.
-- lista de todos los publishers que crearon algun item_asset para ese item_spec. El scope es el id del item_spec
-  - en C&T te da una lista de los publisher que crearon alguna carta: muchas filas
-  - en Turrent deffence te da una por cada torreta diferente y todas hechas por la misma app: pocas filas
-- lista de todos los item_asset creados por algun publisher, donde el scope es el publisher prefix.
-  - en C&T te da cosas como "100 viter.telos-card-telosvenezuela", "200 carlos.tremenda-carta-me-mande"
-  - en Turrent deffence te da: "1000000 turretdefence.basic-turret", "1000000 turretdefence.medium-turret" , "1000000 turretdefence.bkt-turret" 
-
-------------------------------------------                           
-
-
-
-
-/usr/opt/eosio.cdt/1.3.2/bin/clang-7: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.22' not found (required by /usr/opt/eosio.cdt/1.3.2/bin/clang-7)
-issue: https://github.com/EOSIO/eosio.cdt/issues/284
-solution: https://stackoverflow.com/a/46613765
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo apt-get update
-sudo apt-get install gcc-4.9
-sudo apt-get upgrade libstdc++6
-
-
-
-
--- problema del plugin antes de solucionarlo --
- ------------------------------------------------------------------------------
-
- cleos push action appserver inside '["bob","hello from the inside"]' -p bob@active
-executed transaction: d6aaf87e59bbf5c98cf613d4f371eac957ef7255e1c7ec2185685c352561e510  128 bytes  1628 us
-#     appserver <= appserver::inside            {"signatory":"bob","message":"hello from the inside"}
->> 
-#     appserver <= appserver::notify            {"signatory":"bob","message":"hello from the inside"}
->> 
-#           bob <= appserver::notify            {"signatory":"bob","message":"hello from the inside"}
-warning: transaction executed locally, but may not be confirmed by the network yet   
-
-
-
----------------
-
-debug 2019-01-16T03:31:09.064 thread-0  apply_context.cpp:28          print_debug          ] 
-[(appserver,inside)->appserver]: CONSOLE OUTPUT BEGIN =====================
-
-ACTION appserver.inside() signatory: bob msg: hello from the inside
-
-[(appserver,inside)->appserver]: CONSOLE OUTPUT END   =====================
-debug 2019-01-16T03:31:09.064 thread-0  apply_context.cpp:28          print_debug          ] 
-[(appserver,notify)->appserver]: CONSOLE OUTPUT BEGIN =====================
-
-ACTION appserver.notify() signatory: bob msg: hello from the inside
-
-[(appserver,notify)->appserver]: CONSOLE OUTPUT END   =====================
-
-
---------------------------------------------------------------------------------
-cleos push action appserver outside '["bob","hello for the outside"]' -p bob@active
-Error 3090003: Provided keys, permissions, and delays do not satisfy declared authorizations
-Ensure that you have the related private keys inside your wallet and your wallet is unlocked.
-
----------------
-
-error 2019-01-16T03:32:49.100 thread-0  http_plugin.cpp:580           handle_exception     ] FC Exception encountered while processing chain.push_transaction
-debug 2019-01-16T03:32:49.100 thread-0  http_plugin.cpp:581           handle_exception     ] Exception Details: 3090003 unsatisfied_authorization: Provided keys, permissions, and delays do not satisfy declared authorizations
-transaction declares authority '{"actor":"appserver","permission":"active"}', but does not have signatures for it under a provided delay of 0 ms, provided permissions [{"actor":"appserver","permission":"eosio.code"}], provided keys [], and a delay max limit of 3888000000 ms
-    {"auth":{"actor":"appserver","permission":"active"},"provided_delay":0,"provided_permissions":[{"actor":"appserver","permission":"eosio.code"}],"provided_keys":[],"delay_max_limit_ms":3888000000}
-    thread-0  authorization_manager.cpp:517 check_authorization
-pending console output: 
-ACTION appserver.outside() signatory: bob msg: hello for the outside
-
-    {"console":"\nACTION appserver.outside() signatory: bob msg: hello for the outside\n"}
-    thread-0  apply_context.cpp:72 exec_one
-
-
---- solution ---------
-https://eosio.stackexchange.com/a/1711/2452
-
-cleos set account permission boardgamebox active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"boardgamebox","permission":"eosio.code"},"weight":1}]}' owner -p boardgamebox
