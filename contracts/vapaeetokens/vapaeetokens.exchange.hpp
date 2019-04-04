@@ -298,35 +298,6 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::aux_try_to_unlock() ...\n");
         }
 
-        void aux_generate_order(name owner, name type, asset total, asset price, name ram_payer) {
-            PRINT("vapaee::token::exchange::aux_generate_order()\n");
-            PRINT(" owner: ", owner.to_string(), "\n");
-            PRINT(" type: ", type.to_string(), "\n");
-            PRINT(" total: ", total.to_string(), "\n");
-            PRINT(" price: ", price.to_string(), "\n");
-
-            require_auth(owner);            
-
-            // create scope for the orders table
-            name scope_buy = aux_get_scope_for_tokens(total.symbol.code(), price.symbol.code());
-            name scope_sell = aux_get_scope_for_tokens(price.symbol.code(), total.symbol.code());            
-
-            PRINT(" scope_buy: ", scope_buy.to_string(), "\n");
-            PRINT(" scope_sell: ", scope_sell.to_string(), "\n");
-            
-            if (type == "sell"_n) {
-                aux_generate_sell_order(owner, scope_sell, scope_buy, total, price, ram_payer);
-            } else if (type == "buy"_n) {
-                asset inverse = vapaee::utils::inverse(price, total.symbol);
-                asset payment = vapaee::utils::payment(total, price);
-                aux_generate_sell_order(owner, scope_buy, scope_sell, payment, inverse, ram_payer);
-            } else {
-                eosio_assert(false, (string("type must be 'sell' or 'buy' in lower case, got: ") + type.to_string()).c_str());
-            }
-            
-            PRINT("vapaee::token::exchange::aux_generate_order() ...\n");
-        }
-
         void aux_convert_deposits_to_earnings(asset quantity) {
             PRINT("vapaee::token::exchange::aux_convert_deposits_to_earnings()\n");
             PRINT(" quantity: ", quantity.to_string(), "\n");
@@ -380,6 +351,7 @@ namespace vapaee {
             symbol_code A = amount.symbol.code();
             symbol_code B = payment.symbol.code();
             name scope = aux_get_history_scope_for_symbols(A, B);
+            bool is_buy = true;
             PRINT(" -> scope: ", scope.to_string(), "\n");
             if (scope == aux_get_scope_for_tokens(B, A)) {
                 // swap names
@@ -395,6 +367,8 @@ namespace vapaee {
                 amount = payment;
                 payment = tmp_asset;
                 
+                // sell transaction
+                is_buy = false;
 
                 // swap price / inverse
                 price = vapaee::utils::inverse(price, tmp_asset.symbol);
@@ -420,11 +394,41 @@ namespace vapaee {
                 a.payment = payment;
                 a.buyfee = buyfee;
                 a.sellfee = sellfee;
+                a.isbuy = is_buy;
             });
 
 
 
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history() ...\n");
+        }
+
+        void aux_generate_order(name owner, name type, asset total, asset price, name ram_payer) {
+            PRINT("vapaee::token::exchange::aux_generate_order()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" type: ", type.to_string(), "\n");
+            PRINT(" total: ", total.to_string(), "\n");
+            PRINT(" price: ", price.to_string(), "\n");
+
+            require_auth(owner);            
+
+            // create scope for the orders table
+            name scope_buy = aux_get_scope_for_tokens(total.symbol.code(), price.symbol.code());
+            name scope_sell = aux_get_scope_for_tokens(price.symbol.code(), total.symbol.code());            
+
+            PRINT(" scope_buy: ", scope_buy.to_string(), "\n");
+            PRINT(" scope_sell: ", scope_sell.to_string(), "\n");
+            
+            if (type == "sell"_n) {
+                aux_generate_sell_order(owner, scope_sell, scope_buy, total, price, ram_payer);
+            } else if (type == "buy"_n) {
+                asset inverse = vapaee::utils::inverse(price, total.symbol);
+                asset payment = vapaee::utils::payment(total, price);
+                aux_generate_sell_order(owner, scope_buy, scope_sell, payment, inverse, ram_payer);
+            } else {
+                eosio_assert(false, (string("type must be 'sell' or 'buy' in lower case, got: ") + type.to_string()).c_str());
+            }
+            
+            PRINT("vapaee::token::exchange::aux_generate_order() ...\n");
         }
 
         void aux_generate_sell_order(name owner, name scope_buy, name scope_sell, asset total, asset price, name ram_payer) {
@@ -604,7 +608,7 @@ namespace vapaee {
                     permission_level{owner,"active"_n},
                     get_self(),
                     "swapdeposit"_n,
-                    std::make_tuple(owner, get_self(), total_fee, string("future order fee for ") + tlos.to_string())
+                    std::make_tuple(owner, get_self(), total_fee, string("future order fee for ") + tlos.to_string() + " worth transaction")
                 ).send();
 
                 // create order entry
