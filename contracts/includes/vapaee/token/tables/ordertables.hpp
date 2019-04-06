@@ -6,6 +6,7 @@
             name table;
             symbol_code sell;
             symbol_code pay;
+            asset total;
             int orders;
             uint64_t primary_key() const { return table.value; }
         };

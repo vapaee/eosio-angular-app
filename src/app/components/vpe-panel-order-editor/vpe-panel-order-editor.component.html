@@ -27,12 +27,12 @@
                     <div class="row">
                         <div class="col-sm-6 col-padding-right">
                             <span type="text" class="form-control form-control-sm btn btn-sm" [ngClass]="{active: wants=='buy', 'btn-success': can_buy, 'disabled': !can_buy}" (click)="wantsTo('buy')" >
-                                Wanna buy
+                                <i class="material-icons"> done_outline </i> {{local.string.wanna_buy}}
                             </span>
                         </div>
                         <div class="col-sm-6 col-padding-left">
                             <span type="text" class="form-control form-control-sm btn btn-sm" [ngClass]="{active: wants=='sell', 'btn-danger': can_sell, 'disabled': !can_sell}" (click)="wantsTo('sell')" >
-                                Wanna sell
+                                <i class="material-icons"> done_outline </i> {{local.string.wanna_sell}}
                             </span>    
                         </div>
                     </div>
@@ -42,20 +42,32 @@
                     <vpe-token-input [(asset)]="price" (valueChange)="onChange($event)" precision="8" placeholder="{{local.string.Price}}"></vpe-token-input>
                 </div> 
                 <div class="form-group col-sm-3">
-                    <label>{{local.string.Amount}}</label>
+                    <label [ngClass]="{'text-danger':!can_sell && wants=='sell'}">{{local.string.Amount}}</label>
                     <vpe-token-input [(asset)]="amount" (valueChange)="onChange($event)" precision="8" placeholder="{{local.string.Amount}}"></vpe-token-input>
                 </div>
-                <div [hidden]="wants=='sell'" class="form-group col-sm-3">
+
+
+                <div [hidden]="wants=='sell' || !can_buy" class="form-group col-sm-3">
                     <label>{{local.string.Payment}} {{payment ? payment.toString(8) : ""}}</label>
                     <span type="text" class="form-control form-control-sm btn btn-sm btn-success" (click)="buy()" >
                         {{local.string.Buy}}
                     </span>
                 </div>
-                <div [hidden]="wants=='buy'" class="form-group col-sm-3">
+                <div [hidden]="!(wants=='buy' && !can_buy)" class="form-group col-sm-3">
+                    <label class="text-danger">you can't pay {{payment ? payment.toString(8) : ""}}</label>
+                    <label class="text-danger" >you have {{money ? money.toString(8) : ""}}</label>
+                </div>
+
+
+                <div [hidden]="wants=='buy' || !can_sell" class="form-group col-sm-3">
                     <label>{{local.string.Payment}} {{payment ? payment.toString(8) : ""}}</label>
                     <span type="text" class="form-control form-control-sm btn btn-sm btn-danger" (click)="sell()" >
                         {{local.string.Sell}}
                     </span>
+                </div>
+                <div [hidden]="!(wants=='sell' && !can_sell)" class="form-group col-sm-3">
+                    <label class="text-danger">you can't sell {{amount ? amount.toString(8) : ""}}</label>
+                    <label class="text-danger" >you have {{asset ? asset.toString(8) : ""}}</label>
                 </div>
             </div>
         </div>

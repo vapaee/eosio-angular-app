@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Mar 28 10:00:08 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sat Apr  6 18:30:49 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -301,6 +301,10 @@
                 {
                     "name": "sellfee",
                     "type": "asset"
+                },
+                {
+                    "name": "isbuy",
+                    "type": "bool"
                 }
             ]
         },
@@ -411,6 +415,10 @@
                 {
                     "name": "pay",
                     "type": "symbol_code"
+                },
+                {
+                    "name": "total",
+                    "type": "asset"
                 },
                 {
                     "name": "orders",

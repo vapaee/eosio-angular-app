@@ -2,21 +2,33 @@
     <div class="row">
         <div class="col-sm-6">
             <div class="row margin-top">
-                <div class="nowrap text-bold text-sm col-sm-3 col-padding-right">{{local.string.price | titlecase}}</div>
+                <div class="col-sm-12">
+                    <div class="pull-right">
+                        <span class="text-muted">
+                            {{summary.sell ? summary.sell.orders : 0}} {{local.string.orders}} -
+                            {{summary.sell.total ? summary.sell.total.toString() : ""}}
+                        </span>
+                    </div>
+                    {{local.string.sell_orders | titlecase}}
+                </div>
+            </div>
+            <div class="row margin-top">
+                <div class="nowrap text-bold text-sm col-sm-3 col-padding-right padding-left-lg">{{local.string.price | titlecase}}</div>
                 <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-right col-padding-left">{{local.string.amount | titlecase}}</div>
                 <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-right col-padding-left">{{local.string.total | titlecase}}</div>
-                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-left">{{local.string.sum | titlecase}}</div>
+                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-left padding-right-lg">{{local.string.sum | titlecase}}</div>
             </div>
             <div class="row margin-top">
                 <div class="col-sm-12">
-                    <perfect-scrollbar style="max-height: 250px; max-width: 100%">
-                        <div class="row margin-bottom" 
-                            *ngFor="let order of orders.sell"               
+                    <perfect-scrollbar style="max-height: 300px; max-width: 100%">
+                        <div class="row margin-bottom danger active-on-hover" 
+                            [ngClass]="{'owner':row.owners[vapaee.account.name]}"
+                            *ngFor="let row of orders.sell"
                         >
-                            <div class="nowrap col-sm-3 col-padding-right">{{order.price.valueToString(8)}}</div>
-                            <div class="nowrap col-sm-3 text-right col-padding-right col-padding-left">{{order.total.valueToString(8)}}</div>
-                            <div class="nowrap col-sm-3 text-right col-padding-right col-padding-left">{{order.telos.valueToString()}}</div>
-                            <div class="nowrap col-sm-3 text-right padding-right-lg ">{{order.sum.valueToString()}}</div>
+                            <div class="cursor-pointer nowrap col-sm-3 col-padding-right text-danger padding-left-lg" (click)="clickPrice('sell', row)">{{row.price.valueToString(8)}}</div>
+                            <div class="cursor-pointer nowrap col-sm-3 text-right col-padding-right col-padding-left" (click)="clickRow('sell', row)">{{row.total.valueToString(8)}}</div>
+                            <div class="cursor-pointer nowrap col-sm-3 text-right col-padding-right col-padding-left" (click)="clickRow('sell', row)">{{row.telos.valueToString()}}</div>
+                            <div class="cursor-pointer nowrap col-sm-3 text-right padding-right-lg" (click)="clickRow('sell', row)">{{row.sumtelos.valueToString()}}</div>
                         </div>
                     </perfect-scrollbar>
                 </div>
@@ -24,21 +36,33 @@
         </div>
         <div class="col-sm-6">
             <div class="row margin-top">
-                <div class="nowrap text-bold text-sm col-sm-3 col-padding-right">{{local.string.price | titlecase}}</div>
+                <div class="col-sm-12">
+                    <div class="pull-right">
+                        <span class="text-muted">
+                            {{summary.buy ? summary.buy.orders : 0}} {{local.string.orders}} -
+                            {{summary.buy.total ? summary.buy.total.toString() : ""}}
+                        </span>
+                    </div>
+                    {{local.string.buy_orders | titlecase}}
+                </div>
+            </div>
+            <div class="row margin-top">
+                <div class="nowrap text-bold text-sm col-sm-3 col-padding-right padding-left-lg">{{local.string.price | titlecase}}</div>
                 <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-right col-padding-left">{{local.string.amount | titlecase}}</div>
                 <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-right col-padding-left">{{local.string.total | titlecase}}</div>
-                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-left">{{local.string.sum | titlecase}}</div>
+                <div class="nowrap text-bold text-sm-right col-sm-3 col-padding-left padding-right-lg">{{local.string.sum | titlecase}}</div>
             </div>
             <div class="row margin-top">
                 <div class="col-sm-12">
-                    <perfect-scrollbar style="max-height: 250px; max-width: 100%">
-                        <div class="row margin-bottom" 
-                            *ngFor="let order of orders.buy"             
+                    <perfect-scrollbar style="max-height: 300px; max-width: 100%">
+                        <div class="row margin-bottom success active-on-hover"
+                            [ngClass]="{'owner':row.owners[vapaee.account.name]}"
+                            *ngFor="let row of orders.buy"
                         >
-                            <div class="nowrap col-sm-3 col-padding-right">{{order.price.valueToString(8)}}</div>    
-                            <div class="nowrap col-sm-3 text-right col-padding-right col-padding-left">{{order.total.valueToString(8)}}</div>
-                            <div class="nowrap col-sm-3 text-right col-padding-right col-padding-left">{{order.telos.valueToString()}}</div>
-                            <div class="nowrap col-sm-3 text-right padding-right-lg ">{{order.sum.valueToString()}}</div>
+                            <div class="cursor-pointer nowrap col-sm-3 col-padding-right text-success padding-left-lg" (click)="clickPrice('buy', row)">{{row.price.valueToString(8)}}</div>    
+                            <div class="cursor-pointer nowrap col-sm-3 text-right col-padding-right col-padding-left" (click)="clickRow('buy', row)">{{row.total.valueToString(8)}}</div>
+                            <div class="cursor-pointer nowrap col-sm-3 text-right col-padding-right col-padding-left" (click)="clickRow('buy', row)">{{row.telos.valueToString()}}</div>
+                            <div class="cursor-pointer nowrap col-sm-3 text-right padding-right-lg " (click)="clickRow('buy', row)">{{row.sumtelos.valueToString()}}</div>
                         </div>
                     </perfect-scrollbar>
                 </div>

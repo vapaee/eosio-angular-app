@@ -25,7 +25,7 @@
     <div class="row margin-top">
         <div class="col-sm-12">
             <perfect-scrollbar style="max-height: 250px; max-width: 100%">
-                <div class="row cursor-pointer margin-bottom" 
+                <div class="row cursor-pointer margin-bottom active-on-hover" 
                     *ngFor="let token of tokens | filter:token_filter"
                     [hidden]="token.symbol == 'TLOS'"
                     routerLink="{{'/exchange/trade/' + token.scope}}"                

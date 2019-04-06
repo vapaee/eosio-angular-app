@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AppService } from 'src/app/services/common/app.service';
 import { LocalStringsService } from 'src/app/services/common/common.services';
 import { ScatterService } from 'src/app/services/scatter.service';
@@ -6,8 +6,9 @@ import { BGBoxService } from 'src/app/services/bgbox.service';
 import { CntService } from 'src/app/services/cnt.service';
 import { ActivatedRoute } from '@angular/router';
 import { Token } from 'src/app/services/utils.service';
-import { VapaeeService, Asset } from 'src/app/services/vapaee.service';
+import { VapaeeService, Asset, OrderRow } from 'src/app/services/vapaee.service';
 import { Subscriber } from 'rxjs';
+import { VpePanelOrderEditorComponent } from 'src/app/components/vpe-panel-order-editor/vpe-panel-order-editor.component';
 
 
 @Component({
@@ -21,6 +22,8 @@ export class TradePage implements OnInit, OnDestroy {
     comodity:Token;
     currency:Token;
     private onStateSubscriber: Subscriber<string>;
+
+    @ViewChild(VpePanelOrderEditorComponent) orderform: VpePanelOrderEditorComponent;
    
     constructor(
         public app: AppService,
@@ -36,19 +39,15 @@ export class TradePage implements OnInit, OnDestroy {
     }      
 
     async init() {
+        console.log("TradePage.init() <-- ");
+        this.orderform.reset();
         this.scope = this.route.snapshot.paramMap.get('scope');
         var com:string = this.scope.split(".")[0];
-        var cur:string = this.scope.split(".")[1];        
+        var cur:string = this.scope.split(".")[1];
         this.comodity = await this.vapaee.getToken(com);
-        this.currency = await this.vapaee.getToken(cur);
+        this.currency = await this.vapaee.getToken(cur);        
 
-        
-
-        this.vapaee.getSellOrders(this.comodity, this.currency);
-        this.vapaee.getBuyOrders(this.comodity, this.currency);
-        this.vapaee.getTransactionHistory(this.comodity, this.currency);
-        this.vapaee.getDeposits();
-        console.log("ORDERS:", this.orders);
+        this.vapaee.updateTrade(this.comodity, this.currency);
     }
 
     get deposits(): Asset[] {
@@ -69,6 +68,15 @@ export class TradePage implements OnInit, OnDestroy {
         return scope ? scope.orders : {sell:[],buy:[]};
     }
 
+    get summary() {
+        var scope = this.vapaee.scopes[this.scope];
+        var tables = { 
+            sell: {total:null, orders:0}, 
+            buy: {total:null, orders:0}
+        }
+        return scope ? (scope.tables ? scope.tables : tables) : tables;
+    }
+
     get tokens() {
         return this.vapaee.tokens;
     }
@@ -82,6 +90,18 @@ export class TradePage implements OnInit, OnDestroy {
         this.app.onStateChange.subscribe(this.onStateSubscriber);
     }
 
+    onClickRow(e:{type:string, row:OrderRow}) {
+        console.log("**************** onClickRow", e);
+        this.orderform.setPrice(e.row.price.clone());
+        this.orderform.setAmount(e.row.sum.clone());
+        this.orderform.wantsTo(e.type == "sell" ? "buy" : "sell");
+    }
+
+    onClickPrice(e) {
+        console.log("**************** onClickPrice", e);
+        this.orderform.setPrice(e.row.price.clone());
+    }
+    
     onStateChange(state:string) {
         console.log("TradePage.onStateChange("+state+")");
         if (state == "trade") {

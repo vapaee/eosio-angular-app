@@ -2,3 +2,16 @@
     display: flex;
     flex-direction: column;
 }
+
+span.form-control {
+    i.material-icons {
+        display: none;
+    }
+    &.active {
+        i.material-icons {
+            font-size: 15px;
+            display: inline-block;
+            vertical-align: middle;
+        }        
+    }    
+}

@@ -286,6 +286,10 @@ th.left-aligned, td.left-aligned {
 .text-align-center { text-align: center; }
 
 
+.active-on-hover:hover {
+    background-color: rgba(0,0,0,0.5) !important;
+}
+
 // FAB 
 .btn.btn-floating {
     color: #fff;

@@ -12,6 +12,7 @@
             asset payment;
             asset buyfee;
             asset sellfee;
+            bool isbuy;
             uint64_t primary_key() const { return id; }
             uint64_t by_date_key() const { return (uint64_t) date.sec_since_epoch(); }
             uint64_t by_buyer_key() const { return buyer.value; }

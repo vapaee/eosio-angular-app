@@ -183,6 +183,7 @@ export class VapaeeService {
             this.getTransactionHistory(comodity, currency, true),
             this.getSellOrders(comodity, currency, true),
             this.getBuyOrders(comodity, currency, true),
+            this.getOrderTables(comodity, currency, true),
             this.getDeposits()
         ])
     }
@@ -211,7 +212,8 @@ export class VapaeeService {
                     price: new Asset(history.rows[i].price, this),
                     buyer: history.rows[i].buyer,
                     seller: history.rows[i].seller,
-                    date: new Date(history.rows[i].date)
+                    date: new Date(history.rows[i].date),
+                    isbuy: !!history.rows[i].isbuy
                 }
 
                 this.scopes[scope].history.push(transaction);
@@ -220,7 +222,8 @@ export class VapaeeService {
             this.scopes[scope].history.sort(function(a:HistoryTx, b:HistoryTx){
                 if(a.date < b.date) return 1;
                 if(a.date > b.date) return -1;
-                return 0;
+                if(a.id < b.id) return 1;
+                if(a.id > b.id) return -1;
             });            
 
             console.log("History final:", this.scopes[scope].history);
@@ -245,17 +248,16 @@ export class VapaeeService {
         var result = null;
         aux = this.waitReady.then(async _ => {
             var orders = await this.fetchOrders(scope);
+            var sell: Order[] = [];
             console.log("-------------");
             console.log("Sell crudo:", orders);
             this.scopes[scope] = this.auxCreateScope(scope);
-            this.scopes[scope].orders.sell = [];
             for (var i=0; i < orders.rows.length; i++) {
                 var order:Order = {
                     id: orders.rows[i].id,
                     price: new Asset(orders.rows[i].price, this),
                     inverse: new Asset(orders.rows[i].inverse, this),
                     total: new Asset(orders.rows[i].selling, this),
-                    sum: new Asset(orders.rows[i].selling, this),
                     deposit: new Asset(orders.rows[i].total, this),
                     telos: new Asset(orders.rows[i].selling, this),
                     fee: new Asset(orders.rows[i].fee, this),
@@ -267,23 +269,60 @@ export class VapaeeService {
                     order.telos = order.deposit;
                 }
 
-                this.scopes[scope].orders.sell.push(order);
+                sell.push(order);
             }
 
 
-            this.scopes[scope].orders.sell.sort(function(a:Order, b:Order){
+            sell.sort(function(a:Order, b:Order){
                 if(a.price.amount > b.price.amount) return 1;
                 if(a.price.amount < b.price.amount) return -1;
                 return 0;
             });
+            
+            // grouping together orders with the same price.
+            var list: OrderRow[] = [];
+            var row: OrderRow;
+            if (sell.length > 0) {
+                for(var i=0; i<sell.length; i++) {
+                    var order: Order = sell[i];
+                    if (list.length > 0) {
+                        row = list[i-1];
+                        if (row.price.amount.eq(order.price.amount)) {
+                            row.total.amount = row.total.amount.plus(order.total.amount);
+                            row.telos.amount = row.telos.amount.plus(order.telos.amount);
+                            row.owners[order.owner] = true;
+                            row.orders.push(order);
+                            continue;
+                        }    
+                    }
+                    row = {
+                        orders: [],
+                        price: order.price,
+                        total: order.total,
+                        telos: order.telos,
+                        inverse: order.inverse,
+                        sum: null,
+                        sumtelos: null,
+                        owners: {}
+                    }
 
-            var sum = new BigNumber(0);
-            for (var j in this.scopes[scope].orders.sell) {
-                var order = this.scopes[scope].orders.sell[j];
-                sum = sum.plus(order.telos.amount);
-                order.sum = new Asset(sum, order.telos.token);
+                    row.owners[order.owner] = true;
+                    row.orders.push(order);
+                    list.push(row);
+                }
             }
 
+            var sum = new BigNumber(0);
+            var sumtelos = new BigNumber(0);
+            for (var j in list) {
+                var order_row = list[j];
+                sumtelos = sumtelos.plus(order_row.telos.amount);
+                sum = sum.plus(order_row.total.amount);
+                order_row.sumtelos = new Asset(sumtelos, order_row.telos.token);
+                order_row.sum = new Asset(sum, order_row.total.token);
+            }
+
+            this.scopes[scope].orders.sell = list;
             console.log("Sell final:", this.scopes[scope].orders.sell);
             console.log("-------------");
             return orders;
@@ -304,17 +343,16 @@ export class VapaeeService {
         var result = null;
         aux = this.waitReady.then(async _ => {
             var orders = await this.fetchOrders(invere_scope);
+            var buy: Order[] = [];
             console.log("-------------");
             console.log("Buy crudo:", orders);
             this.scopes[scope] = this.auxCreateScope(scope);
-            this.scopes[scope].orders.buy = [];
             for (var i=0; i < orders.rows.length; i++) {
                 var order:Order = {
                     id: orders.rows[i].id,
                     price: new Asset(orders.rows[i].inverse, this),
                     inverse: new Asset(orders.rows[i].price, this),
                     total: new Asset(orders.rows[i].total, this),
-                    sum: new Asset(orders.rows[i].total, this),
                     deposit: new Asset(orders.rows[i].selling, this),
                     telos: new Asset(orders.rows[i].selling, this),
                     fee: new Asset(orders.rows[i].fee, this),
@@ -328,22 +366,59 @@ export class VapaeeService {
 
                 // order.price = order.price.inverse(order.deposit.token);
 
-                this.scopes[scope].orders.buy.push(order);
+                buy.push(order);
             }
 
-            this.scopes[scope].orders.buy.sort(function(a:Order, b:Order){
+            buy.sort(function(a:Order, b:Order){
                 if(a.price.amount < b.price.amount) return 1;
                 if(a.price.amount > b.price.amount) return -1;
                 return 0;
             });
 
-            var sum = new BigNumber(0);
-            for (var j in this.scopes[scope].orders.buy) {
-                var order = this.scopes[scope].orders.buy[j];
-                sum = sum.plus(order.telos.amount);
-                order.sum = new Asset(sum, order.telos.token);
+            // grouping together orders with the same price.
+            var list: OrderRow[] = [];
+            var row: OrderRow;
+            if (buy.length > 0) {
+                for(var i=0; i<buy.length; i++) {
+                    var order: Order = buy[i];
+                    if (list.length > 0) {
+                        row = list[i-1];
+                        if (row.price.amount.eq(order.price.amount)) {
+                            row.total.amount = row.total.amount.plus(order.total.amount);
+                            row.telos.amount = row.telos.amount.plus(order.telos.amount);
+                            row.owners[order.owner] = true;
+                            row.orders.push(order);
+                            continue;
+                        }    
+                    }
+                    row = {
+                        orders: [],
+                        price: order.price,
+                        total: order.total,
+                        telos: order.telos,
+                        inverse: order.inverse,
+                        sum: null,
+                        sumtelos: null,
+                        owners: {}
+                    }
+
+                    row.owners[order.owner] = true;
+                    row.orders.push(order);
+                    list.push(row);
+                }
             }            
 
+            var sum = new BigNumber(0);
+            var sumtelos = new BigNumber(0);
+            for (var j in list) {
+                var order_row = list[j];
+                sumtelos = sumtelos.plus(order_row.telos.amount);
+                sum = sum.plus(order_row.total.amount);
+                order_row.sumtelos = new Asset(sumtelos, order_row.telos.token);
+                order_row.sum = new Asset(sum, order_row.total.token);
+            }
+
+            this.scopes[scope].orders.buy = list;
             console.log("Buy final:", this.scopes[scope].orders.buy);
             console.log("-------------");
             return orders;
@@ -355,16 +430,40 @@ export class VapaeeService {
             result = aux;
         }
         return result;
-    }    
+    }
+    
+    async getOrderTables(comodity:Token, currency:Token, force:boolean = false): Promise<any> {
+        var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
+        this.scopes[scope] = this.auxCreateScope(scope);
+        var tables = await this.fetchOrderTables(comodity, currency);
+
+        for (var i in tables.rows) {
+            if (tables.rows[i].pay == comodity.symbol && tables.rows[i].sell == currency.symbol) {
+                this.scopes[scope].tables.buy.total = new Asset(tables.rows[i].total, this);
+                this.scopes[scope].tables.buy.orders = tables.rows[i].orders;
+            }
+            if (tables.rows[i].pay == currency.symbol && tables.rows[i].sell == comodity.symbol) {
+                this.scopes[scope].tables.sell.total = new Asset(tables.rows[i].total, this);
+                this.scopes[scope].tables.sell.orders = tables.rows[i].orders;
+            }
+        }
+
+    }
     //
     // --------------------------------------------------------------
     // Aux functions
 
     private auxCreateScope(scope:string) {
+        var comodity_sym = scope.split(".")[0].toUpperCase();
+        var currency_sym = scope.split(".")[1].toUpperCase();
         return this.scopes[scope] || {
             scope: scope,
             orders: { sell: [], buy: [] },
-            history: []
+            history: [],
+            tables: { 
+                sell: {total:new Asset("0.0 " + comodity_sym, this), orders:0}, 
+                buy: {total:new Asset("0.0 " + currency_sym, this), orders:0}
+            },
         };        
     }
 
@@ -396,6 +495,12 @@ export class VapaeeService {
 
     private fetchOrders(scope): Promise<any> {
         return this.utils.getTable("sellorders", {scope:scope}).then(result => {
+            return result;
+        });
+    }
+
+    private fetchOrderTables(token1:Token, token2:Token): Promise<any> {
+        return this.utils.getTable("ordertables").then(result => {
             return result;
         });
     }
@@ -463,6 +568,9 @@ export class Asset {
             this.parse(a,b);
         }
     }
+    clone(): Asset {
+        return new Asset(this.amount, this.token);
+    }
 
     parse(text: string, vapaee: VapaeeService) {
         var sym = text.split(" ")[1];
@@ -512,13 +620,24 @@ export interface TableMap {
     [key: string]: {
         scope: string,
         orders: TokenOrders,
-        history: HistoryTx[]
+        history: HistoryTx[],
+        tables: Summary
     };
 }
 
+export interface Summary {
+    sell:TableSummary,
+    buy:TableSummary
+}
+
+export interface TableSummary {
+    total: Asset;
+    orders: number;
+}
+
 export interface TokenOrders {
-    sell:Order[],
-    buy:Order[]
+    sell:OrderRow[],
+    buy:OrderRow[]
 }
 
 export interface HistoryTx {
@@ -531,6 +650,7 @@ export interface HistoryTx {
     buyer: string;
     seller: string;
     date: Date;
+    isbuy: boolean;
 }
 
 export interface Order {
@@ -538,9 +658,19 @@ export interface Order {
     price: Asset;
     inverse: Asset;
     total: Asset;
-    sum: Asset;
     deposit: Asset;
     telos: Asset;
     fee: Asset;
     owner: string;
+}
+
+export interface OrderRow {
+    orders: Order[];
+    price: Asset;
+    inverse: Asset;
+    total: Asset;
+    sum: Asset;
+    sumtelos: Asset;
+    telos: Asset;
+    owners: {[key:string]:boolean}
 }

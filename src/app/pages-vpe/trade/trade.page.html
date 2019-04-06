@@ -22,10 +22,10 @@
         </div>
         <div class="col-sm-8 col-md-9 col-padding-left">
             <vpe-panel-chart></vpe-panel-chart>
-            <vpe-panel-order-editor [deposits]="deposits" [comodity]="comodity" [currency]="currency"></vpe-panel-order-editor>
+            <vpe-panel-order-editor #orderform [deposits]="deposits" [comodity]="comodity" [currency]="currency"></vpe-panel-order-editor>
             <div class="row">
                 <div class="col-sm-8 col-md-9 col-padding-right">
-                    <vpe-panel-orders [orders]="orders"></vpe-panel-orders>
+                    <vpe-panel-orders (onClickRow)="onClickRow($event)" (onClickPrice)="onClickPrice($event)" [summary]="summary" [orders]="orders"></vpe-panel-orders>
                 </div>
                 <div class="col-sm-4 col-md-3 col-padding-left">
                     <vpe-panel-history [history]="history"></vpe-panel-history>

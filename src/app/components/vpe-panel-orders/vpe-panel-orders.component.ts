@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
-import { TokenOrders, VapaeeService } from 'src/app/services/vapaee.service';
+import { TokenOrders, VapaeeService, OrderRow, Summary } from 'src/app/services/vapaee.service';
 import { LocalStringsService } from 'src/app/services/common/common.services';
 
 
@@ -12,6 +12,9 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 export class VpePanelOrdersComponent implements OnChanges {
 
     @Input() public orders: TokenOrders;
+    @Input() public summary: Summary;
+    @Output() onClickRow: EventEmitter<{type:string, row:OrderRow}> = new EventEmitter();
+    @Output() onClickPrice: EventEmitter<{type:string, row:OrderRow}> = new EventEmitter();
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService
@@ -21,5 +24,13 @@ export class VpePanelOrdersComponent implements OnChanges {
 
     ngOnChanges() {
 
+    }
+
+    clickRow(type:string, row:OrderRow) {
+        this.onClickRow.next({type: type, row: row});
+    }
+
+    clickPrice(type:string, row:OrderRow) {
+        this.onClickPrice.next({type: type, row: row});
     }
 }
