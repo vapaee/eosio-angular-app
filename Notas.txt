@@ -1,74 +1,25 @@
 -- TODO --
 - contrato vapaeetokens
-  - agregar total depositado a la tabla ordertables
+  - agregar los fees depositados a la tabla ordertables
   - me falta resolver el problema de desuscribir al usuario que ya no tiene depósitos: depusers depuserstable(get_self(), get_self().value);
 - website
   - Trade
-    - traducir el "wanna buy" a español
     - tokens panel
       - volumen diario
       - precio actual
       - porcentage de cambio 24%
     - manejar errores cuando se genera una órden
     - listar las órdenes propias en el panel de "orden form"
-    - panel de órdenes
-      - la fila que tenga una orden del usuario logueado debe seleccionarse como tal
-      - click:
-        - sobre el precio: setea el precio en el order-form
-        - sobre la línea: setea el precio, amount y determina si se quiere comprar o vender en order-form
-      - título de "órdenes de compra" y "órdenes de ventas"
-      - scrollbars
-      - agregar en una sola línea, las ofertas que coincidan en precio.
     - Gráfica
     - Timezone: que el usuario elija su timezone para mostrar mejor los horarios de las transacciones en el historial
     - cuando se genera una transacción, el historial se actualiza y debería resaltarse temporalmente la reciente transacción.
-  - Profile
-    - cambiarle el nombre de Profile a Account
-    - scatter / login state
-    - depósitos
-      - deposit / withdraw
-    - balances
+  - Account
     - órdenes vigentes
   - ambientar todo para deployar en vapaee.io ?
     - home page (logo, textos, lista de tokens más relevantes)
     - comprar dominio
     - resolver https
     - PWA?
-
-
-
-
-
-
-
-transfer 0.40000000 TLOS to bob   itr->amount > amount: 1.99200000 TLOS > 0.40000000 TLOS
-transfer 0.70000000 TLOS to bob   itr->amount > amount: 1.55200000 TLOS > 0.70000000 TLOS
-transfer 0.14000000 TLOS to bob   itr->amount > amount: 0.78200000 TLOS > 0.14000000 TLOS
-transfer 0.48000000 TLOS to bob   itr->amount > amount: 0.62800000 TLOS > 0.48000000 TLOS
-transfer 0.20000000 TLOS to bob   itr->amount > amount: 0.10000000 TLOS > 0.20000000 TLOS
--------------------------------   ---------------------------------            
-         1.92000000
-
-
-
-
-0.07000000 TLOS
-0.02000000 TLOS
-0.04800000 TLOS
-0.01400000 TLOS
-0.04000000 TLOS
-0.39000000 TLOS
----------------
-0.58200000 TLOS
-1.92000000 TLOS
-----------------
-2.50200000 TLOS
-
-
-
-
-
-
 
 
 
@@ -102,7 +53,9 @@ transfer 0.20000000 TLOS to bob   itr->amount > amount: 0.10000000 TLOS > 0.2000
 ---------------------------------------------------------------------
 -- Mainnet ----------------------------------------------------------
 ---------------------------------------------------------------------
+cd /var/www/eosio-angular-app/contracts/vapaeetokens
 telosmain set contract vapaeetokens $PWD -p vapaeetokens@active
+telosmain set account permission vapaeetokens active '{"threshold": 1,"keys": [{"key": "EOS8MPwGHuGSHSfBp3HAWsrHDotAqp9ZPShBvNcGDpcmNNa5h8y1Q","weight": 1}],"accounts": [{"permission":{"actor":"vapaeetokens","permission":"eosio.code"},"weight":1}]}' owner -p vapaeetokens
 telosmain push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
 telosmain push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active
 telosmain push action vapaeetokens setsnapshot '["snapshots.tf",1,"CNT",0,0,10000,0,"CNT Token Airdrop - Cards & Tokens - http://cardsandtokens.com"]' -p vapaeetokens@active

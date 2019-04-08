@@ -76,4 +76,13 @@ Resulta que no puedo cargar con RAM al usuario, si registro ese evento lo tengo 
   --- solution ---------
   https://eosio.stackexchange.com/a/1711/2452
   cleos set account permission appserver active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"appserver","permission":"eosio.code"},"weight":1}]}' owner -p appserver
-
+- En producción me dió este error cuando quise hacer un withdraw (que implica que el contrato me mande una transacción de tokens)
+  -- error obtenido --
+  Error 3100006: Subjective exception thrown during block production
+  Error Details:
+  Authorization failure with inline action sent to self
+  transaction declares authority '{"actor":"vapaeetokens","permission":"active"}', but does not have signatures for it under a provided delay of 0 ms, provided permissions [{"actor":"vapaeetokens","permission":"eosio.code"}], provided keys [], and a delay max limit of 3888000000 ms
+  pending console output:
+  --- solución ---
+  https://eosio.stackexchange.com/a/1711/2452
+  telosmain set account permission vapaeetokens active '{"threshold": 1,"keys": [{"key": "EOS8MPwGHuGSHSfBp3HAWsrHDotAqp9ZPShBvNcGDpcmNNa5h8y1Q","weight": 1}],"accounts": [{"permission":{"actor":"vapaeetokens","permission":"eosio.code"},"weight":1}]}' owner -p vapaeetokens

@@ -7,6 +7,7 @@
             symbol_code sell;
             symbol_code pay;
             asset total;
+            vector<asset> fees;
             int orders;
             uint64_t primary_key() const { return table.value; }
         };
