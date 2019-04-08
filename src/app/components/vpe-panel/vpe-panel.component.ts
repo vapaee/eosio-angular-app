@@ -12,11 +12,12 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 export class VpePanelComponent implements OnChanges {
 
     @Input() public title: string;
+    @Input() public hideheader: boolean;
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService
     ) {
-        
+        this.hideheader = false;
     }
 
     ngOnChanges() {

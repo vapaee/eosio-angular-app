@@ -1,7 +1,11 @@
-<vpe-panel [title]="local.string.wallet">
+<vpe-panel [hideheader]="hideheader" [title]="local.string.wallet">
     <div class="row">
 
-        <div class="col-sm-12" [hidden]="vapaee.logged">
+        <div class="col-sm-12">
+            <div class="text-lg text-center">{{title | titlecase}}</div>
+        </div>
+
+        <div class="col-sm-12" [hidden]="vapaee.logged || hideuser">
             <div class="pull-left margin-top">
                 <span class="btn btn-sm btn-secondary" (click)="vapaee.login()">
                     {{local.string.LoginWScatter}}
@@ -10,18 +14,34 @@
         </div>
 
         <div class="col-sm-12" [hidden]="!vapaee.logged">
-            <div class="pull-right">
-                <small class="text-muted cursor-pointer" [routerLink]="'/exchange/profile/' + vapaee.current">
+            <div class="pull-right" [hidden]="hideuser">
+                <small class="text-muted cursor-pointer" [routerLink]="'/exchange/account/' + vapaee.current.name">
                     {{local.string.LoggedAs}} '{{vapaee.logged}}'
                 </small>
             </div>            
             <div class="text-md">{{local.string.deposits | titlecase}}</div>
             <table class="table complete margin-top">
                 <tbody>
-                    <tr *ngFor="let deposit of deposits">
+                    <tr
+                        [ngClass]="{'active-on-hover':actions}"
+                        *ngFor="let deposit of deposits">
                         <td>
-                            <img [src]="deposit.token.logo" style="width: 20px; height: 20px; margin-top:-1px">
-                            {{deposit.toString(8)}}
+                            <div (click)="withdrawForm(deposit)" [ngClass]="{'cursor-pointer': actions}">
+                                <img [src]="deposit.token.logo" style="width: 20px; height: 20px; margin-top:-1px">
+                                {{deposit.toString(8)}}        
+                            </div>
+                            <div class="row" [hidden]="deposit.token.symbol != withdraw.token.symbol">
+                                <div class="col-sm-12 margin-top">
+                                    <label>{{local.string.withdraw | titlecase}}</label>
+                                    <vpe-token-input
+                                        [(asset)]="withdraw"
+                                        (valueChange)="onChange($event)"
+                                        (valueEnter)="onConfirmWithdraw($event)"
+                                        precision="4"
+                                        [button]="local.string.withdraw"
+                                        placeholder="{{local.string.withdraw | titlecase}}"></vpe-token-input>
+                                </div>
+                            </div>                            
                         </td>
                     </tr>
                 </tbody>
@@ -32,10 +52,27 @@
             <div class="text-md">{{local.string.balances | titlecase}}</div>
             <table class="table complete margin-top">
                 <tbody>
-                    <tr *ngFor="let balance of balances">
+                    <tr 
+                        [ngClass]="{'active-on-hover':actions}"
+                        *ngFor="let balance of balances"
+                        >
                         <td>
-                            <img [src]="balance.token.logo" style="width: 20px; height: 20px; margin-top:-1px">
-                            {{balance.toString()}}
+                            <div (click)="depositForm(balance)" [ngClass]="{'cursor-pointer': actions}">
+                                <img [src]="balance.token.logo" style="width: 20px; height: 20px; margin-top:-1px">
+                                {{balance.toString()}}
+                            </div>
+                            <div class="row" [hidden]="balance.token.symbol != deposit.token.symbol">
+                                <div class="col-sm-12 margin-top">
+                                    <label>{{local.string.deposit | titlecase}}</label>
+                                    <vpe-token-input
+                                        [(asset)]="deposit"
+                                        (valueChange)="onChange($event)"
+                                        (valueEnter)="onConfirmDeposit($event)"
+                                        precision="4"
+                                        [button]="local.string.deposit"
+                                        placeholder="{{local.string.deposit | titlecase}}"></vpe-token-input>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

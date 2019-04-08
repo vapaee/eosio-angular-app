@@ -14,9 +14,11 @@ export class VpeTokenInputComponent implements OnChanges {
     private prev: string;
     @Input() public asset: Asset;
     @Input() public placeholder: string;
+    @Input() public button: string;
     @Input() public precision: number;
     @Input() public disabled: boolean;
     @Output() valueChange: EventEmitter<any> = new EventEmitter();
+    @Output() valueEnter: EventEmitter<any> = new EventEmitter();
     public text: string;
     constructor(
         public vapaee: VapaeeService,
@@ -39,6 +41,13 @@ export class VpeTokenInputComponent implements OnChanges {
         } catch(e) {
             console.error(e);
         }
+    }
+
+    onEnter() {
+        this.ngOnChanges();
+        setTimeout(_ => {
+            this.valueEnter.emit(this.asset);
+        }, 0);
     }
 
     onChange(ctrl:any, text:any) {

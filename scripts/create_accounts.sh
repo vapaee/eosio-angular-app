@@ -83,13 +83,6 @@ cleos push action eosio.token issue '["bob", "10.0000 QBE", "memo QBE"]' -p eosi
 cleos push action eosio.token issue '["tom", "10.0000 QBE", "memo QBE"]' -p eosio@active
 cleos push action eosio.token issue '["kate", "10.0000 QBE", "memo QBE"]' -p eosio@active
 
-echo "-------- eosio.token (CNT) ---------"
-cleos push action eosio.token create '[ "eosio", "500000000.0000 CNT"]' -p eosio.token@active
-cleos push action eosio.token issue '["alice", "10.0000 CNT", "memo CNT"]' -p eosio@active
-cleos push action eosio.token issue '["bob", "10.0000 CNT", "memo CNT"]' -p eosio@active
-cleos push action eosio.token issue '["tom", "10.0000 CNT", "memo CNT"]' -p eosio@active
-cleos push action eosio.token issue '["kate", "10.0000 CNT", "memo CNT"]' -p eosio@active
-
 echo "-------- eosio.token (EDNA) ---------"
 cleos push action eosio.token create '[ "eosio", "1300000000.0000 EDNA"]' -p eosio.token@active
 cleos push action eosio.token issue '["alice", "10.0000 EDNA", "memo EDNA"]' -p eosio@active

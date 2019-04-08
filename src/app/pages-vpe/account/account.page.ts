@@ -7,17 +7,18 @@ import { CntService } from 'src/app/services/cnt.service';
 import { Subscriber } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Profile } from 'src/app/services/utils.service';
-import { VapaeeService } from 'src/app/services/vapaee.service';
+import { VapaeeService, Asset } from 'src/app/services/vapaee.service';
 
 
 @Component({
-    selector: 'vpe-profile-page',
-    templateUrl: './profile.page.html',
-    styleUrls: ['./profile.page.scss', '../common.page.scss']
+    selector: 'vpe-account-page',
+    templateUrl: './account.page.html',
+    styleUrls: ['./account.page.scss', '../common.page.scss']
 })
-export class VpeProfilePage implements OnInit, OnDestroy {
+export class VpeAccountPage implements OnInit, OnDestroy {
 
     private subscriber: Subscriber<string>;
+    current_mode: boolean;
    
     constructor(
         public app: AppService,
@@ -28,7 +29,22 @@ export class VpeProfilePage implements OnInit, OnDestroy {
         public vapaee: VapaeeService,
     ) {
         this.subscriber = new Subscriber<string>(this.onCntCurrentAccountChange.bind(this));
-        this.onCntCurrentAccountChange('guest');
+        this.current_mode = true;
+        // this.onCntCurrentAccountChange('guest');
+    }
+
+
+    get deposits(): Asset[] {
+        return this.vapaee.deposits;
+    }
+
+    get balances(): Asset[] {
+        return this.vapaee.balances;
+    }    
+
+    updateAccount() {
+        // this.vapaee.account
+        
     }
 
     ngOnDestroy() {
@@ -36,15 +52,16 @@ export class VpeProfilePage implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        console.log("ProfilePage.ngOnInit()");
+        console.log("VpeAccountPage.ngOnInit()");
         // this.cnt.updateLogState();
         this.vapaee.onCurrentAccountChange.subscribe(this.subscriber);
-        var profile = this.route.snapshot.paramMap.get('profile');       
+        var name = this.route.snapshot.paramMap.get('name');
+        this.onCntCurrentAccountChange(name);
     }
 
     onCntCurrentAccountChange(account: string) {
         console.log("VaeProfilePage.onCntCurrentAccountChange() ----------------->", account);
-        var url = "/exchange/profile/";
+        var url = "/exchange/account/";
         if (account) {
             url += account;
         } else {
@@ -52,6 +69,20 @@ export class VpeProfilePage implements OnInit, OnDestroy {
         };
         console.log("accountPage.onCntCurrentAccountChange()", [account], " --> ", url);
         this.app.navigate(url);
+    }
+
+    onWalletConfirmDeposit(amount: Asset) {
+        console.log("------------------>", amount.toString());
+        this.vapaee.deposit(amount).then(_ => {
+            console.log("------------------>", amount.toString());
+        });
+    }
+
+    onWalletConfirmWithdraw(amount: Asset) {
+        console.log("------------------>", amount.toString());
+        this.vapaee.withdraw(amount).then(_ => {
+            console.log("------------------>", amount.toString());
+        });
     }
 
 }

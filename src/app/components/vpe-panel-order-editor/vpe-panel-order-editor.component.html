@@ -1,17 +1,14 @@
 <vpe-panel [title]="local.string.OrderForm">
     <div class="row">
-        <!--
+  
         <div class="col-sm-12">
-            <div [hidden]="!vapaee.logged" class="pull-right">
-                <small class="text-muted cursor-pointer" [routerLink]="'/exchange/profile/' + vapaee.current">
-                    {{local.string.LoggedAs}} '{{vapaee.logged}}'
+            <div class="pull-right">
+                <small class="text-muted cursor-pointer" (click)="debug()">
+                    debug
                 </small>
             </div>
         </div>
-        <div class="col-sm-12">
-            
-        </div>
-        -->
+        
         <div class="col-sm-12" [hidden]="vapaee.logged">
             <div  class="pull-left margin-top">
                 <span class="btn btn-sm btn-secondary" (click)="vapaee.login()">
@@ -54,8 +51,8 @@
                     </span>
                 </div>
                 <div [hidden]="!(wants=='buy' && !can_buy)" class="form-group col-sm-3">
-                    <label class="text-danger">you can't pay {{payment ? payment.toString(8) : ""}}</label>
-                    <label class="text-danger" >you have {{money ? money.toString(8) : ""}}</label>
+                    <label class="text-danger">{{local.string.ycntpay}} {{payment ? payment.toString(8) : ""}}</label>
+                    <label class="text-danger" >{{local.string.yohave}} {{money ? money.toString(8) : ""}}</label>
                 </div>
 
 
@@ -66,8 +63,8 @@
                     </span>
                 </div>
                 <div [hidden]="!(wants=='sell' && !can_sell)" class="form-group col-sm-3">
-                    <label class="text-danger">you can't sell {{amount ? amount.toString(8) : ""}}</label>
-                    <label class="text-danger" >you have {{asset ? asset.toString(8) : ""}}</label>
+                    <label class="text-danger">{{local.string.ycntsell}} {{amount ? amount.toString(8) : ""}}</label>
+                    <label class="text-danger" >{{local.string.yohave}} {{asset ? asset.toString(8) : ""}}</label>
                 </div>
             </div>
         </div>

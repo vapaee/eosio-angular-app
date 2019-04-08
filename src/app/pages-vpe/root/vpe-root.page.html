@@ -25,8 +25,8 @@
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('tokens')}">
                     <a class="nav-link" [routerLink]="'/exchange/tokens'" >{{local.string.Tokens}}</a>
                 </li>
-                <li class="nav-item" [ngClass]="{active: app.stateStartsWith('profile')}">
-                    <a class="nav-link" [routerLink]="'/exchange/profile/' + vapaee.current" >{{local.string.Profile}}</a>
+                <li class="nav-item" [ngClass]="{active: app.stateStartsWith('account')}">
+                    <a class="nav-link" [routerLink]="'/exchange/account/' + vapaee.current.name" >{{local.string.Account}}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link cursor-pointer" (click)="debug()">DEBUG</a>

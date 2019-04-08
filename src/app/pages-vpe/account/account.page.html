@@ -1,0 +1,217 @@
+<div class="container-fluid d-lg-none">
+    <div class="card text-white bg-dark margin-top">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-auto col-padding-right">
+                    <identicon-comp [value]="vapaee.current.name"></identicon-comp>
+                </div>
+                <div class="col col-padding-left">
+                    <div class="text-xl">
+                        {{vapaee.current.name}}
+                        <span [ngClass]="{'d-none':!vapaee.logged}">
+                            <span class="btn btn-sm btn-secondary margin-left" (click)="vapaee.logout()">logout</span>
+                        </span>
+                    </div>
+                    <div [ngClass]="{'d-none':vapaee.loginState != 'no-scatter'}">
+                        <div class="pull-right">
+                            <span class="btn btn-sm btn-secondary" (click)="scatter.connectApp()">retry</span>
+                        </div>
+                        <span>Scatter not detected</span>
+                    </div>
+                    <div [ngClass]="{'d-none':vapaee.loginState != 'no-logged'}">
+                        <div class="pull-right">
+                            <span class="btn btn-sm btn-secondary" (click)="vapaee.login()">
+                                {{local.string.LoginWScatter}}
+                            </span>
+                        </div>
+                        <span>{{local.string.NotLogged}}</span>
+                    </div>                  
+                    <div class="text-md nowrap" [hidden]="!vapaee.current.data.total_balance">total balance:
+                        <span class="text-lg color-green">{{vapaee.current.data.total_balance}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card text-white bg-dark margin-top d-lg-none">
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <div class="text-lg text-center">Resources</div>
+                    <div class="text-md margin-top">RAM <span class="text-xs color-grey">{{vapaee.current.data.ram_limit.percentStr}} available</span></div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar" [ngStyle]="{'width': vapaee.current.data.ram_limit.percentStr}"></div>
+                    </div>
+                    <div class="text-sm text-center">RAM used - {{vapaee.current.data.ram_limit.used}} Bytes / {{vapaee.current.data.ram_limit.max}} Bytes</div>
+                    <div class="text-md margin-top">NET <span class="text-xs color-grey">{{vapaee.current.data.net_limit.percentStr}} available</span></div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar" [ngStyle]="{'width': vapaee.current.data.net_limit.percentStr}"></div>
+                    </div>
+                    <div class="text-sm text-center">NET used - {{vapaee.current.data.net_limit.used}} Bytes / {{vapaee.current.data.net_limit.max}} Bytes</div>
+                    <div class="text-md margin-top">CPU <span class="text-xs color-grey">{{vapaee.current.data.cpu_limit.percentStr}} available</span></div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar" [ngStyle]="{'width': vapaee.current.data.cpu_limit.percentStr}"></div>
+                    </div>
+                    <div class="text-sm text-center">CPU used - {{vapaee.current.data.cpu_limit.used}} µs / {{vapaee.current.data.cpu_limit.max}} µs</div>
+                </div>
+            </div>    
+        </div>
+    </div>
+
+    <div class="card text-white bg-dark margin-top">
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <div class="text-lg text-center">Balance Breakdown</div>
+                    <table class="table right-aligned margin-top">
+                        <tbody>
+                            <tr><td>Available:</td><td>{{vapaee.current.data.core_liquid_balance}}</td></tr>
+                            <tr><td>Refunding:</td><td>{{vapaee.current.data.refund_request.total}}</td></tr>
+                            <tr><td>CPU Staked:</td><td>{{vapaee.current.data.total_resources.cpu_weight}}</td></tr>
+                            <tr><td>NET Staked:</td><td>{{vapaee.current.data.total_resources.net_weight}}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>    
+        </div>
+    </div>
+
+    <vpe-panel-wallet (confirmWithdraw)="onWalletConfirmWithdraw($event)" (confirmDeposit)="onWalletConfirmDeposit($event)" [actions]="true" [hideuser]="true" [hideheader]="true" [title]="local.string.wallet" [deposits]="deposits" [balances]="balances"></vpe-panel-wallet>
+
+</div>
+
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<div class="container d-none d-lg-block">
+    <div class="card text-white bg-dark margin-top">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-sm-auto col-padding-right">
+                    <identicon-comp [value]="vapaee.current.name"></identicon-comp>
+                </div>
+                <div class="col col-padding-left">
+                    <div class="text-xl">
+                        {{vapaee.current.name}}
+                        <span [ngClass]="{'d-none':!vapaee.logged}">
+                            <span class="btn btn-sm btn-secondary margin-left" (click)="vapaee.logout()">logout</span>
+                        </span>
+                    </div>
+                    <div [ngClass]="{'d-none':vapaee.loginState != 'no-scatter'}">
+                        <div class="pull-right">
+                            <span class="btn btn-sm btn-secondary" (click)="scatter.connectApp()">retry</span>
+                        </div>
+                        <span>Scatter not detected</span>
+                    </div>
+                    <div [ngClass]="{'d-none':vapaee.loginState != 'no-logged'}">
+                        <div class="pull-right">
+                            <span class="btn btn-sm btn-secondary" (click)="vapaee.login()">
+                                {{local.string.LoginWScatter}}
+                            </span>
+                        </div>
+                        <span>{{local.string.NotLogged}}</span>
+                    </div>                  
+                    <div class="text-md nowrap" [hidden]="!vapaee.current.data.total_balance">total balance:
+                        <span class="text-lg color-green">{{vapaee.current.data.total_balance}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-padding-right">
+            <div class="card text-white bg-dark margin-top">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="pull-right">
+                                <span class="btn btn-sm btn-secondary" (click)="current_mode = !current_mode">switch</span>
+                            </div>
+                            <div class="text-lg text-center">Resources {{current_mode}}</div>
+                        </div>
+                    </div>
+
+                    <div class="row" [ngClass]="{'d-none':current_mode}">
+                        <div class="col">
+                            <div class="text-md margin-top">RAM <span class="text-xs color-grey">{{vapaee.current.data.ram_limit.percentStr}} available</span></div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                    role="progressbar" [ngStyle]="{'width': vapaee.current.data.ram_limit.percentStr}"></div>
+                            </div>
+                            <div class="text-sm text-center">RAM used - {{vapaee.current.data.ram_limit.used}} Bytes / {{vapaee.current.data.ram_limit.max}} Bytes</div>
+                            <div class="text-md margin-top">NET <span class="text-xs color-grey">{{vapaee.current.data.net_limit.percentStr}} available</span></div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                    role="progressbar" [ngStyle]="{'width': vapaee.current.data.net_limit.percentStr}"></div>
+                            </div>
+                            <div class="text-sm text-center">NET used - {{vapaee.current.data.net_limit.used}} Bytes / {{vapaee.current.data.net_limit.max}} Bytes</div>
+                            <div class="text-md margin-top">CPU <span class="text-xs color-grey">{{vapaee.current.data.cpu_limit.percentStr}} available</span></div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                    role="progressbar" [ngStyle]="{'width': vapaee.current.data.cpu_limit.percentStr}"></div>
+                            </div>
+                            <div class="text-sm text-center">CPU used - {{vapaee.current.data.cpu_limit.used}} µs / {{vapaee.current.data.cpu_limit.max}} µs</div>
+                        </div>
+                    </div>
+
+
+                    <div class="row" [ngClass]="{'d-none':!current_mode}">
+                        <div class="col col-padding-right">
+                            <div class="text-md margin-top">RAM <span class="text-xs color-grey">{{vapaee.current.data.ram_limit.percentStr}} available</span></div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                    role="progressbar" [ngStyle]="{'width': vapaee.current.data.ram_limit.percentStr}"></div>
+                            </div>
+                            <div class="text-muted text-xs margin-top-xs text-center">{{vapaee.current.data.ram_limit.max}} Bytes</div>
+                        </div>
+                        <div class="col col-padding-left col-padding-right">
+                            <div class="text-md margin-top">NET <span class="text-xs color-grey">{{vapaee.current.data.net_limit.percentStr}} available</span></div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                    role="progressbar" [ngStyle]="{'width': vapaee.current.data.net_limit.percentStr}"></div>
+                            </div>
+                            <div class="text-muted text-xs margin-top-xs text-center">{{vapaee.current.data.net_limit.max}} Bytes</div>
+                        </div>
+                        <div class="col col-padding-left">
+                            <div class="text-md margin-top">CPU <span class="text-xs color-grey">{{vapaee.current.data.cpu_limit.percentStr}} available</span></div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                    role="progressbar" [ngStyle]="{'width': vapaee.current.data.cpu_limit.percentStr}"></div>
+                            </div>
+                            <div class="text-muted text-xs margin-top-xs text-center">{{vapaee.current.data.cpu_limit.max}} µs</div>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+        
+            <div class="card text-white bg-dark margin-top">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="text-lg text-center">Balance Breakdown</div>
+                            <table class="table right-aligned margin-top">
+                                <tbody>
+                                    <tr><td>Available:</td><td>{{vapaee.current.data.core_liquid_balance}}</td></tr>
+                                    <tr><td>Refunding:</td><td>{{vapaee.current.data.refund_request.total}}</td></tr>
+                                    <tr><td>CPU Staked:</td><td>{{vapaee.current.data.total_resources.cpu_weight}}</td></tr>
+                                    <tr><td>NET Staked:</td><td>{{vapaee.current.data.total_resources.net_weight}}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-padding-left">
+            <vpe-panel-wallet (confirmWithdraw)="onWalletConfirmWithdraw($event)" (confirmDeposit)="onWalletConfirmDeposit($event)" [actions]="true" [hideuser]="true" [hideheader]="true" [title]="local.string.wallet" [deposits]="deposits" [balances]="balances"></vpe-panel-wallet>
+        </div>
+    </div>
+
+</div>
+

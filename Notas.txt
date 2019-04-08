@@ -23,6 +23,7 @@
     - Timezone: que el usuario elija su timezone para mostrar mejor los horarios de las transacciones en el historial
     - cuando se genera una transacción, el historial se actualiza y debería resaltarse temporalmente la reciente transacción.
   - Profile
+    - cambiarle el nombre de Profile a Account
     - scatter / login state
     - depósitos
       - deposit / withdraw
@@ -105,6 +106,41 @@ telosmain set contract vapaeetokens $PWD -p vapaeetokens@active
 telosmain push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
 telosmain push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active
 telosmain push action vapaeetokens setsnapshot '["snapshots.tf",1,"CNT",0,0,10000,0,"CNT Token Airdrop - Cards & Tokens - http://cardsandtokens.com"]' -p vapaeetokens@active
+
+telosmain set contract boardgamebox $PWD -p boardgamebox@active
+
+
+
+
+echo "-- register CNT --" 
+telosmain push action vapaeetokens addtoken '["vapaeetokens","CNT",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["CNT", "Cards & Tokens", "http://cardsandtokens.com", "/assets/logos/cnt.svg", "/assets/logos/cnt-lg.svg", true]' -p vapaeetokens@active
+echo "-- register TLOS --" 
+telosmain push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io", "/assets/logos/telos.png", "/assets/logos/telos-lg.png", true]' -p vapaeetokens@active
+echo "-- register VIITA --" 
+telosmain push action vapaeetokens addtoken '["viitasphere1","VIITA",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["VIITA", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png", true]' -p vapaeetokens@active
+echo "-- register VIICT --" 
+telosmain push action vapaeetokens addtoken '["viitasphere1","VIICT",0,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["VIICT", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png", false]' -p vapaeetokens@active
+echo "-- register QBE --" 
+telosmain push action vapaeetokens addtoken '["qubicletoken","QBE",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png", true]' -p vapaeetokens@active
+echo "-- register ACORN --" 
+telosmain push action vapaeetokens addtoken '["acornaccount","ACORN",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ACORN", "ACORN", "http://acorns.fun", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png", true]' -p vapaeetokens@active
+echo "-- register EDNA --" 
+telosmain push action vapaeetokens addtoken '["ednazztokens","EDNA",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["EDNA", "EDNA", "https://github.com/EDNA-LIFE", "/assets/logos/edna.png", "/assets/logos/edna-lg.png", true]' -p vapaeetokens@active
+echo "-- register TEACH --" 
+telosmain push action vapaeetokens addtoken '["teachology14","TEACH",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TEACH", "Teachology", "http://teachology.io", "/assets/logos/teach.svg", "/assets/logos/teach-lg.png", true]' -p vapaeetokens@active
+echo "-- register ROBO --" 
+telosmain push action vapaeetokens addtoken '["proxibotstkn","ROBO",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://proxibots.io", "/assets/logos/proxibots.png", "/assets/logos/proxibots-lg.png", true]' -p vapaeetokens@active
+
+
 
 
 ---------------------------------------------------------------------

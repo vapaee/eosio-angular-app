@@ -1,4 +1,4 @@
-<div class="input-group">
+<div class="input-group" [hidden]="button">
     <input
         type="text"
         class="form-control form-control-sm"
@@ -8,8 +8,28 @@
         #ctrl="ngModel"
         [(ngModel)]="text"
         onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46"
-        placeholder="{{placeholder}}">
+        placeholder="{{placeholder}}"
+    >
     <div class="input-group-append">
         <span class="input-group-text form-control-sm padding-xs">{{asset ? asset.token.symbol : ' '}}</span>
+    </div>
+</div>
+
+<div class="input-group" [hidden]="!button">
+    <input
+        type="text"
+        class="form-control form-control-sm"
+        [ngClass]="{'disabled': disabled}"
+        (ngModelChange)="onChange(ctrl,$event)"
+        (blur)="onBlur(ctrl,$event)"
+        #ctrl="ngModel"
+        [(ngModel)]="text"
+        onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46"
+        placeholder="{{placeholder}}"
+        (keyup.enter)="onEnter(ctrl.value)"
+    >
+    <div class="input-group-append">
+        <span class="input-group-text form-control-sm padding-xs">{{asset ? asset.token.symbol : ' '}}</span>
+        <button [hidden]="!button" class="action btn btn-sm btn-primary" type="button" (click)="onEnter(ctrl.value)">{{button | titlecase}}</button>
     </div>
 </div>

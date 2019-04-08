@@ -41,13 +41,16 @@ export class TradePage implements OnInit, OnDestroy {
     async init() {
         console.log("TradePage.init() <-- ");
         this.orderform.reset();
-        this.scope = this.route.snapshot.paramMap.get('scope');
-        var com:string = this.scope.split(".")[0];
-        var cur:string = this.scope.split(".")[1];
-        this.comodity = await this.vapaee.getToken(com);
-        this.currency = await this.vapaee.getToken(cur);        
-
-        this.vapaee.updateTrade(this.comodity, this.currency);
+        this.comodity = null;
+        this.currency = null;
+        setTimeout(async _ => {
+            this.scope = this.route.snapshot.paramMap.get('scope');
+            var com:string = this.scope.split(".")[0];
+            var cur:string = this.scope.split(".")[1];
+            this.comodity = await this.vapaee.getToken(com);
+            this.currency = await this.vapaee.getToken(cur);        
+            this.vapaee.updateTrade(this.comodity, this.currency);    
+        }, 0);
     }
 
     get deposits(): Asset[] {

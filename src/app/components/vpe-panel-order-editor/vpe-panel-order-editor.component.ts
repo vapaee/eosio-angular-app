@@ -75,8 +75,11 @@ export class VpePanelOrderEditorComponent implements OnChanges {
             }
             
             if (!this.wants) {
-                this.wantsTo("sell");
-                this.wantsTo("buy");
+                if (this.can_buy) {
+                    this.wantsTo("buy");
+                } else {
+                    this.wantsTo("sell");
+                }
             }
 
             /*if (!this.can_buy && !this.can_sell) {
@@ -89,8 +92,8 @@ export class VpePanelOrderEditorComponent implements OnChanges {
 
     wantsTo(what) {
         console.assert(what == "sell" || what == "buy", "ERROR: wantsTo what??", what);
-        if (what == "sell" && !this.can_sell) return;
-        if (what == "buy" && !this.can_buy) return;
+        // if (what == "sell" && !this.can_sell) return;
+        // if (what == "buy" && !this.can_buy) return;
         this.wants = what;
         this.calculate();
     }
@@ -140,9 +143,9 @@ export class VpePanelOrderEditorComponent implements OnChanges {
         });
     }
 
-    debug(obj:any) {
+    debug() {
         console.log("-------");
-        console.log(obj);
+        console.log(this);
         console.log("-------");
     }
 

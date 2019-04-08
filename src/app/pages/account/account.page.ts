@@ -52,10 +52,7 @@ export class AccountPage implements OnInit {
             memo: "testing"
         };
 
-        this.account = {
-            account_name:"guesst",
-            dummie: true
-        };
+        this.account = this.scatter.default.data;
         var name = this.route.snapshot.paramMap.get('name');
         // console.log("name", name);
         if (name) {

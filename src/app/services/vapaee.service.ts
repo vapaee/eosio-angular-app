@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { ScatterService } from './scatter.service';
+import { ScatterService, Account, AccountData } from './scatter.service';
 import { Utils, Token } from './utils.service';
 import BigNumber from "bignumber.js";
 
@@ -18,16 +18,14 @@ export class VapaeeService {
     public tokens: Token[];
     public scopes: TableMap;
     public utils: Utils;
-    public current: String;
-    public default: String;
-    public contract:string;   
+    public current: Account;
+    public contract: string;   
     public deposits: Asset[];
     public balances: Asset[];
-    public onLoggedAccountChange:Subject<String> = new Subject();
-    public onCurrentAccountChange:Subject<String> = new Subject();
-    public onHistoryChange:Subject<String> = new Subject();
-    vapaeetokens:string = "vapaeetokens";
-    
+    public onLoggedAccountChange:Subject<string> = new Subject();
+    public onCurrentAccountChange:Subject<string> = new Subject();
+    public onHistoryChange:Subject<string> = new Subject();
+    vapaeetokens:string = "vapaeetokens";    
     
     private setReady: Function;
     public waitReady: Promise<any> = new Promise((resolve) => {
@@ -35,9 +33,9 @@ export class VapaeeService {
     });
     constructor(
         private scatter: ScatterService
-        ) {
+    ) {
+        
         this.scopes = {};
-        this.default = 'guest';
         this.current = this.default;
         this.contract = this.vapaeetokens;
         this.scatter.onLogggedStateChange.subscribe(this.onLoggedChange.bind(this));
@@ -55,6 +53,10 @@ export class VapaeeService {
     }
 
     // getters ------------
+    get default(): Account {
+        return this.scatter.default;
+    }
+
     get logged() {
         return this.scatter.logged ? this.scatter.account.name : null;
     }
@@ -77,7 +79,7 @@ export class VapaeeService {
 
     onLogout() {
         console.log("VapaeeService.onLogout()");
-        this.resetCurrentAccount(this.default);
+        this.resetCurrentAccount(this.default.name);
         this.updateLogState();
         this.onLoggedAccountChange.next(this.logged);
     }
@@ -100,11 +102,14 @@ export class VapaeeService {
         }
     }
 
-    resetCurrentAccount(profile:String) {
+    async resetCurrentAccount(profile:string) {
         console.log("VapaeeService.resetCurrentAccount() current:", this.current, "next:", profile);
-        if (this.current != profile) {
-            this.current = profile;
-            this.onCurrentAccountChange.next(this.current);
+        if (this.current.name != profile) {
+            this.current = this.default;
+            this.current.name = profile;
+            if (profile != "guest") {
+                this.current.data = await this.getAccountData(this.current.name);
+            }
         }
     }
 
@@ -119,7 +124,13 @@ export class VapaeeService {
         });
     }
 
-    // --------------------------------------------------------------
+    private async getAccountData(name: string): Promise<AccountData>  {
+        return this.scatter.queryAccountData(name).catch(async _ => {
+            return this.default.data;
+        });
+    }
+
+    // Actions --------------------------------------------------------------
     createOrder(type:string, amount:Asset, price:Asset) {
         // "alice", "buy", "2.50000000 CNT", "0.40000000 TLOS"
         // name owner, name type, const asset & total, const asset & price
@@ -133,6 +144,32 @@ export class VapaeeService {
             return result;
         });
     }
+
+    deposit(quantity:Asset) {
+        // name owner, name type, const asset & total, const asset & price
+        var util = new Utils(quantity.token.contract, this.scatter);
+        return util.excecute("transfer", {
+            from:  this.scatter.account.name,
+            to: this.vapaeetokens,
+            quantity: quantity.toString(),
+            memo: "deposit"
+        }).then(async result => {
+            await this.getDeposits();
+            await this.getBalances();
+            return result;
+        });
+    }    
+
+    withdraw(quantity:Asset) {
+        return this.utils.excecute("withdraw", {
+            owner:  this.scatter.account.name,
+            quantity: quantity.toString()
+        }).then(async result => {
+            await this.getDeposits();
+            await this.getBalances();
+            return result;
+        });
+    }    
 
     // --------------------------------------------------------------
     // Getters 
@@ -286,7 +323,7 @@ export class VapaeeService {
                 for(var i=0; i<sell.length; i++) {
                     var order: Order = sell[i];
                     if (list.length > 0) {
-                        row = list[i-1];
+                        row = list[list.length-1];
                         if (row.price.amount.eq(order.price.amount)) {
                             row.total.amount = row.total.amount.plus(order.total.amount);
                             row.telos.amount = row.telos.amount.plus(order.telos.amount);
@@ -382,7 +419,7 @@ export class VapaeeService {
                 for(var i=0; i<buy.length; i++) {
                     var order: Order = buy[i];
                     if (list.length > 0) {
-                        row = list[i-1];
+                        row = list[list.length-1];
                         if (row.price.amount.eq(order.price.amount)) {
                             row.total.amount = row.total.amount.plus(order.total.amount);
                             row.telos.amount = row.telos.amount.plus(order.telos.amount);
@@ -557,7 +594,13 @@ export class Asset {
     amount:BigNumber;
     token:Token;
     
-    constructor(a: any, b: any) {
+    constructor(a: any = null, b: any = null) {
+        if (a == null && b == null) {
+            this.amount = new BigNumber(0);
+            this.token = {symbol:"SYS"};
+            return;
+        }
+
         if (a instanceof BigNumber) {
             this.amount = a;
             this.token = b;
@@ -568,6 +611,7 @@ export class Asset {
             this.parse(a,b);
         }
     }
+
     clone(): Asset {
         return new Asset(this.amount, this.token);
     }

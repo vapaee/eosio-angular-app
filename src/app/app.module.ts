@@ -36,7 +36,7 @@ import { VapaeeService } from './services/vapaee.service';
 
 import { CntRootPage } from './pages-cnt/root/cntroot.page';
 import { VpeRootPage } from './pages-vpe/root/vpe-root.page';
-import { VpeProfilePage } from './pages-vpe/profile/profile.page';
+import { VpeAccountPage } from './pages-vpe/account/account.page';
 import { TradePage } from './pages-vpe/trade/trade.page';
 import { TokensPage } from './pages-vpe/tokens/tokens.page';
 import { VpeHomePage } from './pages-vpe/home/home.page';
@@ -81,7 +81,7 @@ import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-i
         CntRootPage,
         VpeRootPage,
         ProfilePage,
-        VpeProfilePage,
+        VpeAccountPage,
         TradePage,
         TokensPage,
         VpeHomePage,

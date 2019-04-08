@@ -13,14 +13,56 @@ export class VpePanelWalletComponent implements OnChanges {
 
     @Input() public deposits: Asset[];
     @Input() public balances: Asset[];
+    @Input() public actions: boolean;
+    @Input() public hideuser: boolean;
+    @Input() public hideheader: boolean;
+    @Input() public title: string;
+    @Output() confirmDeposit: EventEmitter<any> = new EventEmitter();
+    @Output() confirmWithdraw: EventEmitter<any> = new EventEmitter();
+    public deposit: Asset;
+    public withdraw: Asset;
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService
     ) {
-        
+        this.hideuser = false;
+        this.hideheader = false;
+        this.actions = false;
+        this.deposit = new Asset();
+        this.withdraw = new Asset();
+    }
+
+    depositForm(asset:Asset) {
+        if (this.deposit.token.symbol == asset.token.symbol) {
+            this.deposit = new Asset();
+        } else {
+            this.deposit = asset.clone();
+        }        
+        this.withdraw = new Asset();
+    }
+
+    withdrawForm(asset:Asset) {
+        if (this.withdraw.token.symbol == asset.token.symbol) {
+            this.withdraw = new Asset();
+        } else {
+            this.withdraw = asset.clone();
+        }
+        this.deposit = new Asset();
     }
 
     ngOnChanges() {
+        
+    }
 
+    onChange() {
+        
+    }
+
+    onConfirmWithdraw() {
+        this.confirmWithdraw.next(this.withdraw);
+    }
+
+    onConfirmDeposit() {
+        this.confirmDeposit.next(this.deposit);
     }
 }

@@ -4,6 +4,8 @@ import ScatterEOS from 'scatterjs-plugin-eosjs'
 import Eos from 'eosjs';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { AccountPage } from '../pages/account/account.page';
+import { EosioTokenMathService } from './eosio.token-math.service';
 // import { EOS, Scatter, AccountData, Account, Endpoint, Eosconf, Network, ScatterJSDef } from './scatter.datatypes.service';
 
 // declare var ScatterJS:any;
@@ -110,6 +112,12 @@ export interface AccountData {
     ram_quota?: number,
     net_weight?: number,
     cpu_weight?: number,
+    total_balance: string,
+    ram_limit?: {
+        used?: number,
+        available?: number,
+        max?: number
+    },
     net_limit?: {
         used?: number,
         available?: number,
@@ -143,11 +151,13 @@ export interface AccountData {
     self_delegated_bandwidth?: {
         from?: string,
         to?: string,
+        total?: string,
         net_weight?: string,
         cpu_weight?: string
     },
     refund_request?: {
         owner?: string,
+        total?: string,
         request_time?: string,
         net_amount?: string,
         cpu_amount?: string
@@ -165,11 +175,11 @@ export interface AccountData {
 }
 
 export interface Account {
-    authority: string,
-    blockchain: string,
+    authority?: string,
+    blockchain?: string,
     name: string,
-    publicKey: string,
-    data: AccountData
+    publicKey?: string,
+    data?: AccountData
 }
 
 export interface Endpoint {
@@ -208,6 +218,7 @@ export class ScatterService {
     
     public error: string;
     private appTitle: string;
+    private symbol: string;
     private _connected: boolean;
     private lib: Scatter;
     private ScatterJS: ScatterJSDef;
@@ -240,7 +251,10 @@ export class ScatterService {
         this.setEndpoints = resolve;
     });    
     
-    constructor(private http: HttpClient) {
+    constructor(
+        private http: HttpClient,
+        public tokenMath: EosioTokenMathService
+    ) {
         this._networks_slugs = [];
         this._networks = {};
         this._network = {
@@ -254,6 +268,7 @@ export class ScatterService {
                 "port":443
             }]
         };
+        this.symbol = "EOS";
         //this.waitReady.then(() => console.log("ScatterService.setReady()"));
         // console.error("scatter interrumpido --------------------------------");
         this.http.get<any>("assets/endpoints.json").toPromise().then((response) => {
@@ -265,6 +280,20 @@ export class ScatterService {
         });
         this._account_queries = {};
     }
+
+    get default(): Account {
+        return {
+            name:'guest',
+            data: {
+                total_balance: "",
+                cpu_limit: {},
+                net_limit: {},
+                ram_limit: {},
+                refund_request: {},
+                total_resources: {}
+            }
+        }
+    }    
 
     setNetwork(name:string, index: number = 0) {
         console.log("ScatterService.setNetwork("+name+","+index+")");
@@ -438,10 +467,67 @@ export class ScatterService {
         console.log("ScatterService.setIdentity() -> ScatterService.queryAccountData() : " , [this.account.name]);
         this.queryAccountData(this.account.name).then(account => {
             this.account.data = account;
-            console.log("this.account: " , [this.account]);
+            this.onLogggedStateChange.next(true);
+        }).catch(_ => {
+            this.account.data = this.default.data;
             this.onLogggedStateChange.next(true);
         });
     }
+
+    // ----- account data (resources, staking, refunding) -------
+    // extract the float part of an valid asset string representation like: "123.2424 EOS" -> returns 123.2424
+    private extractNumber (balance) {
+        if(typeof balance != "string") {
+            // console.log("extractNumber() " , balance);
+            return 0;
+        }
+        return parseFloat(balance.split(" ")[0]);
+    }
+
+    // add balance1 to balance2 and return de result
+    private add(balance1:string, balance2:string) {
+        // console.log("add(",balance1, balance2, ")");
+        var symbol = balance1.split(" ")[1];
+        var sym2 = balance2.split(" ")[1];
+        console.assert(sym2 == symbol, "ERROR: adding two different Tokens", balance1, balance2);
+        var v1 = this.extractNumber(balance1), v2 = this.extractNumber(balance2);
+        var tot = (v1 + v2) + "";
+        if (tot.indexOf(".") != -1) {
+            tot  = (tot + "0000").substr(0, tot.length + 4 - tot.indexOf("."));
+        } else {
+            tot  += ".0000";
+        }
+        tot += " " + symbol;
+        // console.log("add(",balance1, balance2, ") --> ", tot);
+        return tot;
+    }
+
+
+    calculateTotalBalance(account) {
+        return this.tokenMath.addAll([
+            account.core_liquid_balance,
+            account.refund_request.net_amount,
+            account.refund_request.cpu_amount,
+            account.self_delegated_bandwidth.cpu_weight,
+            account.self_delegated_bandwidth.net_weight
+        ]);
+    }
+
+    calculateResourceLimit(limit) {
+        limit = Object.assign({
+            max: 0, used: 0
+        }, limit);
+        
+        if (limit.max != 0) {
+            limit.percent = 1 - (Math.min(limit.used, limit.max) / limit.max);
+        } else {
+            limit.percent = 0;
+        }
+        limit.percentStr = Math.round(limit.percent*100) + "%";
+        return limit;
+    }
+
+    // ----- account data (end) -------
 
     queryAccountData(name:string): Promise<AccountData> {
         /*
@@ -463,7 +549,48 @@ export class ScatterService {
                 // console.log("PASO 2 (eosjs) ------");
                 this.eos.getAccount({account_name: name}).then((response) => {
                     // console.log("PASO 3 (eosjs.getAccount) ------", response);
-                    resolve(response);
+                    var accountdata: AccountData = <AccountData>response;
+
+                    if (accountdata.core_liquid_balance) {
+                        this.symbol = accountdata.core_liquid_balance.split(" ")[1];
+                    } else {
+                        accountdata.core_liquid_balance = "0.0000 " + this.symbol;
+                    }
+                    
+                    // --
+                    accountdata.refund_request = accountdata.refund_request || {
+                        total: "0.0000 " + this.symbol,
+                        net_amount: "0.0000 " + this.symbol,
+                        cpu_amount: "0.0000 " + this.symbol,
+                        request_time: "2018-11-18T18:09:53"
+                    }
+                    
+                    accountdata.refund_request.total =
+                        this.add(accountdata.refund_request.net_amount, accountdata.refund_request.cpu_amount);
+
+                    // --
+                    accountdata.self_delegated_bandwidth = accountdata.self_delegated_bandwidth || {
+                        total: "0.0000 " + this.symbol,
+                        net_weight: "0.0000 " + this.symbol,
+                        cpu_weight: "0.0000 " + this.symbol
+                    }
+                    accountdata.self_delegated_bandwidth.total =
+                        this.add(accountdata.self_delegated_bandwidth.net_weight, accountdata.self_delegated_bandwidth.cpu_weight);
+
+                    // --
+                    accountdata.total_resources = accountdata.total_resources || {
+                        net_weight: "0.0000 " + this.symbol,
+                        cpu_weight: "0.0000 " + this.symbol
+                    }
+                    
+                    accountdata.total_balance = this.calculateTotalBalance(accountdata);
+                    accountdata.cpu_limit = this.calculateResourceLimit(accountdata.cpu_limit);
+                    accountdata.net_limit = this.calculateResourceLimit(accountdata.net_limit);
+                    accountdata.ram_limit = this.calculateResourceLimit({
+                        max: accountdata.ram_quota, used: accountdata.ram_usage
+                    });
+
+                    resolve(accountdata);
                 }).catch((err) => {
                     reject(err);
                 });

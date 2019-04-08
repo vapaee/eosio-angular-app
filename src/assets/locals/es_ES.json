@@ -9,6 +9,8 @@
     "wanna_sell": "Quiero vender",    
     "balances":"balances",
     "deposits":"depósitos",
+    "deposit": "depositar",
+    "withdraw": "retirar",
     "sum": "suma",
     "total": "total",
     "amount": "cantidad",
@@ -50,6 +52,9 @@
     "chart": "gráfica",
     "Payment": "Pago",
     "wdywdo": "Qué quieres hacer?",
+    "yohave": "Sólo tienes",
+    "ycntsell": "No puedes vender",
+    "ycntpay": "No puedes pagar",
     "Disclaimer": "Información Legal",
     "DisclaimerText": "Este es un sitio destinado a hacer pruebas con la tecnología EOSIO y algunas aplicaciones satélites como Scatter. Se sugiere discreción para su uso ya que es posible hacer transacciones reales. Cualquier situación que resulte de utilizar este sitio es entera responsabilidad del usuario y no de su creador."
 }
