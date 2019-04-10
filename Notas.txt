@@ -23,6 +23,7 @@
 
 
 
+
 -- TODO (futuro) vapaeetokens --
 - Subasta: Implementar en el contrato la Subasta
   - tengo que poder vender M (de los N XXX tokens depositados) cada T tiempo al mejor postor que page con ZZZ, hasta agotar stock.
