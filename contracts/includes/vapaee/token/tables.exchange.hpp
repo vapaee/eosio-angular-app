@@ -7,3 +7,4 @@
 #include "tables/ordertables.hpp"
 #include "tables/earnings.hpp"
 #include "tables/history.hpp"
+#include "tables/tablesummary.hpp"

@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Apr  8 10:14:49 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Apr 12 10:51:50 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -674,6 +674,28 @@
             ]
         },
         {
+            "name": "tablesummary_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "label",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "volumen",
+                    "type": "asset"
+                },
+                {
+                    "name": "concept",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "transfer",
             "base": "",
             "fields": [
@@ -1112,6 +1134,13 @@
         {
             "name": "stat",
             "type": "currency_stats",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tablesummary",
+            "type": "tablesummary_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

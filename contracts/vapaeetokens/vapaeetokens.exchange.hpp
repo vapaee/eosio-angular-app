@@ -424,6 +424,45 @@ namespace vapaee {
 
 
 
+
+            tablesummary summary(get_self(), scope.value);
+            uint64_t ahora = current_time();
+            uint64_t sec = ahora / 1000000;
+            // time_point_sec(now()).to_seconds();
+            // uint64_t sec = microseconds(now()).to_seconds();
+            PRINT(" ---------->>> now: ", std::to_string((unsigned long long) ahora), "\n");
+            PRINT(" ---------->>> sec: ", std::to_string((unsigned long long) sec), "\n");
+
+/*
+13:41:01
+ ----------> now: 1555076461000000
+ ----------> sec: 5598275259600
+13:42:31
+ ----------> now: 1555076551000000
+ ----------> sec: 5598275583600
+13:43:01
+ ----------> now: 1555076581500000
+ ----------> sec: 5598275691600
+13:43:36
+ ----------> now: 1555076616000000
+ ----------> sec: 5598275817600
+13:45:21
+ ----------> now: 1555076721000000
+ ----------> sec: 5598276195600
+13:45:26
+ ----------> now: 1555076726000000
+ ----------> sec: 5598276213600
+
+13:52:09
+ ---------->>> now: 1555077129000000
+ ---------->>> sec: 1555
+13:52:14
+ ---------->>> now: 1555077134500000
+ ---------->>> sec: 1555
+
+
+*/
+
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history() ...\n");
         }
 
@@ -746,6 +785,7 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::action_configfee()\n");
             PRINT(" action: ", action.to_string(), "\n");
             PRINT(" fee: ", fee.to_string(), "\n");
+            PRINT(" proirity: ", std::to_string((unsigned long long) proirity), "\n");
 
             require_auth(get_self());
 
