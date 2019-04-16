@@ -1,5 +1,6 @@
 {
     "code404":"404 Page Not Found !!",
+    "table":"table",
     "Cards": "Cards",
     "Buy": "Buy",
     "Sell": "Sell",
@@ -41,6 +42,7 @@
     "Language": "Language",
     "Account": "Account",
     "Video": "Video",
+    "cancel": "cancel",
     "LoginWScatter": "Login with Scatter",
     "LoggedAs": "Logged as",
     "NotLogged": "You are not logged in",

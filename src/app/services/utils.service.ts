@@ -26,6 +26,21 @@ export interface Token {
 
 // -------------------
 
+export interface TableParams {
+    contract?:string, 
+    scope?:string, 
+    table_key?:string, 
+    lower_bound?:string, 
+    upper_bound?:string, 
+    limit?:number, 
+    key_type?:string, 
+    index_position?:string
+}
+
+export interface TableResult {
+    more: boolean;
+    rows: any[];
+}
 
 export interface SlugId {
     low?: string;
@@ -244,19 +259,10 @@ export class Utils {
                     } catch (err) { reject(err); }
                 }).catch(err => { reject(err); });
             } catch (err) { reject(err); }
-        }).catch(err => console.error(err) );
+        }); // .catch(err => console.error(err) );
     }
 
-    getTable(table:string, params:{
-            contract?:string, 
-            scope?:string, 
-            table_key?:string, 
-            lower_bound?:string, 
-            upper_bound?:string, 
-            limit?:number, 
-            key_type?:string, 
-            index_position?:string
-        } = {}): Promise<any> {
+    getTable(table:string, params:TableParams = {}): Promise<TableResult> {
 
         var _p = Object.assign({
             contract: this.contract, 

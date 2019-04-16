@@ -113,10 +113,10 @@ CONTRACT vapaeetokens : public eosio::contract {
             e.action_update_token_info(sym_code, appname, website, logo, logolg, verified);
         };        
 
-        ACTION cancel(name owner, name type, const symbol_code & token_a, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
+        ACTION cancel(name owner, name type, const symbol_code & comodity, const symbol_code & currency, const std::vector<uint64_t> & orders) {
             PRINT("\nACTION vapaeetokens.cancel()\n");
             vapaee::token::exchange e;
-            e.action_cancel(owner, type, token_a, token_p, orders);
+            e.action_cancel(owner, type, comodity, currency, orders);
         };
 
         // "bob", "buy", "5.0000 CNT", "0.2000 TLOS", "1.0000 TLOS"
@@ -194,24 +194,39 @@ CONTRACT vapaeetokens : public eosio::contract {
         };
         
         // debugin ----------
-        ACTION droptokens () {
-            PRINT("\nACTION vapaeetokens.droptokens()\n");
-            vapaee::token::exchange e;
-            e.action_droptokens();
-        };
+        AUX_DEBUG_ACTIONS (
 
-        ACTION cancelall () {
-            PRINT("\nACTION vapaeetokens.cancelall()\n");
-            vapaee::token::exchange e;
-            e.action_cancel_all_orders();
-        };
+            ACTION droptokens () {
+                PRINT("\nACTION vapaeetokens.droptokens()\n");
+                vapaee::token::exchange e;
+                e.action_droptokens();
+            };
 
-        ACTION returnall () {
-            PRINT("\nACTION vapaeetokens.returnall()\n");
-            vapaee::token::exchange e;
-            e.action_return_all_deposits();
-        };
+            ACTION cancelall () {
+                PRINT("\nACTION vapaeetokens.cancelall()\n");
+                vapaee::token::exchange e;
+                e.action_cancel_all_orders();
+            };
 
+            ACTION returnall () {
+                PRINT("\nACTION vapaeetokens.returnall()\n");
+                vapaee::token::exchange e;
+                e.action_return_all_deposits();
+            };
+
+            ACTION cleartables () {
+                PRINT("\nACTION vapaeetokens.cleartables()\n");
+                vapaee::token::exchange e;
+                e.action_clear_tables_orders_and_history();
+            };
+
+            ACTION poblate (name owner, name table) {
+                PRINT("\nACTION vapaeetokens.poblate()\n");
+                vapaee::token::exchange e;
+                e.action_poblate_user_orders_table(owner, table);
+            };
+
+        )
 
 
 

@@ -4,7 +4,7 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 import { ScatterService } from 'src/app/services/scatter.service';
 import { BGBoxService } from 'src/app/services/bgbox.service';
 import { CntService } from 'src/app/services/cnt.service';
-import { VapaeeService } from 'src/app/services/vapaee.service';
+import { VapaeeService, TableMap } from 'src/app/services/vapaee.service';
 import { Token } from 'src/app/services/utils.service';
 import { Subscriber } from 'rxjs';
 
@@ -31,6 +31,22 @@ export class TokensPage implements OnInit, OnDestroy {
 
     get tokens(): Token[] {
         return this.vapaee.tokens;
+    }
+
+    get scopes(): TableMap {
+        return this.vapaee.scopes;
+    }
+
+    summary(_scope) {
+        var scope = this.scopes[_scope];
+        var _summary = Object.assign({
+            percent: 0,
+            percent_str: "0%",
+            price: this.vapaee.zero_telos.clone(),
+            records: [],
+            volume: this.vapaee.zero_telos.clone()
+        }, scope ? scope.summary : {});
+        return _summary;
     }
 
 

@@ -17,6 +17,8 @@ export class VpeTokenInputComponent implements OnChanges {
     @Input() public button: string;
     @Input() public precision: number;
     @Input() public disabled: boolean;
+    @Input() public loading: boolean;
+    @Input() @Output() public error: string;
     @Output() valueChange: EventEmitter<any> = new EventEmitter();
     @Output() valueEnter: EventEmitter<any> = new EventEmitter();
     public text: string;

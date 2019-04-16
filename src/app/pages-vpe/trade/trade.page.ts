@@ -6,7 +6,7 @@ import { BGBoxService } from 'src/app/services/bgbox.service';
 import { CntService } from 'src/app/services/cnt.service';
 import { ActivatedRoute } from '@angular/router';
 import { Token } from 'src/app/services/utils.service';
-import { VapaeeService, Asset, OrderRow } from 'src/app/services/vapaee.service';
+import { VapaeeService, Asset, OrderRow, TokenOrders } from 'src/app/services/vapaee.service';
 import { Subscriber } from 'rxjs';
 import { VpePanelOrderEditorComponent } from 'src/app/components/vpe-panel-order-editor/vpe-panel-order-editor.component';
 
@@ -21,6 +21,7 @@ export class TradePage implements OnInit, OnDestroy {
     scope:string;
     comodity:Token;
     currency:Token;
+    _orders:TokenOrders;
     private onStateSubscriber: Subscriber<string>;
 
     @ViewChild(VpePanelOrderEditorComponent) orderform: VpePanelOrderEditorComponent;
@@ -35,6 +36,7 @@ export class TradePage implements OnInit, OnDestroy {
         public route: ActivatedRoute
 
     ) {
+        this._orders = {sell:[],buy:[]};
         this.onStateSubscriber = new Subscriber<string>(this.onStateChange.bind(this));
     }      
 
@@ -49,7 +51,9 @@ export class TradePage implements OnInit, OnDestroy {
             var cur:string = this.scope.split(".")[1];
             this.comodity = await this.vapaee.getToken(com);
             this.currency = await this.vapaee.getToken(cur);        
-            this.vapaee.updateTrade(this.comodity, this.currency);    
+            this.vapaee.updateTrade(this.comodity, this.currency).then(_ => {
+                
+            });    
         }, 0);
     }
 
@@ -68,16 +72,33 @@ export class TradePage implements OnInit, OnDestroy {
 
     get orders() {
         var scope = this.vapaee.scopes[this.scope];
-        return scope ? scope.orders : {sell:[],buy:[]};
+        return scope ? scope.orders : this._orders;
+    }
+
+    get headers() {
+        var scope = this.vapaee.scopes[this.scope];
+        var header = { 
+            sell: {total:null, orders:0}, 
+            buy: {total:null, orders:0}
+        }
+        return scope ? (scope.header ? scope.header : header) : header;
     }
 
     get summary() {
         var scope = this.vapaee.scopes[this.scope];
-        var tables = { 
-            sell: {total:null, orders:0}, 
-            buy: {total:null, orders:0}
-        }
-        return scope ? (scope.tables ? scope.tables : tables) : tables;
+        var _summary = Object.assign({
+            percent: 0,
+            percent_str: "0%",
+            price: this.vapaee.zero_telos.clone(),
+            records: [],
+            volume: this.vapaee.zero_telos.clone()
+        }, scope ? scope.summary : {});
+        return _summary;
+        // return scope ? (scope.summary ? scope.summary : _summary) : _summary;
+    }
+
+    get scopes() {
+        return this.vapaee.scopes;
     }
 
     get tokens() {

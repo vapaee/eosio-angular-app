@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
-import { VapaeeService, Asset } from 'src/app/services/vapaee.service';
+import { VapaeeService, Asset, TokenOrders, Order } from 'src/app/services/vapaee.service';
 import { LocalStringsService } from 'src/app/services/common/common.services';
 import { Token } from 'src/app/services/utils.service';
 
@@ -18,23 +18,33 @@ export class VpePanelOrderEditorComponent implements OnChanges {
     asset: Asset;
     can_sell: boolean;
     can_buy: boolean;
-
+    error: string;
+    loading: boolean;
+    c_loading: {[id:string]:boolean};
     wants: string;
 
+    @Input() public owner: string;
     @Input() public comodity: Token;
     @Input() public currency: Token;
     @Input() public deposits: Asset[];
+    @Input() public orders: TokenOrders;
+    public own: Order[];
     price: Asset;
     amount: Asset;
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService
     ) {
-        
+        this.error = "";
+        this.loading = false;
+        this.c_loading = {};
     }
 
     calculate() {
         setTimeout(_ => {
+            if (!this.price) this.restaure();
+            if (!this.price) return;
+
             var a = this.price.amount;
             this.payment.amount = this.price.amount.multipliedBy(this.amount.amount);
     
@@ -121,26 +131,52 @@ export class VpePanelOrderEditorComponent implements OnChanges {
         this.ngOnChanges();
     }
 
+    private restaure() {
+        if (this.comodity && !this.amount) {
+            this.amount = new Asset("0.0000 " + this.comodity.symbol, this.vapaee);
+        }
+
+        if (this.currency && !this.payment) {
+            this.payment = new Asset("0.0000 " + this.currency.symbol, this.vapaee);
+        }
+
+        if (this.currency && !this.price) {
+            this.price = new Asset("0.0000 " + this.currency.symbol, this.vapaee);
+        }
+
+        if (this.price && this.amount && this.deposits && this.deposits.length > 0) {
+            this.calculate();
+        }
+
+        if (this.orders && this.own.length == 0) {
+            console.log("this.orders.sell.length", this.orders.sell.length);
+            for (var i=0; i<this.orders.sell.length; i++) {
+                var sell = this.orders.sell[i];
+                for (var j=0; j<sell.orders.length; j++) {
+                    var order = sell.orders[j];
+                    if (order.owner == this.owner) {
+                        this.own.push(order);
+                    }
+                }
+            }
+            console.log("this.orders.buy.length", this.orders.buy.length);
+            for (var i=0; i<this.orders.buy.length; i++) {
+                var buy = this.orders.buy[i];
+                for (var j=0; j<buy.orders.length; j++) {
+                    var order = buy.orders[j];
+                    if (order.owner == this.owner) {
+                        this.own.push(order);
+                    }
+                }
+            }
+        }
+    }
+
     ngOnChanges() {
         console.log("VpePanelOrderEditorComponent.ngOnChanges()");
+        this.own = [];
         // changes from outside
-        this.vapaee.waitReady.then(_ => {
-            if (this.comodity && !this.amount) {
-                this.amount = new Asset("0.0000 " + this.comodity.symbol, this.vapaee);
-            }
-
-            if (this.currency && !this.payment) {
-                this.payment = new Asset("0.0000 " + this.currency.symbol, this.vapaee);
-            }
-
-            if (this.currency && !this.price) {
-                this.price = new Asset("0.0000 " + this.currency.symbol, this.vapaee);
-            }
-
-            if (this.price && this.amount && this.deposits && this.deposits.length > 0) {
-                this.calculate();
-            }
-        });
+        return this.vapaee.waitReady.then(_ => this.restaure());
     }
 
     debug() {
@@ -152,13 +188,70 @@ export class VpePanelOrderEditorComponent implements OnChanges {
     buy() {
         if (!this.can_buy) return;
         console.log("BUY");
-        this.vapaee.createOrder("buy", this.amount, this.price);
+        this.loading = true;
+        this.vapaee.createOrder("buy", this.amount, this.price).then(_ => {
+            // success
+            this.loading = false;
+        }).catch(e => {
+            console.log(e);
+            if (typeof e == "string") {
+                this.error = "ERROR: " + JSON.stringify(JSON.parse(e), null, 4);
+            } else {
+                this.error = null;
+            }
+            this.loading = false;
+        });
     }
 
     sell() {
         if (!this.can_sell) return;
         console.log("SELL");
-        this.vapaee.createOrder("sell", this.amount, this.price);
+        this.loading = true;
+        this.vapaee.createOrder("sell", this.amount, this.price).then(_ => {
+            // success
+            this.loading = false;
+        }).catch(e => {
+            console.log(e);
+            if (typeof e == "string") {
+                this.error = "ERROR: " + JSON.stringify(JSON.parse(e), null, 4);
+            } else {
+                this.error = null;
+            }
+            this.loading = false;
+        });
+    }
+
+    cancel(order) {
+        if (order.deposit.token.symbol != this.currency.symbol) {
+            this.c_loading[order.id] = true;
+            this.vapaee.cancelOrder("sell", this.comodity, this.currency, [order.id]).then(_ => {
+                // success
+                this.c_loading[order.id] = false;
+            }).catch(e => {
+                console.log(e);
+                if (typeof e == "string") {
+                    this.error = "ERROR: " + JSON.stringify(JSON.parse(e), null, 4);
+                } else {
+                    this.error = null;
+                }
+                this.c_loading[order.id] = false;
+            });;
+        }
+        if (order.deposit.token.symbol != this.comodity.symbol) {
+            this.c_loading[order.id] = true;
+            this.vapaee.cancelOrder("buy", this.comodity, this.currency, [order.id]).then(_ => {
+                // success
+                this.c_loading[order.id] = false;
+            }).catch(e => {
+                console.log(e);
+                if (typeof e == "string") {
+                    this.error = "ERROR: " + JSON.stringify(JSON.parse(e), null, 4);
+                } else {
+                    this.error = null;
+                }
+                this.c_loading[order.id] = false;
+            });;
+        }        
     }
 
 }

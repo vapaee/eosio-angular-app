@@ -39,6 +39,8 @@
                                         (valueEnter)="onConfirmWithdraw($event)"
                                         precision="4"
                                         [button]="local.string.withdraw"
+                                        [loading]="loading"
+                                        [error]="error"
                                         placeholder="{{local.string.withdraw | titlecase}}"></vpe-token-input>
                                 </div>
                             </div>                            
@@ -70,6 +72,8 @@
                                         (valueEnter)="onConfirmDeposit($event)"
                                         precision="4"
                                         [button]="local.string.deposit"
+                                        [loading]="loading"
+                                        [error]="error"
                                         placeholder="{{local.string.deposit | titlecase}}"></vpe-token-input>
                                 </div>
                             </div>

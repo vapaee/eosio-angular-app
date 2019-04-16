@@ -89,32 +89,32 @@
 # 
 
 echo "--- serie a ---"
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaa", "vpeworkeraab", "2.0000 ACORN", ""]' -p vpeworkeraaa@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraab", "vpeworkeraaa", "4.0000 ACORN", ""]' -p vpeworkeraab@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraac", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraac@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraad", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraad@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraae", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraae@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaf", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraaf@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraag", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraag@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraah", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraah@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraai", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraai@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaj", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraaj@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraak", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraak@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraal", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraal@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraam", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraam@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraan", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraan@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraao", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraao@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraap", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraap@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaq", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraaq@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraar", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraar@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraas", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraas@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraat", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraat@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraau", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraau@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraav", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraav@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaw", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraaw@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraax", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraax@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraay", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraay@active
-cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaz", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraaz@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaa", "vpeworkeraab", "1.0000 ACORN", ""]' -p vpeworkeraaa@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraab", "vpeworkeraaa", "2.0000 ACORN", ""]' -p vpeworkeraab@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraac", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraac@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraad", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraad@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraae", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraae@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaf", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraaf@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraag", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraag@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraah", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraah@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraai", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraai@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaj", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraaj@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraak", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraak@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraal", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraal@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraam", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraam@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraan", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraan@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraao", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraao@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraap", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraap@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaq", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraaq@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraar", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraar@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraas", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraas@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraat", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraat@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraau", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraau@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraav", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraav@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaw", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraaw@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraax", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraax@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraay", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraay@active
+cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraaz", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraaz@active
 
 echo "--- serie b ---"
 cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpeworkeraba", "vpeworkeraaa", "1.0000 ACORN", ""]' -p vpeworkeraba@active
@@ -174,3 +174,4 @@ cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpe
 
 echo "-- personal --"
 cleos --url https://telos.eos.barcelona push action acornaccount open '["viterbotelos", "4,ACORN", "viterbotelos"]' -p viterbotelos@active
+cleos --url https://telos.eos.barcelona push action acornaccount open '["squirrelboss", "4,ACORN", "squirrelboss"]' -p squirrelboss@active

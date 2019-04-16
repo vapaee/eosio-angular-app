@@ -9,6 +9,7 @@
             asset total;
             vector<asset> fees;
             int orders;
+            int deals;
             uint64_t primary_key() const { return table.value; }
         };
         typedef eosio::multi_index< "ordertables"_n, ordertables_table > ordertables;

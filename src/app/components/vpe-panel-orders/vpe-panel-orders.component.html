@@ -5,8 +5,8 @@
                 <div class="col-sm-12">
                     <div class="pull-right">
                         <span class="text-muted">
-                            {{summary.sell ? summary.sell.orders : 0}} {{local.string.orders}} -
-                            {{summary.sell.total ? summary.sell.total.toString() : ""}}
+                            {{headers.sell ? headers.sell.orders : 0}} {{local.string.orders}} -
+                            {{headers.sell.total ? headers.sell.total.toString() : ""}}
                         </span>
                     </div>
                     {{local.string.sell_orders | titlecase}}
@@ -39,8 +39,8 @@
                 <div class="col-sm-12">
                     <div class="pull-right">
                         <span class="text-muted">
-                            {{summary.buy ? summary.buy.orders : 0}} {{local.string.orders}} -
-                            {{summary.buy.total ? summary.buy.total.toString() : ""}}
+                            {{headers.buy ? headers.buy.orders : 0}} {{local.string.orders}} -
+                            {{headers.buy.total ? headers.buy.total.toString() : ""}}
                         </span>
                     </div>
                     {{local.string.buy_orders | titlecase}}

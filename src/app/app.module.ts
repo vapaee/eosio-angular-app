@@ -49,6 +49,7 @@ import { IdenticonComponent } from './components/identicon/identicon.component';
 import { EosioAccountComponent } from './components/eosio-account/eosio-account.component';
 import { VpePanelComponent } from './components/vpe-panel/vpe-panel.component';
 import { VpePanelOrdersComponent } from './components/vpe-panel-orders/vpe-panel-orders.component';
+import { VpePanelUserOrdersComponent } from './components/vpe-panel-user-orders/vpe-panel-user-orders.component';
 import { VpePanelHistoryComponent } from './components/vpe-panel-history/vpe-panel-history.component';
 import { VpePanelWalletComponent } from './components/vpe-panel-wallet/vpe-panel-wallet.component';
 import { VpePanelChartComponent } from './components/vpe-panel-chart/vpe-panel-chart.component';
@@ -71,6 +72,7 @@ import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-i
         EosioAccountComponent,
         VpePanelComponent,
         VpePanelOrdersComponent,
+        VpePanelUserOrdersComponent,
         VpePanelHistoryComponent,
         VpePanelWalletComponent,
         VpePanelChartComponent,

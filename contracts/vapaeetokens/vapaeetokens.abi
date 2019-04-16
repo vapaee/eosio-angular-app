@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Fri Apr 12 10:51:50 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Apr 16 14:48:54 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -79,11 +79,11 @@
                     "type": "name"
                 },
                 {
-                    "name": "token_a",
+                    "name": "comodity",
                     "type": "symbol_code"
                 },
                 {
-                    "name": "token_p",
+                    "name": "currency",
                     "type": "symbol_code"
                 },
                 {
@@ -124,6 +124,11 @@
                     "type": "symbol_code"
                 }
             ]
+        },
+        {
+            "name": "cleartables",
+            "base": "",
+            "fields": []
         },
         {
             "name": "close",
@@ -427,6 +432,24 @@
                 {
                     "name": "orders",
                     "type": "int32"
+                },
+                {
+                    "name": "deals",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "poblate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "table",
+                    "type": "name"
                 }
             ]
         },
@@ -686,12 +709,16 @@
                     "type": "asset"
                 },
                 {
-                    "name": "volumen",
+                    "name": "volume",
                     "type": "asset"
                 },
                 {
-                    "name": "concept",
-                    "type": "string"
+                    "name": "date",
+                    "type": "time_point_sec"
+                },
+                {
+                    "name": "hour",
+                    "type": "uint64"
                 }
             ]
         },
@@ -880,6 +907,20 @@
             ]
         },
         {
+            "name": "userorders_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "table",
+                    "type": "name"
+                },
+                {
+                    "name": "ids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
             "name": "withdraw",
             "base": "",
             "fields": [
@@ -927,6 +968,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "cleartables",
+            "type": "cleartables",
+            "ricardian_contract": ""
+        },
+        {
             "name": "close",
             "type": "close",
             "ricardian_contract": ""
@@ -969,6 +1015,11 @@
         {
             "name": "order",
             "type": "order",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "poblate",
+            "type": "poblate",
             "ricardian_contract": ""
         },
         {
@@ -1155,6 +1206,13 @@
         {
             "name": "unstakes",
             "type": "user_unstakes_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "userorders",
+            "type": "userorders_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

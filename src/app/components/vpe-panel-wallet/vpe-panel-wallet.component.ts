@@ -17,6 +17,9 @@ export class VpePanelWalletComponent implements OnChanges {
     @Input() public hideuser: boolean;
     @Input() public hideheader: boolean;
     @Input() public title: string;
+    @Input() public loading: boolean;
+    @Input() public error: string;
+
     @Output() confirmDeposit: EventEmitter<any> = new EventEmitter();
     @Output() confirmWithdraw: EventEmitter<any> = new EventEmitter();
     public deposit: Asset;

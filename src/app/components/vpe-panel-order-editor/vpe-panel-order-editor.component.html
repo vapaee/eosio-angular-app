@@ -43,10 +43,10 @@
                     <vpe-token-input [(asset)]="amount" (valueChange)="onChange($event)" precision="8" placeholder="{{local.string.Amount}}"></vpe-token-input>
                 </div>
 
-
                 <div [hidden]="wants=='sell' || !can_buy" class="form-group col-sm-3">
                     <label>{{local.string.Payment}} {{payment ? payment.toString(8) : ""}}</label>
                     <span type="text" class="form-control form-control-sm btn btn-sm btn-success" (click)="buy()" >
+                        <span class="spinner-border spinner-border-sm" [hidden]="!loading"></span>
                         {{local.string.Buy}}
                     </span>
                 </div>
@@ -59,6 +59,7 @@
                 <div [hidden]="wants=='buy' || !can_sell" class="form-group col-sm-3">
                     <label>{{local.string.Payment}} {{payment ? payment.toString(8) : ""}}</label>
                     <span type="text" class="form-control form-control-sm btn btn-sm btn-danger" (click)="sell()" >
+                        <span class="spinner-border spinner-border-sm" [hidden]="!loading"></span>
                         {{local.string.Sell}}
                     </span>
                 </div>
@@ -68,66 +69,101 @@
                 </div>
             </div>
         </div>
-
-        <!--
-        <div class="col-sm-12" [hidden]="!vapaee.logged">
-            <div class="form-row">
-                <div class="form-group col-sm-4">
-                    <label>{{local.string.Price}}</label>
-                    <vpe-token-input [(asset)]="price" (valueChange)="onChange($event)" precision="8" placeholder="{{local.string.Price}}"></vpe-token-input>
-                </div> 
-                <div class="form-group col-sm-4">
-                    <label>{{local.string.Amount}}</label>
-                    <vpe-token-input [(asset)]="amount" (valueChange)="onChange($event)" precision="8" placeholder="{{local.string.Amount}}"></vpe-token-input>
+        <div>{{error}}</div>
+        <div class="col-sm-12" [hidden]="!error">
+            <div class="alert alert-danger">
+                <div class="pull-right">
+                    <button type="button" class="close text-white" (click)="error = null">
+                        <i class="material-icons" style="font-size: 100%;">cancel</i>
+                    </button>                
                 </div>
-                <div class="form-group col-sm-2">
-                    <label>{{local.string.Buy}} {{comodity ? comodity.symbol : ""}}</label>
-                    <span type="text" class="form-control form-control-sm btn btn-sm" [ngClass]="{'disabled': !can_buy, 'btn-success': can_buy}" (click)="buy()" >
-                        {{local.string.Buy}}
-                    </span>
-                </div>
-                <div class="form-group col-sm-2">
-                    <label>{{local.string.Sell}} {{comodity ? comodity.symbol : ""}}</label>
-                    <span type="text" class="form-control form-control-sm btn btn-sm" [ngClass]="{'disabled': !can_sell, 'btn-danger': can_sell}" (click)="sell()" >
-                        {{local.string.Sell}}
-                    </span>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-sm-4">
-                    <label>Payment {{payment ? payment.toString(8) : ""}}</label>
-                </div>
+                {{error}}
             </div>
         </div>
-        -->
 
+        <div class="col-sm-12 d-lg-none" [hidden]="!vapaee.logged || own.length == 0">
+            <label>{{local.string.orders | titlecase}}</label>
+            <div class="row">
+                <div class="nowrap col-sm-4 text-right col-padding-right padding-left-lg">{{local.string.price}}</div>
+                <div class="nowrap col-sm-4 text-right col-padding-right col-padding-left">{{local.string.total}}</div>
+            </div>
+            <perfect-scrollbar style="max-height: 300px; max-width: 100%">
+                <div class="row margin-bottom active-on-hover cursor-pointer" 
+                    *ngFor="let order of own"
+                    (click)="cancel(order)"
+                >
+                    <div class="nowrap col-sm-5 text-right col-padding-right padding-left-lg"
+                        [ngClass]="{'text-danger':order.deposit.token.symbol == currency.symbol, 'text-success':order.deposit.token.symbol == comodity.symbol}"
+                        >
+                        {{order.price.toString(8)}}
+                    </div>
+                    <div class="nowrap col-sm-5 text-right col-padding-right col-padding-left"
+                        [ngClass]="{'text-danger':order.deposit.token.symbol == currency.symbol, 'text-success':order.deposit.token.symbol == comodity.symbol}"
+                        >
+                        {{order.total.toString(8)}}
+                    </div>
+                    <div class="nowrap col-sm-1 text-right col-padding-left padding-right-lg">
+                        <i class="material-icons" style="font-size: 100%;" [hidden]="c_loading[order.id]">cancel</i>
+                        <span class="spinner-border spinner-border-sm" [hidden]="!c_loading[order.id]"></span>
+                    </div>
+                </div>
+            </perfect-scrollbar>
+        </div>
 
-        <!--
-        <div class="col-sm-12" [hidden]="!vapaee.logged">
-            <div class="form-row">
-                <div class="form-group col-sm-3 col-md-3">
-                    <label>{{local.string.Price}}</label>
-                    <vpe-token-input [(asset)]="price" (valueChange)="onChange($event)" precision="8" placeholder="{{local.string.Price}}"></vpe-token-input>
+        <div class="d-sm-none d-lg-block col-lg-12">
+            <div class="row" [hidden]="!vapaee.logged || own.length == 0">
+                <div class="col-sm-6">
+                    <label>{{local.string.sell_orders | titlecase}}</label>
+                    <div class="row">
+                        <div class="nowrap col-sm-5 text-right col-padding-right padding-left-lg">{{local.string.price}}</div>
+                        <div class="nowrap col-sm-5 text-right col-padding-right col-padding-left">{{local.string.total}}</div>
+                    </div>
+                    <perfect-scrollbar style="max-height: 200px; max-width: 100%">
+                        <div class="row margin-bottom active-on-hover cursor-pointer" 
+                            [ngClass]="{'d-none':order.deposit.token.symbol != comodity.symbol}"
+                            *ngFor="let order of own"
+                            (click)="cancel(order)"
+                        >
+                            <div class="nowrap col-sm-5 text-right col-padding-right padding-left-lg text-danger">{{order.price.toString(8)}}</div>
+                            <div class="nowrap col-sm-5 text-right col-padding-right col-padding-left text-danger">{{order.total.toString(8)}}</div>
+                            <div class="nowrap col-sm-1 text-right col-padding-left padding-right-lg">
+                                <i class="material-icons" style="font-size: 100%;" [hidden]="c_loading[order.id]">cancel</i>
+                                <span class="spinner-border spinner-border-sm" [hidden]="!c_loading[order.id]"></span>
+                            </div>
+                        </div>
+                    </perfect-scrollbar>                    
                 </div>
-                <div class="form-group col-sm-3 col-md-3">
-                    <label>{{local.string.Amount}}</label>
-                    <vpe-token-input [(asset)]="amount" (valueChange)="onChange($event)" precision="8" placeholder="{{local.string.Amount}}"></vpe-token-input>
-                </div>
-                <div class="form-group col-sm-3 col-md-3">
-                    <label>{{local.string.Buy}} {{amount ? amount.toString(8) : ""}}</label>
-                    <span type="text" class="form-control form-control-sm btn btn-success btn-sm" (click)="debug(price)" >
-                        {{local.string.Buy}}
-                    </span>
-                </div>
-                <div class="form-group col-sm-3 col-md-3">
-                    <label>{{local.string.Sell}}</label>
-                    <span type="text" class="form-control form-control-sm btn btn-danger btn-sm" (click)="debug(amount)" >
-                        {{local.string.Sell}}
-                    </span>
+                <div class="col-sm-6">
+                    <label>{{local.string.sell_orders | titlecase}}</label>
+                    <div class="row">
+                        <div class="nowrap col-sm-5 text-right col-padding-right padding-left-lg">{{local.string.price}}</div>
+                        <div class="nowrap col-sm-5 text-right col-padding-right col-padding-left">{{local.string.total}}</div>
+                    </div>
+                    <perfect-scrollbar style="max-height: 200px; max-width: 100%">
+                        <div class="row margin-bottom danger active-on-hover cursor-pointer" 
+                            [ngClass]="{'d-none':order.deposit.token.symbol != currency.symbol}"
+                            *ngFor="let order of own"
+                            (click)="cancel(order)"
+                        >
+                            <div class="nowrap col-sm-5 text-right col-padding-right padding-left-lg text-success">{{order.price.toString(8)}}</div>
+                            <div class="nowrap col-sm-5 text-right col-padding-right col-padding-left text-success">{{order.total.toString(8)}}</div>
+                            <div class="nowrap col-sm-1 text-right col-padding-left padding-right-lg">
+                                <i class="material-icons" style="font-size: 100%;" [hidden]="c_loading[order.id]">cancel</i>
+                                <span class="spinner-border spinner-border-sm" [hidden]="!c_loading[order.id]"></span>
+                            </div>
+                        </div>
+                    </perfect-scrollbar>
                 </div>
             </div>
-        </div>   
-        -->
+
+
+
+
+            
+
+
+        </div>        
+
     </div>
 </vpe-panel>
 

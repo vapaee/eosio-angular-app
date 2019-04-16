@@ -4,12 +4,7 @@
   - me falta resolver el problema de desuscribir al usuario que ya no tiene depósitos: depusers depuserstable(get_self(), get_self().value);
 - website
   - Trade
-    - tokens panel
-      - volumen diario
-      - precio actual
-      - porcentage de cambio 24%
     - manejar errores cuando se genera una órden
-    - listar las órdenes propias en el panel de "orden form"
     - Gráfica
     - Timezone: que el usuario elija su timezone para mostrar mejor los horarios de las transacciones en el historial
     - cuando se genera una transacción, el historial se actualiza y debería resaltarse temporalmente la reciente transacción.
@@ -20,6 +15,51 @@
     - comprar dominio
     - resolver https
     - PWA?
+
+
+-- TODO NEXT !! --
+- que pasa si hay dos errores seguidos en el "order-editor"? se muestra solo el primero pero y si lo cerrás el segundo no aparece
+- account:
+  - listar órdenes
+  - hacer funcionar el router (poder ver otros accounts sin estar logueado)
+  - si el account es "guest" no mostrar los paneles
+
+-- TODO MUST --
+- un botón para vender el 100%
+- min trade: hay que asegurar que la orden cumpla un mínimo.
+- Gráfica
+- home:
+  - logos
+  - textos
+  - tokens principales
+- publishing
+  - dominio vapaee.io
+  - certificado
+
+-- TODO bugs --
+- el componente panel-wallet en la página trade se puede hacer click y aparece el cmapo para retirar. No debería aparecer nada.
+- se sabe que si se hace múitiple match con todo el depósito, puede que no haya suficiente para la comisión y falle toda la transacción.
+- cuando toco una orden que no es la primera, el total se calcula sin tener el cuenta los escalones de diferentes precios.
+
+-- TODO detalles --
+- cambiar el contrato para que, intente cobrarte con ACORNS primero y con TLOS después. Si no puede, que te saque un porcentaje de tus ganancias.
+- la lista de tokens debería tener el summary (vol, price, change24h)
+- debería usarse el api para saber cuanto vale el TLOS y hacer regla de tres para saber cuanto vale cada token
+- listar el precio de cada token en USD, sumar todo y mostrar el TOTAl en la seccion account
+- hacer que en la sección account se pueda explorar el estado de cuenta de un account sin tener que estar logueado
+
+
+
+
+
+-- TODO PARTE 2: Working proposal --
+- Gráfica
+- que se vena todo en dólares
+- subastas
+- vapaee tokens - pasive income eco
+- better UI
+
+
 
 
 
@@ -47,6 +87,8 @@
     - Si el primero ya está vencido, lo ejecuta y agenda el siguiente si no está agendado ya.
     - si el primero no está vencido, se fija si está agendado comparando timer con next.
       Si timer < next => reagendar y actualizar timer
+
+
 
 
 

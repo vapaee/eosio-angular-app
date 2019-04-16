@@ -28,15 +28,24 @@
                 <div class="row cursor-pointer margin-bottom active-on-hover" 
                     *ngFor="let token of tokens | filter:token_filter"
                     [hidden]="token.symbol == 'TLOS'"
-                    routerLink="{{'/exchange/trade/' + token.scope}}"                
+                    routerLink="{{'/exchange/trade/' + token.scope}}"
                 >
                     <div class="nowrap col-sm-3 col-padding-right">
                         <img style="height:16px; width: 16px; margin-top:-2px" [src]="token.logo">
                         {{token.symbol}}                        
                     </div>
-                    <div class="nowrap col-sm-2 text-right col-padding-right col-padding-left">12</div>
-                    <div class="nowrap col-sm-4 text-right col-padding-right col-padding-left">1.10000000</div>
-                    <div class="nowrap col-sm-3 text-right text-success padding-right-lg ">+0.3%</div>
+                    <div class="nowrap col-sm-2 text-right col-padding-right col-padding-left">
+                        {{summary(token.scope).volume.valueToString(2)}}
+                    </div>
+                    <div class="nowrap col-sm-4 text-right col-padding-right col-padding-left">
+                        {{summary(token.scope).price.valueToString(4)}}
+                    </div>
+                    <div
+                        class="nowrap col-sm-3 text-right padding-right-lg"
+                        [ngClass]="{'text-success': summary(token.scope).percent > 0, 'text-danger': summary(token.scope).percent < 0, 'text-muted': summary(token.scope).percent  == 0}"
+                    >
+                        {{summary(token.scope).percent_str}}
+                    </div>
                 </div>
             </perfect-scrollbar>
         </div>

@@ -34,6 +34,8 @@ using namespace utils;
 
 //*
 #define PRINT(...) print(__VA_ARGS__)
+#define AUX_DEBUG_ACTIONS(...) __VA_ARGS__
 /*/
 #define PRINT(...)
+#define AUX_DEBUG_ACTIONS(...)
 //*/

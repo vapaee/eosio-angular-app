@@ -81,8 +81,8 @@
         </div>
     </div>
 
-    <vpe-panel-wallet (confirmWithdraw)="onWalletConfirmWithdraw($event)" (confirmDeposit)="onWalletConfirmDeposit($event)" [actions]="true" [hideuser]="true" [hideheader]="true" [title]="local.string.wallet" [deposits]="deposits" [balances]="balances"></vpe-panel-wallet>
-
+    <vpe-panel-wallet (confirmWithdraw)="onWalletConfirmWithdraw($event)" (confirmDeposit)="onWalletConfirmDeposit($event)" [error]="error" [loading]="loading" [actions]="true" [hideuser]="true" [hideheader]="true" [title]="local.string.wallet" [deposits]="deposits" [balances]="balances"></vpe-panel-wallet>
+    
 </div>
 
 
@@ -207,9 +207,11 @@
                     </div>    
                 </div>
             </div>
+
+            <vpe-panel-user-orders [userorders]="userorders" [hideheader]="true" [title]="local.string.orders"></vpe-panel-user-orders>
         </div>
         <div class="col-lg-6 col-padding-left">
-            <vpe-panel-wallet (confirmWithdraw)="onWalletConfirmWithdraw($event)" (confirmDeposit)="onWalletConfirmDeposit($event)" [actions]="true" [hideuser]="true" [hideheader]="true" [title]="local.string.wallet" [deposits]="deposits" [balances]="balances"></vpe-panel-wallet>
+            <vpe-panel-wallet (confirmWithdraw)="onWalletConfirmWithdraw($event)" (confirmDeposit)="onWalletConfirmDeposit($event)" [error]="error" [loading]="loading" [actions]="true" [hideuser]="true" [hideheader]="true" [title]="local.string.wallet" [deposits]="deposits" [balances]="balances"></vpe-panel-wallet>
         </div>
     </div>
 

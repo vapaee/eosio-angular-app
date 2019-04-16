@@ -248,9 +248,9 @@ namespace vapaee {
          
         void aux_calculate_total_fee(name owner, const asset & amount_a, const asset & amount_b, asset & total_fee, asset & tlos, vector<asset> & depos) {
             PRINT("vapaee::token::exchange::aux_calculate_total_fee()\n");
-            PRINT(" owner: ", owner.to_string(), "\n");
-            PRINT(" amount_a: ", amount_a.to_string(), "\n");
-            PRINT(" amount_b: ", amount_b.to_string(), "\n");
+            // PRINT(" owner: ", owner.to_string(), "\n");
+            // PRINT(" amount_a: ", amount_a.to_string(), "\n");
+            // PRINT(" amount_b: ", amount_b.to_string(), "\n");
 
             feeconfig feetable(get_self(), get_self().value);
             tlos = aux_which_one_is_tlos(amount_a, amount_b);
@@ -258,13 +258,13 @@ namespace vapaee {
             auto itr = feetable.begin();
             bool success = false;
             int i=0;
-            PRINT("  tlos: ", tlos.to_string(), "\n");
+            // PRINT("  tlos: ", tlos.to_string(), "\n");
             if (tlos.amount > 0) {
                 for (itr = feetable.begin(); itr != feetable.end(); itr++) {
                     asset deposit;
                     bool found = false;
                     for (i=0; i<depos.size(); i++) {
-                        PRINT("    candidato: ", depos[i].to_string(), "\n");
+                        // PRINT("    candidato: ", depos[i].to_string(), "\n");
                         if (depos[i].symbol.code().raw() == itr->fee.symbol.code().raw()) {
                             deposit = depos[i];
                             found = true;
@@ -272,19 +272,19 @@ namespace vapaee {
                         }
                     }
                     if (!found) {
-                        PRINT("    no tiene: ", itr->fee.to_string(), "  probamos con otro...\n");
+                        // PRINT("    no tiene: ", itr->fee.to_string(), "  probamos con otro...\n");
                         continue;
                     }
-                    PRINT("- fee: ", itr->fee.to_string(), "\n");
-                    PRINT("  deposit: ", deposit.to_string(), "\n");
+                    // PRINT("- fee: ", itr->fee.to_string(), "\n");
+                    // PRINT("  deposit: ", deposit.to_string(), "\n");
                     total_fee = itr->fee;
                     total_fee.amount = tlos.amount * ((double)itr->fee.amount / (double)pow(10.0, itr->fee.symbol.precision()));
-                    PRINT("  total_fee: ", total_fee.to_string(), "\n");
+                    // PRINT("  total_fee: ", total_fee.to_string(), "\n");
                     if (deposit > total_fee) {
                         // user has enough fee-token to pay the fee -> we lock them up
                         depos[i] -= total_fee;
                         success = true;
-                        PRINT("  success !! \n");
+                        // PRINT("  success !! \n");
                         break;
                     }
                 }
@@ -295,7 +295,7 @@ namespace vapaee {
 
             eosio_assert(success, "user don't have enough deposists to pay the order fee");
 
-            PRINT(" -> total_fee: ", total_fee.to_string(), "\n");
+            PRINT(" ",owner.to_string(), " -> fee: ", total_fee.to_string(), "(",  amount_a.to_string(),", ", amount_b.to_string(), "\n");
             PRINT("vapaee::token::exchange::aux_calculate_total_fee() ...\n");
         }
 
@@ -360,6 +360,38 @@ namespace vapaee {
             return scope;
         }
 
+        name aux_create_label_for_hour (int hh) {
+            switch(hh) {
+                case  0: return "h.zero"_n;
+                case  1: return "h.one"_n;
+                case  2: return "h.two"_n;
+                case  3: return "h.three"_n;
+                case  4: return "h.four"_n;
+                case  5: return "h.five"_n;
+                case  6: return "h.six"_n;
+                case  7: return "h.seven"_n;
+                case  8: return "h.eight"_n;
+                case  9: return "h.nine"_n;
+                case 10: return "h.ten"_n;
+                case 11: return "h.eleven"_n;
+                case 12: return "h.twelve"_n;
+                case 13: return "h.thirteen"_n;
+                case 14: return "h.fourteen"_n;
+                case 15: return "h.fifteen"_n;
+                case 16: return "h.sixteen"_n;
+                case 17: return "h.seventeen"_n;
+                case 18: return "h.eighteen"_n;
+                case 19: return "h.nineteen"_n;
+                case 20: return "h.twenty"_n;
+                case 21: return "h.twentyone"_n;
+                case 22: return "h.twentytwo"_n;
+                case 23: return "h.twentythree"_n;
+            }
+            PRINT("    aux_create_label_for_hour(hh): ERROR:", std::to_string(hh), "\n");
+            eosio_assert(false, "ERROR: bad hour: ");
+            return "error"_n;
+        }
+
         void aux_register_transaction_in_history(name buyer, name seller, asset amount, asset price, asset payment, asset buyfee, asset sellfee) {
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history()\n");
             PRINT(" buyer: ", buyer.to_string(), "\n");
@@ -370,6 +402,7 @@ namespace vapaee {
             PRINT(" buyfee: ", buyfee.to_string(), "\n");
             PRINT(" sellfee: ", sellfee.to_string(), "\n");
             
+            time_point_sec date = time_point_sec(now());
             name tmp_name;
             asset tmp_asset;
             asset tmp_pay;
@@ -398,20 +431,19 @@ namespace vapaee {
                 // swap price / inverse
                 price = vapaee::utils::inverse(price, tmp_asset.symbol);
 
-                PRINT(" -> buyer: ", buyer.to_string(), "\n");
-                PRINT(" -> seller: ", seller.to_string(), "\n");
-                PRINT(" -> amount: ", amount.to_string(), "\n");
-                PRINT(" -> price: ", price.to_string(), "\n");
-                PRINT(" -> buyfee: ", buyfee.to_string(), "\n");
-                PRINT(" -> sellfee: ", sellfee.to_string(), "\n");
-                PRINT(" -> payment: ", payment.to_string(), "\n");
-
+                // PRINT(" -> buyer: ", buyer.to_string(), "\n");
+                // PRINT(" -> seller: ", seller.to_string(), "\n");
+                // PRINT(" -> amount: ", amount.to_string(), "\n");
+                // PRINT(" -> price: ", price.to_string(), "\n");
+                // PRINT(" -> buyfee: ", buyfee.to_string(), "\n");
+                // PRINT(" -> sellfee: ", sellfee.to_string(), "\n");
+                // PRINT(" -> payment: ", payment.to_string(), "\n");
             }
 
             history table(get_self(), scope.value);
             table.emplace(get_self(), [&](auto & a){
                 a.id = table.available_primary_key();
-                a.date = time_point_sec(now());
+                a.date = date;
                 a.buyer = buyer;
                 a.seller = seller;
                 a.amount = amount;
@@ -422,46 +454,129 @@ namespace vapaee {
                 a.isbuy = is_buy;
             });
 
+            // update deals count for scope table
+            ordertables orderstables(get_self(), get_self().value);
+            auto orders_itr = orderstables.find(scope.value);
+            if (orders_itr == orderstables.end()) {
+                orderstables.emplace( get_self(), [&]( auto& a ) {
+                    a.table = scope;
+                    a.sell = amount.symbol.code();
+                    a.pay = payment.symbol.code();
+                    a.orders = 0;
+                    a.deals = 1;
+                    a.total = asset(0, amount.symbol);
+                });
+            } else {
+                orderstables.modify(*orders_itr, same_payer, [&](auto & a){
+                    a.deals += 1;
+                    a.sell = amount.symbol.code();
+                    a.pay = payment.symbol.code();
+                    a.total = asset(a.total.amount, amount.symbol);
+                });
+            }
 
-
-
+            // save table summary (price & volume/h)
             tablesummary summary(get_self(), scope.value);
             uint64_t ahora = current_time();
             uint64_t sec = ahora / 1000000;
-            // time_point_sec(now()).to_seconds();
-            // uint64_t sec = microseconds(now()).to_seconds();
-            PRINT(" ---------->>> now: ", std::to_string((unsigned long long) ahora), "\n");
-            PRINT(" ---------->>> sec: ", std::to_string((unsigned long long) sec), "\n");
+            uint64_t hour = sec / 3600;
+            int  hora = hour % 24;
+            name label = aux_create_label_for_hour(hora);
+            auto ptr = summary.find(label.value);
+            if (ptr == summary.end()) {
+                summary.emplace(get_self(), [&](auto & a) {
+                    a.label = label;
+                    a.price = price;
+                    a.volume = payment;
+                    a.date = date;
+                    a.hour = hour;
+                });
+            } else {
+                if (ptr->hour == hour) {
+                    summary.modify(*ptr, get_self(), [&](auto & a){
+                        a.price = price;
+                        a.volume += payment;
+                        a.date = date;
+                    });
+                } else {
+                    eosio_assert(ptr->hour < hour, "ERROR: inconsistency in hour property");
+                    summary.modify(*ptr, get_self(), [&](auto & a){
+                        a.price = price;
+                        a.volume = payment;
+                        a.date = date;
+                        a.hour = hour;
+                    });
+                }
+            }
 
-/*
-13:41:01
- ----------> now: 1555076461000000
- ----------> sec: 5598275259600
-13:42:31
- ----------> now: 1555076551000000
- ----------> sec: 5598275583600
-13:43:01
- ----------> now: 1555076581500000
- ----------> sec: 5598275691600
-13:43:36
- ----------> now: 1555076616000000
- ----------> sec: 5598275817600
-13:45:21
- ----------> now: 1555076721000000
- ----------> sec: 5598276195600
-13:45:26
- ----------> now: 1555076726000000
- ----------> sec: 5598276213600
+                /*
+                sec = 1555076461
+                60 * 60  = 1H
+                1555076461 = xH
+                x = 1555076461 / (60*60)
+                x = 1555076461 / 3600
+                13:59:16
+                ---------------------------------->>> now: 1555163956000000
+                ---------------------------------->>> sec: 1555163956
+                ---------------------------------->>> hor: 431989
+                13:59:24
+                ---------------------------------->>> now: 1555163964000000
+                ---------------------------------->>> sec: 1555163964
+                ---------------------------------->>> hor: 431989
+                13:59:30
+                ---------------------------------->>> now: 1555163970500000
+                ---------------------------------->>> sec: 1555163970
+                ---------------------------------->>> hor: 431989
+                13:59:46
+                ---------------------------------->>> now: 1555163986000000
+                ---------------------------------->>> sec: 1555163986
+                ---------------------------------->>> hor: 431989
+                13:59:56
+                ---------------------------------->>> now: 1555163996500000
+                ---------------------------------->>> sec: 1555163996
+                ---------------------------------->>> hor: 431989
+                14:00:01
+                ---------------------------------->>> now: 1555164001500000
+                ---------------------------------->>> sec: 1555164001
+                ---------------------------------->>> hor: 431990
 
-13:52:09
- ---------->>> now: 1555077129000000
- ---------->>> sec: 1555
-13:52:14
- ---------->>> now: 1555077134500000
- ---------->>> sec: 1555
+                */         
 
 
-*/
+
+
+
+
+
+                /*
+                13:41:01
+                ----------> now: 1555076461000000
+                ----------> sec: 5598275259600
+                13:42:31
+                ----------> now: 1555076551000000
+                ----------> sec: 5598275583600
+                13:43:01
+                ----------> now: 1555076581500000
+                ----------> sec: 5598275691600
+                13:43:36
+                ----------> now: 1555076616000000
+                ----------> sec: 5598275817600
+                13:45:21
+                ----------> now: 1555076721000000
+                ----------> sec: 5598276195600
+                13:45:26
+                ----------> now: 1555076726000000
+                ----------> sec: 5598276213600
+
+                13:52:09
+                ---------->>> now: 1555077129000000
+                ---------->>> sec: 1555
+                13:52:14
+                ---------->>> now: 1555077134500000
+                ---------->>> sec: 1555
+
+
+                */
 
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history() ...\n");
         }
@@ -527,7 +642,7 @@ namespace vapaee {
             // asset inverse = vapaee::utils::inverse(price, total.symbol);
             sell_order_table order;
 
-            // aaaaaaaaaaaaaaaaaa
+            
             vector<asset> deposits;
             aux_clone_user_deposits(owner, deposits);
 
@@ -547,12 +662,11 @@ namespace vapaee {
             // iterate over a list or buy order from the maximun price down
             for (auto b_ptr = buy_index.begin(); b_ptr != buy_index.end(); b_ptr = buy_index.begin()) {
                 eosio_assert(b_ptr->price.symbol == inverse.symbol, "buy order price symbol and inverse symbol are different");
-                PRINT("  TRANSACTION - price: ", b_ptr->price.to_string(), " total: ", b_ptr->total.to_string(), " selling: ", b_ptr->selling.to_string(),"\n");
-                PRINT("              inverse: ", inverse.to_string() ,"\n");
-                
+                PRINT(" compare: (price<=inverse) ??  - (", b_ptr->price.to_string(), " <= ", inverse.to_string(), ") ??? \n");
                 if (b_ptr->price.amount <= inverse.amount) {
                     // transaction !!!
                     current_price = b_ptr->price;   // TLOS
+                    PRINT("TRANSACTION!! price: ", current_price.to_string(),"\n");
                     buyer_fee = b_ptr->fee;
                     buyer = b_ptr->owner;
                     PRINT("              buyer: ", buyer.to_string() ,"\n");
@@ -581,14 +695,30 @@ namespace vapaee {
                         });                        
                     } else {
                         // buyer gets all amount wanted -> destroy order
+                        uint64_t buy_id = b_ptr->id;
                         current_total = b_ptr->total;
                         payment = b_ptr->selling;
                         buytable.erase(*b_ptr);
                         PRINT("    payment (2): ", payment.to_string(),"\n");
 
+                        // register order in user personal order registry
+                        userorders buyerorders(get_self(), buyer.value);
+                        // for (auto pp = buyerorders.begin(); pp != buyerorders.end(); pp++) {
+                        //     PRINT("    pp->table: ", pp->table, scope_buy == pp->table ? " (yes) " : " (no) "," pp->orders: ", pp->orders.size(),"\n");
+                        // }
+                        auto buyer_itr = buyerorders.find(scope_buy.value);
+                        // PRINT("    buyer: ", buyer.to_string(),"\n");
+                        // PRINT("    scope_buy: ", scope_buy.to_string(),"\n");
+                        eosio_assert(buyer_itr != buyerorders.end(), "ERROR: cómo que no existe? No fue registrado antes? buyer? scope_buy?");
+
                         // take out the registry for this completed order
                         eosio_assert(buy_itr != orderstables.end(), "table MUST exist but it does not");
                         if (buy_itr->orders > 1) {
+                            buyerorders.modify(*buyer_itr, ram_payer, [&](auto & a){
+                                std::vector<uint64_t> newlist;
+                                std::copy_if (a.ids.begin(), a.ids.end(), std::back_inserter(newlist), [&](uint64_t i){return i!=buy_id;} );
+                                a.ids = newlist;
+                            });                            
                             orderstables.modify(*buy_itr, ram_payer, [&](auto & a){
                                 a.orders--;
                                 PRINT("        a.total:  ", a.total.to_string(),"\n");
@@ -597,6 +727,7 @@ namespace vapaee {
                             });
                         } else {
                             orderstables.erase(*buy_itr);
+                            buyerorders.erase(*buyer_itr);
                         }
                     }
 
@@ -664,7 +795,7 @@ namespace vapaee {
                 if (remaining.amount <= 0) break;
             }
 
-            if (remaining.amount > 0) {
+            if (remaining.amount > 0 && remaining_payment.amount > 0) {
                 PRINT("  final remaining: ", remaining.to_string(), "\n");
                 // insert sell order
                 uint64_t id = selltable.available_primary_key();
@@ -726,6 +857,21 @@ namespace vapaee {
                         a.total += remaining;
                     });
                 }
+
+                // register order in user personal order registry
+                userorders userorders_table(get_self(), owner.value);
+                auto user_itr = userorders_table.find(scope_sell.value);
+                if (user_itr == userorders_table.end()) {
+                    userorders_table.emplace( ram_payer, [&]( auto& a ) {
+                        a.table = scope_sell;
+                        a.ids.push_back(id);
+                    });
+                } else {
+                    userorders_table.modify(*user_itr, ram_payer, [&](auto & a){
+                        a.ids.push_back(id);
+                    });
+                }
+
                 PRINT("  sellorders.emplace(): ", std::to_string((unsigned long long) id), "\n");
             }
             
@@ -973,18 +1119,18 @@ namespace vapaee {
             name scope_sell = aux_get_scope_for_tokens(token_p, token_a);
 
             if (type == "sell"_n) {
-                cancel_sell_order(owner, scope_buy, orders);
+                aux_cancel_sell_order(owner, scope_buy, orders);
             }
 
             if (type == "buy"_n) {
-                cancel_sell_order(owner, scope_sell, orders);
+                aux_cancel_sell_order(owner, scope_sell, orders);
             }
 
             PRINT("vapaee::token::exchange::action_cancel() ...\n");
         }
 
-        void cancel_sell_order(name owner, name scope, const std::vector<uint64_t> & orders) {
-            PRINT("vapaee::token::exchange::cancel_sell_order()\n");
+        void aux_cancel_sell_order(name owner, name scope, const std::vector<uint64_t> & orders) {
+            PRINT("vapaee::token::exchange::aux_cancel_sell_order()\n");
             PRINT(" owner: ", owner.to_string(), "\n");
             PRINT(" scope: ", scope.to_string(), "\n");
             PRINT(" orders.size(): ", orders.size(), "\n");
@@ -998,7 +1144,8 @@ namespace vapaee {
             
 
             for (int i=0; i<orders.size(); i++) {
-                auto itr = selltable.find(orders[i]);
+                uint64_t order_id = orders[i];
+                auto itr = selltable.find(order_id);
                 eosio_assert(itr != selltable.end(), "buy order not found");
                 eosio_assert(itr->owner == owner, "attemp to delete someone elses buy order");
                 return_amount = itr->selling;
@@ -1007,17 +1154,28 @@ namespace vapaee {
                 PRINT("  return_fee: ", return_fee.to_string(), "\n");
                 selltable.erase(*itr);
 
+                // ake out the order from the user personal order registry
+                userorders buyerorders(get_self(), owner.value);
+                auto buyer_itr = buyerorders.find(scope.value);
+                eosio_assert(buyer_itr != buyerorders.end(), "ERROR: cómo que no existe? No fue registrado antes?");
+
                 // take out the registry for this completed order
                 eosio_assert(order_itr != orderstables.end(), "ordertable does not exist for that scope");
                 if (order_itr->orders > 1) {
+                    buyerorders.modify(*buyer_itr, same_payer, [&](auto & a){
+                        std::vector<uint64_t> newlist;
+                        std::copy_if (a.ids.begin(), a.ids.end(), std::back_inserter(newlist), [&](uint64_t i){return i!=order_id;} );
+                        a.ids = newlist;
+                    });                       
                     orderstables.modify(*order_itr, same_payer, [&](auto & a){
                         a.orders--;
                         a.total -= return_amount;
                     });
                 } else {
                     orderstables.erase(*order_itr);
-                }                
-
+                    buyerorders.erase(*buyer_itr);
+                }
+                
                 action(
                     permission_level{get_self(),"active"_n},
                     get_self(),
@@ -1047,6 +1205,35 @@ namespace vapaee {
             
             PRINT("vapaee::token::exchange::action_droptokens() ...\n");
         }
+
+        void action_clear_tables_orders_and_history() {
+            PRINT("vapaee::token::exchange::action_clear_tables_orders_and_history()\n");
+            require_auth(get_self());
+
+            ordertables orderstables(get_self(), get_self().value);
+            for (auto orders = orderstables.begin(); orders != orderstables.end(); orders = orderstables.begin()) {
+                PRINT(" -- deleting table: ", orders->table.to_string(),"\n");
+
+                tablesummary summary(get_self(), orders->table.value);
+                for (auto s_itr = summary.begin(); s_itr != summary.end(); s_itr = summary.begin()) {
+                    PRINT("   -- deleting summary: ", s_itr->label.to_string(),"\n");
+                    summary.erase(*s_itr);
+                }
+                
+                history history_table(get_self(), orders->table.value);
+                for (auto h_itr = history_table.begin(); h_itr != history_table.end(); h_itr = history_table.begin()) {
+                    PRINT("   -- deleting history: ", std::to_string((unsigned long long)h_itr->id),"\n");
+                    history_table.erase(*h_itr);
+                }
+
+                sellorders selltable(get_self(), orders->table.value);
+                for (auto order = selltable.begin(); order != selltable.end(); order = selltable.begin()) {
+                    aux_cancel_sell_order(order->owner, orders->table, {order->id});
+                }
+            }
+            
+            PRINT("vapaee::token::exchange::action_clear_tables_orders_and_history() ...\n");
+        }        
 
         void action_return_all_deposits() {
             PRINT("vapaee::token::exchange::action_return_all_deposits()\n");
@@ -1091,11 +1278,48 @@ namespace vapaee {
                 PRINT(" -- deleting table: ", orders->table.to_string(),"\n");
                 sellorders selltable(get_self(), orders->table.value);
                 for (auto order = selltable.begin(); order != selltable.end(); order = selltable.begin()) {
-                    cancel_sell_order(order->owner, orders->table, {order->id});
+                    aux_cancel_sell_order(order->owner, orders->table, {order->id});
                 }
             }
             
             PRINT("vapaee::token::exchange::action_cancel_all_orders() ...\n");
+        }
+
+        void action_poblate_user_orders_table(name owner, name table) {
+            PRINT("vapaee::token::exchange::action_poblate_user_orders_table()\n");
+            PRINT(" owner: ", owner.to_string(), "\n");
+            PRINT(" table: ", table.to_string(), "\n");
+
+            // search on sell orders if any is own by owner;
+            sellorders selltable(get_self(), table.value);
+            vector<uint64_t> list;
+            for (auto itr = selltable.begin(); itr != selltable.end(); itr++) {
+                // PRINT(" itr->id: ", std::to_string((int)itr->id), " itr->owner: ", itr->owner.to_string(), "\n");
+                if (itr->owner == owner) {
+                    list.push_back(itr->id);
+                }
+            }
+
+            userorders userorders_table(get_self(), owner.value);
+            auto user_itr = userorders_table.find(table.value);
+            if (user_itr == userorders_table.end()) {
+                if (list.size() > 0) {
+                    userorders_table.emplace( get_self(), [&]( auto& a ) {
+                        a.table = table;
+                        a.ids = list;
+                    });
+                }
+            } else {
+                if (list.size() > 0) {
+                    userorders_table.modify(*user_itr, get_self(), [&](auto & a){
+                        a.ids = list;
+                    });
+                } else {
+                    userorders_table.erase(*user_itr);
+                }
+            }
+            
+            PRINT("vapaee::token::exchange::action_poblate_user_orders_table() ...\n");
         }
 
         string aux_error_1(const asset & amount, uint8_t precision) {

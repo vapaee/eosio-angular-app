@@ -11,8 +11,8 @@
             asset selling; // symbol_code_A - how much A you are selling
             asset fee;
             uint64_t primary_key() const { return id; }
-            uint64_t by_price_key() const { return price.amount; } // return asset::max_amount
-            // uint64_t by_inverse_key() const { ((double)price.amount / (double)pow(10.0, price.symbol.precision())) / 1.0; }
+            uint64_t by_price_key() const { return price.amount; }
+            // uint64_t by_inverse_key() const { return inverse.amount; } 
             uint64_t by_owner_key() const { return owner.value; }
             uint64_t by_total_key() const { return total.amount; }
         };

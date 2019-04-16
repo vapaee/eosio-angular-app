@@ -7,7 +7,7 @@ import { CntService } from 'src/app/services/cnt.service';
 import { Subscriber } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Profile } from 'src/app/services/utils.service';
-import { VapaeeService, Asset } from 'src/app/services/vapaee.service';
+import { VapaeeService, Asset, UserOrders, UserOrdersMap } from 'src/app/services/vapaee.service';
 
 
 @Component({
@@ -19,6 +19,8 @@ export class VpeAccountPage implements OnInit, OnDestroy {
 
     private subscriber: Subscriber<string>;
     current_mode: boolean;
+    loading: boolean;
+    error: string;
    
     constructor(
         public app: AppService,
@@ -42,9 +44,11 @@ export class VpeAccountPage implements OnInit, OnDestroy {
         return this.vapaee.balances;
     }    
 
+    get userorders(): UserOrdersMap {
+        return this.vapaee.userorders;
+    }    
+
     updateAccount() {
-        // this.vapaee.account
-        
     }
 
     ngOnDestroy() {
@@ -73,16 +77,40 @@ export class VpeAccountPage implements OnInit, OnDestroy {
 
     onWalletConfirmDeposit(amount: Asset) {
         console.log("------------------>", amount.toString());
+        this.loading = true;
+        this.error = null;
         this.vapaee.deposit(amount).then(_ => {
             console.log("------------------>", amount.toString());
+            this.loading = false;
+        }).catch(e => {
+            console.error(typeof e, e);
+            // this.error = "ERROR: " + JSON.stringify(typeof e == "string" ? JSON.parse(e) : e, null, 4);
+            if (typeof e == "string") {
+                this.error = "ERROR: " + JSON.stringify(JSON.parse(e), null, 4);
+            } else {
+                this.error = null;
+            }
+            this.loading = false;
         });
     }
 
     onWalletConfirmWithdraw(amount: Asset) {
         console.log("------------------>", amount.toString());
+        this.loading = true;
+        this.error = null;
         this.vapaee.withdraw(amount).then(_ => {
             console.log("------------------>", amount.toString());
-        });
+            this.loading = false;
+        }).catch(e => {
+            console.error(typeof e, e);
+            // this.error = "ERROR: " + JSON.stringify(typeof e == "string" ? JSON.parse(e) : e, null, 4);
+            if (typeof e == "string") {
+                this.error = "ERROR: " + JSON.stringify(JSON.parse(e), null, 4);
+            } else {
+                this.error = null;
+            }
+            this.loading = false;
+        });        
     }
 
 }
