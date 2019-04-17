@@ -185,12 +185,6 @@ CONTRACT vapaeetokens : public eosio::contract {
             require_auth( caller );
             vapaee::token::exchange e;
             e.aux_try_to_unlock(caller);
-        };        
-
-        ACTION configfee(name action, const asset & fee, uint64_t priority) {
-            PRINT("\nACTION vapaeetokens.configfee()\n");
-            vapaee::token::exchange e;
-            e.action_configfee(action, fee, priority);
         };
         
         // debugin ----------

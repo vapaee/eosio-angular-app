@@ -21,8 +21,6 @@ show_table() {
     cleos get table $code $scope $table -l 50
 }
 
-show_table vapaeetokens vapaeetokens feeconfig
-
 show_table vapaeetokens vapaeetokens tokens
 
 show_table vapaeetokens tlos.cnt sellorders

@@ -18,10 +18,7 @@
 
 
 -- TODO NEXT !! --
-- que pasa si hay dos errores seguidos en el "order-editor"? se muestra solo el primero pero y si lo cerrás el segundo no aparece
 - account:
-  - listar órdenes
-  - hacer funcionar el router (poder ver otros accounts sin estar logueado)
   - si el account es "guest" no mostrar los paneles
 
 -- TODO MUST --
@@ -47,6 +44,7 @@
 - debería usarse el api para saber cuanto vale el TLOS y hacer regla de tres para saber cuanto vale cada token
 - listar el precio de cada token en USD, sumar todo y mostrar el TOTAl en la seccion account
 - hacer que en la sección account se pueda explorar el estado de cuenta de un account sin tener que estar logueado
+- cambiar la implementación actual del order-form que lista las órdenes y usar el actal panel-user-orders
 
 
 

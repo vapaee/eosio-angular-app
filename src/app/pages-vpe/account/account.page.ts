@@ -60,7 +60,14 @@ export class VpeAccountPage implements OnInit, OnDestroy {
         // this.cnt.updateLogState();
         this.vapaee.onCurrentAccountChange.subscribe(this.subscriber);
         var name = this.route.snapshot.paramMap.get('name');
-        this.onCntCurrentAccountChange(name);
+        setTimeout(_ => {
+            if (!name) {
+                name = "guest";
+                this.onCntCurrentAccountChange(name);
+            } else {
+                this.vapaee.resetCurrentAccount(name);
+            };
+        }, 0);
     }
 
     onCntCurrentAccountChange(account: string) {

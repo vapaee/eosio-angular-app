@@ -1,8 +1,5 @@
 #!/bin/bash
 
-cleos push action vapaeetokens configfee '["create","1.00000000 ACORN", 1]' -p vapaeetokens@active
-cleos push action vapaeetokens configfee '["create","0.00250000 TLOS", 2]' -p vapaeetokens@active
-
 echo "-- deposits --"
 cleos push action eosio.token transfer  '["bob",  "vapaeetokens","50.0000 ACORN","deposit"]' -p bob@active
 cleos push action eosio.token transfer  '["alice","vapaeetokens","10.0000 ACORN","deposit"]' -p alice@active
@@ -108,9 +105,6 @@ cleos push action vapaeetokens order '["alice", "buy", "5.00000000 BOX", "0.2600
 cleos push action vapaeetokens order '["alice", "buy", "5.00000000 BOX", "0.27000000 TLOS"]' -p alice
 cleos push action vapaeetokens order '["alice", "buy", "5.00000000 BOX", "0.28000000 TLOS"]' -p alice
 cleos push action vapaeetokens order '["alice", "buy", "5.00000000 BOX", "0.29000000 TLOS"]' -p alice
-
-
-
 
 
 

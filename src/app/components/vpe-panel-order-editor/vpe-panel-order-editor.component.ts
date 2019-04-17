@@ -222,11 +222,12 @@ export class VpePanelOrderEditorComponent implements OnChanges {
     }
 
     cancel(order) {
-        if (order.deposit.token.symbol != this.currency.symbol) {
-            this.c_loading[order.id] = true;
-            this.vapaee.cancelOrder("sell", this.comodity, this.currency, [order.id]).then(_ => {
+        var key = order.id;
+        if (order.deposit.token.symbol != order.telos.token.symbol) {
+            this.c_loading[key] = true;
+            this.vapaee.cancelOrder("sell", order.deposit.token, order.telos.token, [order.id]).then(_ => {
                 // success
-                this.c_loading[order.id] = false;
+                this.c_loading[key] = false;
             }).catch(e => {
                 console.log(e);
                 if (typeof e == "string") {
@@ -234,14 +235,14 @@ export class VpePanelOrderEditorComponent implements OnChanges {
                 } else {
                     this.error = null;
                 }
-                this.c_loading[order.id] = false;
+                this.c_loading[key] = false;
             });;
         }
-        if (order.deposit.token.symbol != this.comodity.symbol) {
-            this.c_loading[order.id] = true;
-            this.vapaee.cancelOrder("buy", this.comodity, this.currency, [order.id]).then(_ => {
+        if (order.deposit.token.symbol == order.telos.token.symbol) {
+            this.c_loading[key] = true;
+            this.vapaee.cancelOrder("buy", order.total.token, order.telos.token, [order.id]).then(_ => {
                 // success
-                this.c_loading[order.id] = false;
+                this.c_loading[key] = false;
             }).catch(e => {
                 console.log(e);
                 if (typeof e == "string") {
@@ -249,7 +250,7 @@ export class VpePanelOrderEditorComponent implements OnChanges {
                 } else {
                     this.error = null;
                 }
-                this.c_loading[order.id] = false;
+                this.c_loading[key] = false;
             });;
         }        
     }

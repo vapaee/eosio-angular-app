@@ -36,6 +36,7 @@ export class VpePanelWalletComponent implements OnChanges {
     }
 
     depositForm(asset:Asset) {
+        if (!this.vapaee.logged) return;
         if (this.deposit.token.symbol == asset.token.symbol) {
             this.deposit = new Asset();
         } else {
@@ -45,6 +46,7 @@ export class VpePanelWalletComponent implements OnChanges {
     }
 
     withdrawForm(asset:Asset) {
+        if (!this.vapaee.logged) return;
         if (this.withdraw.token.symbol == asset.token.symbol) {
             this.withdraw = new Asset();
         } else {

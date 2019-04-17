@@ -27,11 +27,22 @@
                         {{order.deposit.toString(8)}}
                     </div>
                     
-                     <div class="nowrap col-sm-1 text-right col-padding-left padding-right-lg">
+                    <div class="nowrap col-sm-1 text-right col-padding-left padding-right-lg" [hidden]="!vapaee.logged">
                         <i class="material-icons" style="font-size: 100%;" [hidden]="c_loading[scope.table + order.id]">cancel</i>
                         <span class="spinner-border spinner-border-sm" [hidden]="!c_loading[scope.table + order.id]"></span>
                     </div>
                 
+                    <div class="col-sm-12" [hidden]="!error">
+                        <div class="alert alert-danger">
+                            <div class="pull-right">
+                                <button type="button" class="close text-white" (click)="error = null">
+                                    <i class="material-icons" style="font-size: 100%;">cancel</i>
+                                </button>                
+                            </div>
+                            {{error}}
+                        </div>
+                    </div>
+
                 </div>
             </perfect-scrollbar>
         </div>        

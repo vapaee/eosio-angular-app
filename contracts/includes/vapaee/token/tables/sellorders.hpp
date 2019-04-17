@@ -9,7 +9,6 @@
             asset inverse; // symbol_code_A - inverse price 
             asset total; // symbol_code_P - how much P you want
             asset selling; // symbol_code_A - how much A you are selling
-            asset fee;
             uint64_t primary_key() const { return id; }
             uint64_t by_price_key() const { return price.amount; }
             // uint64_t by_inverse_key() const { return inverse.amount; } 

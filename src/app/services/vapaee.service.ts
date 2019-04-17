@@ -21,6 +21,7 @@ export class VapaeeService {
     public scopes: TableMap;
     public utils: Utils;
     public current: Account;
+    public last_logged: string;
     public contract: string;   
     public deposits: Asset[];
     public balances: Asset[];
@@ -92,6 +93,7 @@ export class VapaeeService {
         this.resetCurrentAccount(this.default.name);
         this.updateLogState();
         this.onLoggedAccountChange.next(this.logged);
+        setTimeout(_  => { this.last_logged = this.logged; }, 400);
     }
     
     onLogin(name:string) {
@@ -102,6 +104,7 @@ export class VapaeeService {
         this.updateLogState();
         this.getUserOrders();
         this.onLoggedAccountChange.next(this.logged);
+        this.last_logged = this.logged;
     }
 
     onLoggedChange() {
@@ -115,13 +118,18 @@ export class VapaeeService {
 
     async resetCurrentAccount(profile:string) {
         console.log("VapaeeService.resetCurrentAccount() current:", this.current, "next:", profile);
-        if (this.current.name != profile) {
+        if (this.current.name != profile && (this.current.name == this.last_logged || profile != "guest")) {
             this.current = this.default;
             this.current.name = profile;
             if (profile != "guest") {
                 this.current.data = await this.getAccountData(this.current.name);
             }
+            // this.scopes = {};
+            this.balances = [];
+            this.userorders = {};            
+            console.log("this.onCurrentAccountChange.next(this.current.name) !!!!!!");
             this.onCurrentAccountChange.next(this.current.name);
+            this.updateCurrentUser();
         }
     }
 
@@ -271,6 +279,7 @@ export class VapaeeService {
     }
 
     async getUserOrders(account:string = null) {
+        console.log("VapaeeService.getUserOrders()");
         return this.waitReady.then(async _ => {
             var userorders: TableResult;
             if (!account && this.current.name) {
@@ -303,11 +312,19 @@ export class VapaeeService {
             this.getTransactionHistory(comodity, currency, -1, -1, true),
             this.getSellOrders(comodity, currency, true),
             this.getBuyOrders(comodity, currency, true),
-            this.getOrderTables(),
-            this.getUserOrders(),
             this.getTableSummary(comodity, currency, true),
-            this.getDeposits()
-        ])
+            this.getOrderTables(),
+            this.updateCurrentUser()
+        ]);
+    }
+
+    async updateCurrentUser(): Promise<any> {
+        console.log("VapaeeService.updateCurrentUser()");
+        return Promise.all([
+            this.getUserOrders(),
+            this.getDeposits(),
+            this.getBalances()
+        ]);       
     }
 
     async getTransactionHistory(comodity:Token, currency:Token, page:number = -1, pagesize:number = -1, force:boolean = false): Promise<any> {
@@ -534,6 +551,7 @@ export class VapaeeService {
     }
     
     async getOrderTables(): Promise<any> {
+        console.log("VapaeeService.getOrderTables()");
         var tables = await this.fetchOrderTables();
 
         for (var i in tables.rows) {
@@ -684,7 +702,6 @@ export class VapaeeService {
             var inverse = new Asset(rows[i].inverse, this);
             var selling = new Asset(rows[i].selling, this);
             var total = new Asset(rows[i].total, this);
-            var fee = new Asset(rows[i].fee, this);
             var order:Order;
 
             if (this.telos.symbol == price.token.symbol) {
@@ -695,7 +712,6 @@ export class VapaeeService {
                     total: selling,
                     deposit: selling,
                     telos: total,
-                    fee: fee,
                     owner: rows[i].owner
                 }
             } else {
@@ -706,7 +722,6 @@ export class VapaeeService {
                     total: total,
                     deposit: selling,
                     telos: selling,
-                    fee: fee,
                     owner: rows[i].owner
                 }
             }
@@ -825,7 +840,7 @@ export class VapaeeService {
             for (var contract in contracts) {
                 var result = await this.utils.getTable("accounts", {
                     contract:contract,
-                    scope:this.scatter.account.name
+                    scope: account || this.current.name
                 });
                 for (var i in result.rows) {
                     balances.push(new Asset(result.rows[i].balance, this));
@@ -1033,7 +1048,6 @@ export interface Order {
     total: Asset;
     deposit: Asset;
     telos: Asset;
-    fee: Asset;
     owner: string;
 }
 

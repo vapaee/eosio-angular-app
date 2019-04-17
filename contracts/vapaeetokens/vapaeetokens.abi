@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Apr 16 14:48:54 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Apr 16 20:38:43 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -145,24 +145,6 @@
             ]
         },
         {
-            "name": "configfee",
-            "base": "",
-            "fields": [
-                {
-                    "name": "action",
-                    "type": "name"
-                },
-                {
-                    "name": "fee",
-                    "type": "asset"
-                },
-                {
-                    "name": "priority",
-                    "type": "uint64"
-                }
-            ]
-        },
-        {
             "name": "create",
             "base": "",
             "fields": [
@@ -249,20 +231,6 @@
             "fields": [
                 {
                     "name": "quantity",
-                    "type": "asset"
-                }
-            ]
-        },
-        {
-            "name": "feeconfig_table",
-            "base": "",
-            "fields": [
-                {
-                    "name": "priority",
-                    "type": "uint64"
-                },
-                {
-                    "name": "fee",
                     "type": "asset"
                 }
             ]
@@ -558,10 +526,6 @@
                 },
                 {
                     "name": "selling",
-                    "type": "asset"
-                },
-                {
-                    "name": "fee",
                     "type": "asset"
                 }
             ]
@@ -978,11 +942,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "configfee",
-            "type": "configfee",
-            "ricardian_contract": ""
-        },
-        {
             "name": "create",
             "type": "create",
             "ricardian_contract": ""
@@ -1122,13 +1081,6 @@
         {
             "name": "earnings",
             "type": "earnings_table",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "feeconfig",
-            "type": "feeconfig_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

@@ -245,7 +245,7 @@ namespace vapaee {
             PRINT(" deposits.size(): ", depos.size(), "\n");
             PRINT("vapaee::token::exchange::aux_clone_user_deposits() ...\n");
         }
-         
+        /* 
         void aux_calculate_total_fee(name owner, const asset & amount_a, const asset & amount_b, asset & total_fee, asset & tlos, vector<asset> & depos) {
             PRINT("vapaee::token::exchange::aux_calculate_total_fee()\n");
             // PRINT(" owner: ", owner.to_string(), "\n");
@@ -298,7 +298,7 @@ namespace vapaee {
             PRINT(" ",owner.to_string(), " -> fee: ", total_fee.to_string(), "(",  amount_a.to_string(),", ", amount_b.to_string(), "\n");
             PRINT("vapaee::token::exchange::aux_calculate_total_fee() ...\n");
         }
-
+        */
         void aux_try_to_unlock(name ram_payer) {
             PRINT("vapaee::token::exchange::aux_try_to_unlock()\n");
             PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
@@ -619,6 +619,8 @@ namespace vapaee {
             PRINT(" payment: ", payment.to_string(), "\n");    // payment: 2.50000000 CNT
             PRINT(" price: ", price.to_string(), "\n");        // price: 2.50000000 CNT
             PRINT(" inverse: ", inverse.to_string(), "\n");    // inverse: 0.40000000 TLOS
+            double buyer_fee_percentage = 0.001;
+            double seller_fee_percentage = 0.002;
             
             sellorders buytable(get_self(), scope_buy.value);
             sellorders selltable(get_self(), scope_sell.value);
@@ -636,7 +638,7 @@ namespace vapaee {
             asset current_price;
             asset current_inverse;
             asset current_total;
-            asset buyer_fee;
+            asset current_payment = payment;
             name buyer;
             name seller = owner;
             // asset inverse = vapaee::utils::inverse(price, total.symbol);
@@ -667,7 +669,6 @@ namespace vapaee {
                     // transaction !!!
                     current_price = b_ptr->price;   // TLOS
                     PRINT("TRANSACTION!! price: ", current_price.to_string(),"\n");
-                    buyer_fee = b_ptr->fee;
                     buyer = b_ptr->owner;
                     PRINT("              buyer: ", buyer.to_string() ,"\n");
                     PRINT("      current_price: ", current_price.to_string() ,"\n");
@@ -675,31 +676,28 @@ namespace vapaee {
                     if (b_ptr->total > remaining) { // CNT
                         // buyer wants more that the user is selling -> reduces buyer order amount
                         current_total = remaining;  // CNT
-                        payment.amount = (int64_t)( (double)(remaining.amount * b_ptr->selling.amount) / (double)b_ptr->total.amount);
+                        current_payment.amount = (int64_t)( (double)(remaining.amount * b_ptr->selling.amount) / (double)b_ptr->total.amount);
                         buytable.modify(*b_ptr, aux_get_modify_payer(ram_payer), [&](auto& a){
-                            asset fee = a.fee;
                             double percent = (double)remaining.amount / (double)a.total.amount;
                             a.total -= remaining;   // CNT
-                            a.selling -= payment;    // TLOS
-                            a.fee.amount -= a.fee.amount * percent;
-                            buyer_fee.amount = buyer_fee.amount * percent;
+                            a.selling -= current_payment;    // TLOS
                         });
-                        PRINT("    payment (1): ", payment.to_string(),"\n");
+                        PRINT("    payment (1): ", current_payment.to_string(),"\n");
 
                         // decrese the total in registry for this incompleted order
                         eosio_assert(buy_itr != orderstables.end(), "table MUST exist but it does not");
                         orderstables.modify(*buy_itr, ram_payer, [&](auto & a){
                             PRINT("        a.total:  ", a.total.to_string(),"\n");
-                            PRINT("        payment:  ", payment.to_string(),"\n");
-                            a.total -= payment;
+                            PRINT("        payment:  ", current_payment.to_string(),"\n");
+                            a.total -= current_payment;
                         });                        
                     } else {
                         // buyer gets all amount wanted -> destroy order
                         uint64_t buy_id = b_ptr->id;
                         current_total = b_ptr->total;
-                        payment = b_ptr->selling;
+                        current_payment = b_ptr->selling;
                         buytable.erase(*b_ptr);
-                        PRINT("    payment (2): ", payment.to_string(),"\n");
+                        PRINT("    payment (2): ", current_payment.to_string(),"\n");
 
                         // register order in user personal order registry
                         userorders buyerorders(get_self(), buyer.value);
@@ -718,49 +716,68 @@ namespace vapaee {
                                 std::vector<uint64_t> newlist;
                                 std::copy_if (a.ids.begin(), a.ids.end(), std::back_inserter(newlist), [&](uint64_t i){return i!=buy_id;} );
                                 a.ids = newlist;
-                            });                            
+                            });
                             orderstables.modify(*buy_itr, ram_payer, [&](auto & a){
                                 a.orders--;
-                                PRINT("        a.total:  ", a.total.to_string(),"\n");
-                                PRINT("        payment:  ", payment.to_string(),"\n");
-                                a.total -= payment;
+                                a.total -= current_payment;
+                                PRINT("     orderstables.modify() a.orders--; a.total: ", a.total.to_string(),"\n");
                             });
                         } else {
                             orderstables.erase(*buy_itr);
                             buyerorders.erase(*buyer_itr);
+                            PRINT("     orderstables.erase()\n");
                         }
                     }
+                    
+                    
+                    remaining -= current_total;
+                    remaining_payment -= current_payment;
+                    asset seller_fee, buyer_fee, seller_gains, buyer_gains;
+                    // calculate fees
+                    buyer_fee = current_total;
+                    buyer_fee.amount = current_total.amount * buyer_fee_percentage;
+                    seller_gains = current_total - buyer_fee;
+                    seller_fee = current_payment;
+                    seller_fee.amount = current_payment.amount * seller_fee_percentage;
+                    buyer_gains = current_payment - seller_fee;
 
                     // transfer to buyer CNT
-                    remaining -= current_total;
-                    remaining_payment -= payment;
                     action(
                         permission_level{owner,"active"_n},
                         get_self(),
                         "swapdeposit"_n,
-                        std::make_tuple(owner, buyer, current_total, string("exchange made for ") + payment.to_string())
+                        std::make_tuple(owner, buyer, seller_gains, string("exchange made for ") + buyer_gains.to_string())
                     ).send();
-                    PRINT("     -- transfer ", current_total.to_string(), " to ", buyer.to_string(),"\n");
+                    PRINT("     -- transfer ", seller_gains.to_string(), " to ", buyer.to_string(),"\n");
+                        
+                    // transfer to contractg fees on CNT
+                    action(
+                        permission_level{owner,"active"_n},
+                        get_self(),
+                        "swapdeposit"_n,
+                        std::make_tuple(owner, get_self(), buyer_fee, string("exchange made for ") + buyer_gains.to_string())
+                    ).send();
+                    PRINT("     -- charge fees ", buyer_fee.to_string(), " to ", buyer.to_string(),"\n");
                         
                     // transfer to seller TLOS
                     action(
                         permission_level{get_self(),"active"_n},
                         get_self(),
                         "swapdeposit"_n,
-                        std::make_tuple(get_self(), owner, payment, string("exchange made for ") + current_total.to_string())
+                        std::make_tuple(get_self(), owner, buyer_gains, string("exchange made for ") + seller_gains.to_string())
                     ).send();
-                    PRINT("     -- transfer ", payment.to_string(), " to ", owner.to_string(),"\n");
+                    PRINT("     -- transfer ", buyer_gains.to_string(), " to ", owner.to_string(),"\n");
 
                     // charge fee to buyer
-                    asset total_fee, tlos;
-                    aux_calculate_total_fee(owner, payment, current_total, total_fee, tlos, deposits);
+                    /*
                     action(
                         permission_level{owner,"active"_n},
                         get_self(),
                         "swapdeposit"_n,
-                        std::make_tuple(owner, get_self(), total_fee, string("charging order fee for ") + tlos.to_string())
+                        std::make_tuple(owner, get_self(), seller_fee, string("charging order fee for ") + tlos.to_string())
                     ).send();
-                    PRINT("     -- charging fee ", total_fee.to_string(), " to ", owner.to_string(),"\n");
+                    PRINT("     -- charging fee ", seller_fee.to_string(), " to ", owner.to_string(),"\n");
+                    */
 
                     // convert deposits to earnings
                     action(
@@ -775,17 +792,17 @@ namespace vapaee {
                         permission_level{get_self(),"active"_n},
                         get_self(),
                         "deps2earn"_n,
-                        std::make_tuple(total_fee)
+                        std::make_tuple(seller_fee)
                     ).send();
-                    PRINT("     -- converting fee ", total_fee.to_string(), " to earnings\n");
+                    PRINT("     -- converting fee ", seller_fee.to_string(), " to earnings\n");
 
                     // saving the transaction in history
-                    current_inverse = vapaee::utils::inverse(current_price, payment.symbol);
-                    PRINT("   - payment:         ", payment.to_string(), " to earnings\n");
-                    PRINT("   - inverse:         ", inverse.to_string(), " to earnings\n");
-                    PRINT("   - current_price:   ", current_price.to_string(), " to earnings\n");
-                    PRINT("   - current_inverse: ", current_inverse.to_string(), " to earnings\n");
-                    aux_register_transaction_in_history(buyer, seller, current_total, current_inverse, payment, buyer_fee, total_fee);
+                    current_inverse = vapaee::utils::inverse(current_price, current_payment.symbol);
+                    // PRINT("   - current_payment: ", current_payment.to_string(), "\n");
+                    // PRINT("   - inverse:         ", inverse.to_string(), "\n");
+                    // PRINT("   - current_price:   ", current_price.to_string(), "\n");
+                    // PRINT("   - current_inverse: ", current_inverse.to_string(), "\n");
+                    aux_register_transaction_in_history(buyer, seller, current_total, current_inverse, current_payment, buyer_fee, seller_fee);
                     
                 } else {
                     break;
@@ -813,22 +830,10 @@ namespace vapaee {
                     std::make_tuple(owner, get_self(), remaining, string("future payment for order"))
                 ).send();
 
-                // transfer order fees to contract
-                asset total_fee, tlos;
-                aux_calculate_total_fee(owner, payment, remaining, total_fee, tlos, deposits);
-                action(
-                    permission_level{owner,"active"_n},
-                    get_self(),
-                    "swapdeposit"_n,
-                    std::make_tuple(owner, get_self(), total_fee, string("future order fee for ") + tlos.to_string() + " worth transaction")
-                ).send();
-
-
                 PRINT(" remaining: ", remaining.to_string(), "\n");
                 PRINT(" payment: ", payment.to_string(), "\n");
                 PRINT(" price: ", price.to_string(), "\n");
                 PRINT(" inverse: ", inverse.to_string(), "\n");
-                PRINT(" total_fee: ", total_fee.to_string(), "\n");
 
                 // create order entry
                 inverse = vapaee::utils::inverse(price, remaining.symbol);
@@ -839,7 +844,6 @@ namespace vapaee {
                     a.inverse = inverse;
                     a.total = payment;
                     a.selling = remaining;
-                    a.fee = total_fee;
                 });
 
                 // register new order in the orders table
@@ -925,42 +929,6 @@ namespace vapaee {
             PRINT("   transfer ", quantity.to_string(), " to ", owner.to_string(),"\n");
 
             PRINT("vapaee::token::exchange::action_withdraw() ...\n");
-        }
-
-        void action_configfee(name action, const asset & fee, uint64_t proirity) {
-            PRINT("vapaee::token::exchange::action_configfee()\n");
-            PRINT(" action: ", action.to_string(), "\n");
-            PRINT(" fee: ", fee.to_string(), "\n");
-            PRINT(" proirity: ", std::to_string((unsigned long long) proirity), "\n");
-
-            require_auth(get_self());
-
-            feeconfig feetable(get_self(), get_self().value);
-            auto index = feetable.template get_index<"symbol"_n>();
-            auto itr = index.find(fee.symbol.code().raw());
-
-            if (itr == index.end()) {
-                feetable.emplace( get_self(), [&]( auto& a ){
-                    a.priority = proirity;
-                    a.fee = fee;
-                });
-                PRINT("  feeconfig.emplace() ", fee.to_string(), "\n");
-            } else {
-                if (action == "update"_n) {
-                    PRINT("  feeconfig.modify() ", fee.to_string(), "\n");
-                    feetable.modify(*itr, get_self(), [&](auto& a){
-                        a.priority = proirity;
-                        a.fee = fee;
-                    });
-                }
-                if (action == "erase"_n) {
-                    feetable.erase(*itr);
-                    PRINT("  feeconfig.erase() ", fee.to_string(), "\n");
-                }
-            }
-
-            PRINT("vapaee::token::exchange::action_configfee() ...\n");
-            
         }
         
         void action_add_token(name contract, const symbol_code & sym_code, uint8_t precision, name ram_payer) {
@@ -1137,7 +1105,6 @@ namespace vapaee {
 
             sellorders selltable(get_self(), scope.value);
             asset return_amount;
-            asset return_fee;
             
             ordertables orderstables(get_self(), get_self().value);
             auto order_itr = orderstables.find(scope.value);
@@ -1149,9 +1116,7 @@ namespace vapaee {
                 eosio_assert(itr != selltable.end(), "buy order not found");
                 eosio_assert(itr->owner == owner, "attemp to delete someone elses buy order");
                 return_amount = itr->selling;
-                return_fee = itr->fee;
                 PRINT("  return_amount: ", return_amount.to_string(), "\n");
-                PRINT("  return_fee: ", return_fee.to_string(), "\n");
                 selltable.erase(*itr);
 
                 // ake out the order from the user personal order registry
@@ -1174,14 +1139,7 @@ namespace vapaee {
                 } else {
                     orderstables.erase(*order_itr);
                     buyerorders.erase(*buyer_itr);
-                }
-                
-                action(
-                    permission_level{get_self(),"active"_n},
-                    get_self(),
-                    "swapdeposit"_n,
-                    std::make_tuple(get_self(), owner, return_fee, string("order canceled, fees returned"))
-                ).send();                
+                }               
 
                 action(
                     permission_level{get_self(),"active"_n},

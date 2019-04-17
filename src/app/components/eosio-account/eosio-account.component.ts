@@ -100,30 +100,31 @@ export class EosioAccountComponent implements OnChanges {
         }
         
         // --
-        this.account.refund_request = this.account.refund_request || {
+        this.account.refund_request = Object.assign({
             total: "0.0000 " + this.symbol,
             net_amount: "0.0000 " + this.symbol,
             cpu_amount: "0.0000 " + this.symbol,
             request_time: "2018-11-18T18:09:53"
-        }
+        }, this.account.refund_request);
         
         this.account.refund_request.total =
             this.add(this.account.refund_request.net_amount, this.account.refund_request.cpu_amount);
 
         // --
-        this.account.self_delegated_bandwidth = this.account.self_delegated_bandwidth || {
+        this.account.self_delegated_bandwidth = Object.assign({
             total: "0.0000 " + this.symbol,
             net_weight: "0.0000 " + this.symbol,
             cpu_weight: "0.0000 " + this.symbol
-        }
+        }, this.account.self_delegated_bandwidth);
+
         this.account.self_delegated_bandwidth.total =
             this.add(this.account.self_delegated_bandwidth.net_weight, this.account.self_delegated_bandwidth.cpu_weight);
 
         // --
-        this.account.total_resources = this.account.total_resources || {
+        this.account.total_resources = Object.assign({
             net_weight: "0.0000 " + this.symbol,
             cpu_weight: "0.0000 " + this.symbol
-        }
+        }, this.account.total_resources);
         
         this.account.total_balance = this.calculateTotalBalance(this.account);
         this.account.cpu_limit = this.calculateResourceLimit(this.account.cpu_limit);

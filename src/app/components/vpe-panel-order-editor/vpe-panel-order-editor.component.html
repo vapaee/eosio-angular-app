@@ -1,13 +1,13 @@
 <vpe-panel [title]="local.string.OrderForm">
     <div class="row">
   
-        <div class="col-sm-12">
+        <!--div class="col-sm-12">
             <div class="pull-right">
                 <small class="text-muted cursor-pointer" (click)="debug()">
                     debug
                 </small>
             </div>
-        </div>
+        </div-->
         
         <div class="col-sm-12" [hidden]="vapaee.logged">
             <div  class="pull-left margin-top">
@@ -69,7 +69,6 @@
                 </div>
             </div>
         </div>
-        <div>{{error}}</div>
         <div class="col-sm-12" [hidden]="!error">
             <div class="alert alert-danger">
                 <div class="pull-right">

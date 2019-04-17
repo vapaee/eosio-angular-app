@@ -58,7 +58,7 @@ export class VpePanelUserOrdersComponent implements OnChanges {
         
         if (order.deposit.token.symbol != order.telos.token.symbol) {
             this.c_loading[key] = true;
-            this.vapaee.cancelOrder("sell", order.total.token, order.telos.token, [order.id]).then(_ => {
+            this.vapaee.cancelOrder("sell", order.deposit.token, order.telos.token, [order.id]).then(_ => {
                 // success
                 this.c_loading[key] = false;
             }).catch(e => {
@@ -73,7 +73,7 @@ export class VpePanelUserOrdersComponent implements OnChanges {
         }
         if (order.deposit.token.symbol == order.telos.token.symbol) {
             this.c_loading[key] = true;
-            this.vapaee.cancelOrder("buy", order.deposit.token, order.telos.token, [order.id]).then(_ => {
+            this.vapaee.cancelOrder("buy", order.total.token, order.telos.token, [order.id]).then(_ => {
                 // success
                 this.c_loading[key] = false;
             }).catch(e => {

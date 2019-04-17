@@ -13,8 +13,8 @@
             </div>
         </div>
 
-        <div class="col-sm-12" [hidden]="!vapaee.logged">
-            <div class="pull-right" [hidden]="hideuser">
+        <div class="col-sm-12">
+            <div class="pull-right" [hidden]="hideuser || !vapaee.logged">
                 <small class="text-muted cursor-pointer" [routerLink]="'/exchange/account/' + vapaee.current.name">
                     {{local.string.LoggedAs}} '{{vapaee.logged}}'
                 </small>
@@ -50,7 +50,7 @@
             </table>
         </div>
 
-        <div class="col-sm-12" [hidden]="!vapaee.logged">
+        <div class="col-sm-12">
             <div class="text-md">{{local.string.balances | titlecase}}</div>
             <table class="table complete margin-top">
                 <tbody>

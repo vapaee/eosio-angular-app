@@ -36,6 +36,7 @@ const routes: Routes = [
       { path: 'tokens',                  data: { state: "tokens" }, component: TokensPage, children: [
           { path: ':symbol',             data: { state: "edit" }, component: TokensPage }
       ] },
+      { path: 'account',                 data: { state: "guest" }, component: VpeAccountPage},
       { path: 'account/:name',           data: { state: "account" }, component: VpeAccountPage }
     ]
   },
@@ -44,9 +45,9 @@ const routes: Routes = [
       { path: 'home',                    data: { state: "home" }, component: HomePage },
       { path: 'video',                   data: { state: "video" }, component: VideoPage },
       { path: 'bgbox',                   data: { state: "bgbox" }, component: BGBoxPage, children: [
-        { path: 'register',              data: { state: "register" }, component: RegisterPage }
-    ] },
-    { path: 'account',                   data: { state: "account" }, component: AccountPage},
+          { path: 'register',            data: { state: "register" }, component: RegisterPage }
+      ] },
+      { path: 'account',                 data: { state: "account" }, component: AccountPage},
       { path: 'account/:name',           data: { state: "account_name" }, component: AccountPage }      
     ]
   },
