@@ -1,9 +1,9 @@
-<div class="card text-white bg-dark margin-top">
-    <label class="title" [hidden]="hideheader">
+<div class="margin-top" [ngClass]="{'card text-white bg-dark vpe-background-panel':!hidebackground}">
+    <label class="title vpe-background-panel-title" [hidden]="hideheader">
         <i class="tiny material-icons">brightness_1</i>
         {{title | titlecase}}
     </label>
-    <div class="card-body padding">
+    <div [ngClass]="{'card-body padding':!hidebackground}">
         <ng-content></ng-content>
     </div>
 </div>

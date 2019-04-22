@@ -214,10 +214,10 @@ CONTRACT vapaeetokens : public eosio::contract {
                 e.action_clear_tables_orders_and_history();
             };
 
-            ACTION poblate (name owner, name table) {
-                PRINT("\nACTION vapaeetokens.poblate()\n");
+            ACTION hotfix (symbol_code & code) {
+                PRINT("\nACTION vapaeetokens.hotfix()\n");
                 vapaee::token::exchange e;
-                e.action_poblate_user_orders_table(owner, table);
+                e.action_hotfix(code);
             };
 
         )

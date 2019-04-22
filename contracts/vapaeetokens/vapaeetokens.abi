@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Apr 16 20:38:43 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Apr 21 22:38:48 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -282,6 +282,16 @@
             ]
         },
         {
+            "name": "hotfix",
+            "base": "",
+            "fields": [
+                {
+                    "name": "code",
+                    "type": "symbol_code"
+                }
+            ]
+        },
+        {
             "name": "issue",
             "base": "",
             "fields": [
@@ -404,20 +414,6 @@
                 {
                     "name": "deals",
                     "type": "int32"
-                }
-            ]
-        },
-        {
-            "name": "poblate",
-            "base": "",
-            "fields": [
-                {
-                    "name": "owner",
-                    "type": "name"
-                },
-                {
-                    "name": "table",
-                    "type": "name"
                 }
             ]
         },
@@ -673,15 +669,31 @@
                     "type": "asset"
                 },
                 {
+                    "name": "entrance",
+                    "type": "asset"
+                },
+                {
+                    "name": "max",
+                    "type": "asset"
+                },
+                {
+                    "name": "min",
+                    "type": "asset"
+                },
+                {
                     "name": "volume",
                     "type": "asset"
+                },
+                {
+                    "name": "hour",
+                    "type": "uint64"
                 },
                 {
                     "name": "date",
                     "type": "time_point_sec"
                 },
                 {
-                    "name": "hour",
+                    "name": "history",
                     "type": "uint64"
                 }
             ]
@@ -962,6 +974,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "hotfix",
+            "type": "hotfix",
+            "ricardian_contract": ""
+        },
+        {
             "name": "issue",
             "type": "issue",
             "ricardian_contract": ""
@@ -974,11 +991,6 @@
         {
             "name": "order",
             "type": "order",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "poblate",
-            "type": "poblate",
             "ricardian_contract": ""
         },
         {

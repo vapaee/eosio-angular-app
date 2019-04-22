@@ -50,8 +50,12 @@ import { EosioAccountComponent } from './components/eosio-account/eosio-account.
 import { VpePanelComponent } from './components/vpe-panel/vpe-panel.component';
 import { VpePanelOrdersComponent } from './components/vpe-panel-orders/vpe-panel-orders.component';
 import { VpePanelUserOrdersComponent } from './components/vpe-panel-user-orders/vpe-panel-user-orders.component';
+import { VpePanelTokensCardDeckComponent } from './components/vpe-panel-tokens-card-deck/vpe-panel-tokens-card-deck.component';
 import { VpePanelHistoryComponent } from './components/vpe-panel-history/vpe-panel-history.component';
 import { VpePanelWalletComponent } from './components/vpe-panel-wallet/vpe-panel-wallet.component';
+import { VpePanelBalanceBreakdawnComponent } from './components/vpe-panel-balance-breakdown/vpe-panel-balance-breakdown.component';
+import { VpePanelAccountResourcesComponent } from './components/vpe-panel-account-resources/vpe-panel-account-resources.component';
+import { VpePanelAccountHeaderComponent } from './components/vpe-panel-account-header/vpe-panel-account-header.component';
 import { VpePanelChartComponent } from './components/vpe-panel-chart/vpe-panel-chart.component';
 import { VpePanelTokensComponent } from './components/vpe-panel-tokens/vpe-panel-tokens.component';
 import { VpePanelOrderEditorComponent } from './components/vpe-panel-order-editor/vpe-panel-order-editor.component';
@@ -73,8 +77,12 @@ import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-i
         VpePanelComponent,
         VpePanelOrdersComponent,
         VpePanelUserOrdersComponent,
+        VpePanelTokensCardDeckComponent,
         VpePanelHistoryComponent,
         VpePanelWalletComponent,
+        VpePanelBalanceBreakdawnComponent,
+        VpePanelAccountResourcesComponent,
+        VpePanelAccountHeaderComponent,
         VpePanelChartComponent,
         VpePanelTokensComponent,
         VpePanelOrderEditorComponent,

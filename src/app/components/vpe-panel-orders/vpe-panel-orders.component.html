@@ -10,6 +10,7 @@
                         </span>
                     </div>
                     {{local.string.sell_orders | titlecase}}
+                    <span class="spinner-border spinner-border-sm" [hidden]="!vapaee.feed.loading('sellorders')"></span>
                 </div>
             </div>
             <div class="row margin-top">
@@ -44,6 +45,7 @@
                         </span>
                     </div>
                     {{local.string.buy_orders | titlecase}}
+                    <span class="spinner-border spinner-border-sm" [hidden]="!vapaee.feed.loading('buyorders')"></span>
                 </div>
             </div>
             <div class="row margin-top">

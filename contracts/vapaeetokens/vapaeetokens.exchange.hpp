@@ -112,6 +112,11 @@ namespace vapaee {
             PRINT(" amount: ", amount.to_string(), "\n");
             PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
 
+            tokens tokenstable(get_self(), get_self().value);
+            auto tk_itr = tokenstable.find(amount.symbol.code().raw());
+            eosio_assert(tk_itr != tokenstable.end(), "The token is not registered");
+            eosio_assert(tk_itr->verified, "The token is not verified");
+
             depusers depuserstable(get_self(), get_self().value);
             auto user_itr = depuserstable.find(owner.value);
             if (user_itr == depuserstable.end()) {
@@ -342,16 +347,15 @@ namespace vapaee {
             // if TLOS is one of them is the base token
             if (B.to_string() == string("TLOS")) {
                 scope = aux_get_scope_for_tokens(A, B);
-            }
-            if (A.to_string() == string("TLOS")) {
+            } else if (A.to_string() == string("TLOS")) {
                 scope = aux_get_scope_for_tokens(B, A);
-            }
-
-            // alfabetic
-            if (A.to_string() < B.to_string()) {
-                scope = aux_get_scope_for_tokens(A, B);
             } else {
-                scope = aux_get_scope_for_tokens(B, A);
+                // if TLOS is NOT one of them, then alfabetic resolution
+                if (A.to_string() < B.to_string()) {
+                    scope = aux_get_scope_for_tokens(A, B);
+                } else {
+                    scope = aux_get_scope_for_tokens(B, A);
+                }
             }
 
             PRINT(" ->scope: ", scope.to_string(), "\n");
@@ -727,6 +731,11 @@ namespace vapaee {
                             buyerorders.erase(*buyer_itr);
                             PRINT("     orderstables.erase()\n");
                         }
+
+                        buyer_itr = buyerorders.find(scope_buy.value);
+                        if (buyer_itr != buyerorders.end() && buyer_itr->ids.size() == 0) {
+                            buyerorders.erase(*buyer_itr);
+                        }
                     }
                     
                     
@@ -813,7 +822,7 @@ namespace vapaee {
             }
 
             if (remaining.amount > 0 && remaining_payment.amount > 0) {
-                PRINT("  final remaining: ", remaining.to_string(), "\n");
+                PRINT("-- final remaining: ", remaining.to_string(), " --\n");
                 // insert sell order
                 uint64_t id = selltable.available_primary_key();
                 //uint64_t next_lock = lockstable.available_primary_key();
@@ -830,13 +839,13 @@ namespace vapaee {
                     std::make_tuple(owner, get_self(), remaining, string("future payment for order"))
                 ).send();
 
-                PRINT(" remaining: ", remaining.to_string(), "\n");
-                PRINT(" payment: ", payment.to_string(), "\n");
-                PRINT(" price: ", price.to_string(), "\n");
-                PRINT(" inverse: ", inverse.to_string(), "\n");
+                PRINT("   remaining: ", remaining.to_string(), "\n");
+                PRINT("   payment: ", payment.to_string(), "\n");
+                PRINT("   price: ", price.to_string(), "\n");
+                PRINT("   inverse: ", inverse.to_string(), "\n");
 
                 // create order entry
-                inverse = vapaee::utils::inverse(price, remaining.symbol);
+                // inverse = vapaee::utils::inverse(price, remaining.symbol);
                 selltable.emplace( ram_payer, [&]( auto& a ) {
                     a.id = id;
                     a.owner = owner;
@@ -976,10 +985,10 @@ namespace vapaee {
             }
 
             tokenstable.modify( *itr, get_self(), [&]( auto& a ){
-                a.appname = appname;
-                a.website = website;
-                a.logo = logo;
-                a.logolg = logolg;
+                a.appname  = appname;
+                a.website  = website;
+                a.logo     = logo;
+                a.logolg   = logolg;
                 a.verified = verified;
             });
 
@@ -1109,6 +1118,7 @@ namespace vapaee {
             ordertables orderstables(get_self(), get_self().value);
             auto order_itr = orderstables.find(scope.value);
             
+            
 
             for (int i=0; i<orders.size(); i++) {
                 uint64_t order_id = orders[i];
@@ -1122,6 +1132,7 @@ namespace vapaee {
                 // ake out the order from the user personal order registry
                 userorders buyerorders(get_self(), owner.value);
                 auto buyer_itr = buyerorders.find(scope.value);
+                
                 eosio_assert(buyer_itr != buyerorders.end(), "ERROR: cómo que no existe? No fue registrado antes?");
 
                 // take out the registry for this completed order
@@ -1147,6 +1158,12 @@ namespace vapaee {
                     "swapdeposit"_n,
                     std::make_tuple(get_self(), owner, return_amount, string("order canceled, payment returned"))
                 ).send();
+            }
+
+            userorders buyerorders(get_self(), owner.value);
+            auto buyer_itr = buyerorders.find(scope.value);
+            if (buyer_itr != buyerorders.end() && buyer_itr->ids.size() == 0) {
+                buyerorders.erase(*buyer_itr);
             }
         }
 
@@ -1243,39 +1260,15 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::action_cancel_all_orders() ...\n");
         }
 
-        void action_poblate_user_orders_table(name owner, name table) {
+        void action_hotfix(symbol_code & code) {
             PRINT("vapaee::token::exchange::action_poblate_user_orders_table()\n");
-            PRINT(" owner: ", owner.to_string(), "\n");
-            PRINT(" table: ", table.to_string(), "\n");
+            require_auth(get_self());
 
-            // search on sell orders if any is own by owner;
-            sellorders selltable(get_self(), table.value);
-            vector<uint64_t> list;
-            for (auto itr = selltable.begin(); itr != selltable.end(); itr++) {
-                // PRINT(" itr->id: ", std::to_string((int)itr->id), " itr->owner: ", itr->owner.to_string(), "\n");
-                if (itr->owner == owner) {
-                    list.push_back(itr->id);
-                }
-            }
+            tokens tokenstable(get_self(), get_self().value);
+            auto tk_itr = tokenstable.find(code.raw());
+            tokenstable.erase(*tk_itr);
 
-            userorders userorders_table(get_self(), owner.value);
-            auto user_itr = userorders_table.find(table.value);
-            if (user_itr == userorders_table.end()) {
-                if (list.size() > 0) {
-                    userorders_table.emplace( get_self(), [&]( auto& a ) {
-                        a.table = table;
-                        a.ids = list;
-                    });
-                }
-            } else {
-                if (list.size() > 0) {
-                    userorders_table.modify(*user_itr, get_self(), [&](auto & a){
-                        a.ids = list;
-                    });
-                } else {
-                    userorders_table.erase(*user_itr);
-                }
-            }
+
             
             PRINT("vapaee::token::exchange::action_poblate_user_orders_table() ...\n");
         }

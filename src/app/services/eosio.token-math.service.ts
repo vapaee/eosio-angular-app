@@ -31,7 +31,7 @@ export class EosioTokenMathService {
     }
 
     addAll(array:string[]) {
-        console.log("EOS-math.addAll()",array);
+        // console.log("EOS-math.addAll()",array);
         var total = array[0];
         for (var i=1; i<array.length; i++) {
             total = this.add(total, array[i]);

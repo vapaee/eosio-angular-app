@@ -26,11 +26,11 @@
         [(ngModel)]="text"
         onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46"
         placeholder="{{placeholder}}"
-        (keyup.enter)="onEnter(ctrl.value)"
+        (keyup.enter)="onEnter()"
     >
     <div class="input-group-append">
         <span class="input-group-text form-control-sm padding-xs">{{asset ? asset.token.symbol : ' '}}</span>
-        <button [hidden]="!button" class="action btn btn-sm btn-primary" type="button" (click)="onEnter(ctrl.value)">
+        <button [hidden]="!button" class="action btn btn-sm btn-primary" type="button" (click)="onEnter()">
             <span class="spinner-border spinner-border-sm" [hidden]="!loading"></span>
             {{button | titlecase}}
         </button>

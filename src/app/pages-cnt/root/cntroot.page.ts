@@ -23,6 +23,8 @@ export class CntRootPage implements OnInit {
         public cnt: CntService,
         public bgbox: BGBoxService
     ) {
+        console.error("NOT AUTHORIZED !! redirect -->  https://vapaee.io");
+        window.location.href = "https://vapaee.io";
     }
     
     ngOnInit() {

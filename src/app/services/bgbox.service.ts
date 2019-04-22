@@ -137,7 +137,7 @@ export class BGBoxService {
                 }
 
                 Promise.all(promises).then(() => {
-                    console.log("BGBoxService.getAuthorsFor() [", account, "] --> ",data);
+                    // console.log("BGBoxService.getAuthorsFor() [", account, "] --> ",data);
                     // console.log("data: ", data);
                     // console.log("---------------------------------------------");
                     resolve(data);

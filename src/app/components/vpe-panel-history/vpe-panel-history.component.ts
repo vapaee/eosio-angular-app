@@ -12,6 +12,7 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 export class VpePanelHistoryComponent implements OnChanges {
 
     @Input() public history: HistoryTx[];
+    @Input() public scope: string;
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService

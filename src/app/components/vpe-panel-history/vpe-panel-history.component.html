@@ -1,6 +1,8 @@
 <vpe-panel [title]="local.string.history">
     <div class="row">
-        <div class="nowrap text-bold text-sm col-sm-4 col-padding-right">{{local.string.time | titlecase}}</div>
+        <div class="nowrap text-bold text-sm col-sm-4 col-padding-right">{{local.string.time | titlecase}}
+            <span class="spinner-border spinner-border-sm" [hidden]="!vapaee.feed.loading('history.'+scope)"></span>
+        </div>
         <div class="nowrap text-bold text-sm-right col-sm-4 col-padding-right col-padding-left">{{local.string.price | titlecase}}</div>
         <div class="nowrap text-bold text-sm-right col-sm-4 col-padding-left">{{local.string.amount | titlecase}}</div>
     </div>

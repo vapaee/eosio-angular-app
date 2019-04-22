@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { ScatterService, Account, AccountData } from './scatter.service';
 import { Utils, Token, TableResult, TableParams } from './utils.service';
 import BigNumber from "bignumber.js";
+import { Feedback } from './feedback.service';
 
 @Injectable()
 export class VapaeeService {
@@ -20,6 +21,7 @@ export class VapaeeService {
     public tokens: Token[];
     public scopes: TableMap;
     public utils: Utils;
+    public feed: Feedback;
     public current: Account;
     public last_logged: string;
     public contract: string;   
@@ -37,6 +39,11 @@ export class VapaeeService {
         this.setOrdertables = resolve;
     });
 
+    private setTokenstats: Function;
+    public waitTokenstats: Promise<any> = new Promise((resolve) => {
+        this.setTokenstats = resolve;
+    });
+
     private setReady: Function;
     public waitReady: Promise<any> = new Promise((resolve) => {
         this.setReady = resolve;
@@ -47,18 +54,20 @@ export class VapaeeService {
         this.scopes = {};
         this.current = this.default;
         this.contract = this.vapaeetokens;
-        this.scatter.onLogggedStateChange.subscribe(this.onLoggedChange.bind(this));
-        this.updateLogState();
         this.utils = new Utils(this.contract, this.scatter);
+        this.feed = new Feedback();
+        this.scatter.onLogggedStateChange.subscribe(this.onLoggedChange.bind(this));
+        this.updateLogState();  
         this.fetchTokens().then(data => {
             this.tokens = data.tokens;
-            this.tokens.sort(function(a:Token, b:Token){
+            this.tokens.sort(function(a:Token, b:Token) {
                 if(a.appname < b.appname) return -1;
                 if(a.appname > b.appname) return 1;
                 return 0;
             });
             this.zero_telos = new Asset("0.0000 TLOS", this);
             this.setReady();
+            this.fetchTokensStats();
             this.getAllTablesSumaries();
         });        
     }
@@ -69,7 +78,15 @@ export class VapaeeService {
     }
 
     get logged() {
-        return this.scatter.logged ? this.scatter.account.name : null;
+        if (this.scatter.logged && !this.scatter.account) {
+            console.error("WARNING!!!");
+            console.log(this.scatter);
+            console.log(this.scatter.username);
+            console.error("*******************");
+        }
+        return this.scatter.logged ?
+            (this.scatter.account ? this.scatter.account.name : this.scatter.default.name) :
+            null;
     }
 
     get account() {
@@ -78,17 +95,25 @@ export class VapaeeService {
 
     // --
     login() {
+        this.feed.setLoading("login", true);
         this.logout();
+        this.feed.setLoading("logout", false);
         this.scatter.login().then(() => {
             this.updateLogState();
+            this.feed.setLoading("login", false);
+        }).catch(e => {
+            this.feed.setLoading("login", false);
+            throw e;
         });
     }
 
     logout() {
+        this.feed.setLoading("logout", true);
         this.scatter.logout();
     }
 
     onLogout() {
+        this.feed.setLoading("logout", false);
         console.log("VapaeeService.onLogout()");
         this.resetCurrentAccount(this.default.name);
         this.updateLogState();
@@ -119,6 +144,7 @@ export class VapaeeService {
     async resetCurrentAccount(profile:string) {
         console.log("VapaeeService.resetCurrentAccount() current:", this.current, "next:", profile);
         if (this.current.name != profile && (this.current.name == this.last_logged || profile != "guest")) {
+            this.feed.setLoading("account", true);
             this.current = this.default;
             this.current.name = profile;
             if (profile != "guest") {
@@ -130,17 +156,23 @@ export class VapaeeService {
             console.log("this.onCurrentAccountChange.next(this.current.name) !!!!!!");
             this.onCurrentAccountChange.next(this.current.name);
             this.updateCurrentUser();
-        }
+            this.feed.setLoading("account", false);
+        }       
     }
 
     private updateLogState() {
         console.log("VapaeeService.updateLogState()", [this]);
         this.loginState = "no-scatter";
+        this.feed.setLoading("log-state", true);
         this.scatter.waitConnected.then(() => {
             this.loginState = "no-logged";
             if (this.scatter.logged) {
                 this.loginState = "account-ok";
             }
+            this.feed.setLoading("log-state", false);
+        }).catch(e => {
+            this.feed.setLoading("log-state", false);
+            throw e;
         });
     }
 
@@ -208,6 +240,57 @@ export class VapaeeService {
 
     // --------------------------------------------------------------
     // Getters 
+
+    async getSomeFreeFakeTokens(symbol:string = null) {
+        var _token = symbol;
+        this.feed.setLoading("freefake-"+_token || "token", true);
+        return this.waitTokenstats.then(_ => {
+            var token = null;
+            for (var i=0; true; i++) {
+                if (symbol) {
+                    if (this.tokens[i].symbol == symbol) {
+                        token = this.tokens[i];
+                    }
+                }                
+
+                var random = Math.random();
+                // console.log(i, "Random: ", random);
+                if (!token && random > 0.5) {
+                    token = this.tokens[i % this.tokens.length];
+                    if (token.fake) {
+                        random = Math.random();
+                        if (random > 0.5) {
+                            token = this.telos;
+                        }
+                    } else {
+                        token = null;
+                    }
+                }
+
+                // console.log(i, "token: ", token);
+
+                if (token) {
+                    random = Math.random();
+                    var monto = Math.floor(10000 * random) / 100;
+                    var quantity = new Asset("" + monto + " " + token.symbol ,this);
+                    var memo = "you get " + quantity.valueToString()+ " free fake " + token.symbol + " tokens to play on vapaee.io DEX";
+                    return this.utils.excecute("issue", {
+                        to:  this.scatter.account.name,
+                        quantity: quantity.toString(),
+                        memo: memo
+                    }).then(_ => {
+                        this.getBalances();
+                        this.feed.setLoading("freefake-"+_token || "token", false);
+                        return memo;
+                    }).catch(e => {
+                        this.feed.setLoading("freefake-"+_token || "token", false);
+                        throw e;
+                    });                
+                }               
+            }
+        })
+    }
+
     getTokenNow(sym:string): Token {
         for (var i in this.tokens) {
             if (this.tokens[i].symbol.toUpperCase() == sym.toUpperCase()) {
@@ -225,6 +308,7 @@ export class VapaeeService {
 
     async getDeposits(account:string = null): Promise<any> {
         console.log("VapaeeService.getDeposits()");
+        this.feed.setLoading("deposits", true);
         return this.waitReady.then(async _ => {
             var deposits: Asset[] = [];
             if (!account && this.current.name) {
@@ -237,12 +321,14 @@ export class VapaeeService {
                 }
             }
             this.deposits = deposits;
+            this.feed.setLoading("deposits", false);
             return this.deposits;
         });
     }
 
     async getBalances(account:string = null): Promise<any> {
         console.log("VapaeeService.getBalances()");
+        this.feed.setLoading("balances", true);
         return this.waitReady.then(async _ => {
             var balances: Asset[];
             if (!account && this.current.name) {
@@ -252,11 +338,14 @@ export class VapaeeService {
                 balances = await this.fetchBalances(account);
             }
             this.balances = balances;
+            console.log("VapaeeService balances updated");
+            this.feed.setLoading("balances", false);
             return this.balances;
         });
     }
 
     async getThisSellOrders(table:string, ids:number[]): Promise<any[]> {
+        this.feed.setLoading("thisorders", true);
         return this.waitReady.then(async _ => {
             var result = [];
             for (var i in ids) {
@@ -271,15 +360,18 @@ export class VapaeeService {
                 if (gotit) {
                     continue;
                 }
-                var res:TableResult = await this.fetchOrders({scope:table, limit:10, lower_bound:id.toString()});
+                var res:TableResult = await this.fetchOrders({scope:table, limit:1, lower_bound:id.toString()});
+
                 result = result.concat(res.rows);
             }
+            this.feed.setLoading("thisorders", false);
             return result;
         });    
     }
 
     async getUserOrders(account:string = null) {
         console.log("VapaeeService.getUserOrders()");
+        this.feed.setLoading("userorders", true);
         return this.waitReady.then(async _ => {
             var userorders: TableResult;
             if (!account && this.current.name) {
@@ -301,13 +393,15 @@ export class VapaeeService {
                 };
             }
             this.userorders = map;
-            console.log(this.userorders);
+            // console.log(this.userorders);
+            this.feed.setLoading("userorders", false);
             return this.userorders;
         });
                 
     }
 
     async updateTrade(comodity:Token, currency:Token): Promise<any> {
+        console.log("**** VapaeeService.updateCurrentUser() ****");
         return Promise.all([
             this.getTransactionHistory(comodity, currency, -1, -1, true),
             this.getSellOrders(comodity, currency, true),
@@ -320,76 +414,58 @@ export class VapaeeService {
 
     async updateCurrentUser(): Promise<any> {
         console.log("VapaeeService.updateCurrentUser()");
+        this.feed.setLoading("current", true);        
         return Promise.all([
             this.getUserOrders(),
             this.getDeposits(),
             this.getBalances()
-        ]);       
+        ]).then(_ => {
+            this.feed.setLoading("current", false);
+            return _;
+        }).catch(e => {
+            this.feed.setLoading("current", false);
+            throw e;
+        });
+    }
+
+    getHistoryPagesFor(scope:string, pagesize: number) {
+        if (!this.scopes || !this.scopes[scope]) return 0;
+        var total = this.scopes[scope].deals;
+        var mod = total % pagesize;
+        var dif = total - mod;
+        var pages = dif / pagesize;
+        return pages;
     }
 
     async getTransactionHistory(comodity:Token, currency:Token, page:number = -1, pagesize:number = -1, force:boolean = false): Promise<any> {
         var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
         if (comodity == this.telos) {
             scope = currency.symbol.toLowerCase() + "." + comodity.symbol.toLowerCase();
-        }
+        }        
         var aux = null;
         var result = null;
+        this.feed.setLoading("history."+scope, true);
         aux = this.waitOrdertables.then(async _ => {
             if (pagesize == -1) {
-                pagesize = 20;                
+                pagesize = 4;                
             }
             if (page == -1) {
-                var mod = this.scopes[scope].deals % pagesize;
-                var dif = this.scopes[scope].deals - mod;
-                var pages = dif / pagesize;
+                var pages = this.getHistoryPagesFor(scope, pagesize);
                 page = pages-2;
-                console.log("página -------------");
-                console.log("deals", this.scopes[scope].deals);
-                console.log("mod", mod);
-                console.log("dif", dif);
-                console.log("pages", pages);
-                console.log("page", page);
-                console.log("-------------");
+                if (page < 0) page = 0;
             }
 
-            var history1:TableResult = await this.fetchHistory(scope, page, pagesize);
-            var history2:TableResult = await this.fetchHistory(scope, page+1, pagesize);
-            var history3:TableResult = await this.fetchHistory(scope, page+2, pagesize);
-            var history = {rows: history1.rows.concat(history2.rows).concat(history3.rows)};
-
-            console.log("-------------");
-            console.log("History crudo:", history);
-            console.log(this.scopes[scope].deals);
-            this.scopes[scope] = this.auxAssertScope(scope);
-            this.scopes[scope].history = [];
-
-            for (var i=0; i < history.rows.length; i++) {
-                var transaction:HistoryTx = {
-                    id: history.rows[i].id,
-                    amount: new Asset(history.rows[i].amount, this),
-                    payment: new Asset(history.rows[i].payment, this),
-                    buyfee: new Asset(history.rows[i].buyfee, this),
-                    sellfee: new Asset(history.rows[i].sellfee, this),
-                    price: new Asset(history.rows[i].price, this),
-                    buyer: history.rows[i].buyer,
-                    seller: history.rows[i].seller,
-                    date: new Date(history.rows[i].date),
-                    isbuy: !!history.rows[i].isbuy
-                }
-
-                this.scopes[scope].history.push(transaction);
-            }
-
-            this.scopes[scope].history.sort(function(a:HistoryTx, b:HistoryTx){
-                if(a.date < b.date) return 1;
-                if(a.date > b.date) return -1;
-                if(a.id < b.id) return 1;
-                if(a.id > b.id) return -1;
-            });            
-
-            // console.log("History final:", this.scopes[scope].history);
-            // console.log("-------------");
-            return history;
+            return Promise.all([
+                this.fetchHistory(scope, page+0, pagesize),
+                this.fetchHistory(scope, page+1, pagesize),
+                this.fetchHistory(scope, page+2, pagesize)
+            ]).then(_ => {
+                this.feed.setLoading("history."+scope, false);
+                return this.scopes[scope].history;
+            }).catch(e => {
+                this.feed.setLoading("history."+scope, false);
+                throw e;
+            });
         });
 
         if (this.scopes[scope] && !force) {
@@ -407,18 +483,19 @@ export class VapaeeService {
         var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
         var aux = null;
         var result = null;
+        this.feed.setLoading("sellorders", true);
         aux = this.waitReady.then(async _ => {
             var orders = await this.fetchOrders({scope:scope, limit:50, index_position: "2", key_type: "i64"});
             this.scopes[scope] = this.auxAssertScope(scope);
-            // console.log("-------------");
-            // console.log("Sell crudo:", orders);
+            // if(scope=="vpe.tlos" || scope=="cnt.tlos")console.log("-------------");
+            // if(scope=="vpe.tlos" || scope=="cnt.tlos")console.log("Sell crudo:", orders);
             var sell: Order[] = this.auxProcessRowsToOrders(orders.rows);
             sell.sort(function(a:Order, b:Order){
-                if(a.price.amount > b.price.amount) return 1;
-                if(a.price.amount < b.price.amount) return -1;
+                if(a.price.amount.isLessThan(b.price.amount)) return -11;
+                if(a.price.amount.isGreaterThan(b.price.amount)) return 1;
                 return 0;
             });
-            
+            // if(scope=="vpe.tlos" || scope=="cnt.tlos")console.log("sorted:", sell);
             // grouping together orders with the same price.
             var list: OrderRow[] = [];
             var row: OrderRow;
@@ -436,8 +513,9 @@ export class VapaeeService {
                         }    
                     }
                     row = {
-                        orders: [],
+                        str: order.price.toString(),
                         price: order.price,
+                        orders: [],
                         total: order.total.clone(),
                         telos: order.telos.clone(),
                         inverse: order.inverse,
@@ -463,8 +541,10 @@ export class VapaeeService {
             }
 
             this.scopes[scope].orders.sell = list;
-            // console.log("Sell final:", this.scopes[scope].orders.sell);
-            // console.log("-------------");
+            // if(scope=="vpe.tlos" || scope=="cnt.tlos")console.log("Sell final:", this.scopes[scope].orders.sell);
+            // if(scope=="vpe.tlos" || scope=="cnt.tlos")console.log("-------------");
+
+            this.feed.setLoading("sellorders", false);            
             return orders;
         });
 
@@ -481,6 +561,7 @@ export class VapaeeService {
         var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
         var aux = null;
         var result = null;
+        this.feed.setLoading("buyorders", true);
         aux = this.waitReady.then(async _ => {
             var orders = await await this.fetchOrders({scope:invere_scope, limit:50, index_position: "2", key_type: "i64"});
             this.scopes[scope] = this.auxAssertScope(scope);
@@ -488,10 +569,12 @@ export class VapaeeService {
             // console.log("Buy crudo:", orders);            
             var buy: Order[] = this.auxProcessRowsToOrders(orders.rows);
             buy.sort(function(a:Order, b:Order){
-                if(a.price.amount < b.price.amount) return 1;
-                if(a.price.amount > b.price.amount) return -1;
+                if(a.price.amount.isLessThan(b.price.amount)) return 1;
+                if(a.price.amount.isGreaterThan(b.price.amount)) return -1;
                 return 0;
             });
+
+            // console.log("buy sorteado:", buy);
 
             // grouping together orders with the same price.
             var list: OrderRow[] = [];
@@ -510,8 +593,9 @@ export class VapaeeService {
                         }    
                     }
                     row = {
-                        orders: [],
+                        str: order.price.toString(),
                         price: order.price,
+                        orders: [],
                         total: order.total.clone(),
                         telos: order.telos.clone(),
                         inverse: order.inverse,
@@ -539,6 +623,7 @@ export class VapaeeService {
             this.scopes[scope].orders.buy = list;
             // console.log("Buy final:", this.scopes[scope].orders.buy);
             // console.log("-------------");
+            this.feed.setLoading("buyorders", false);
             return orders;
         });
 
@@ -570,12 +655,12 @@ export class VapaeeService {
             }
         }
 
-        if (tables.rows.length > 0) {
+        // if (tables.rows.length > 0) {
             this.setOrdertables();
             this.waitOrdertables = new Promise((resolve) => {
                 this.setOrdertables = resolve;
             });
-        }
+        // }
     }
 
     async getTableSummary(comodity:Token, currency:Token, force:boolean = false): Promise<any> {
@@ -583,12 +668,13 @@ export class VapaeeService {
         if (comodity == this.telos) {
             scope = currency.symbol.toLowerCase() + "." + comodity.symbol.toLowerCase();
         }
+        this.feed.setLoading("summary."+scope, true);
         var aux = null;
         var result = null;
         aux = this.waitReady.then(async _ => {
             var summary = await this.fetchSummary(scope);
-            // console.log("---------------------------------------------------");
-            // console.log("Summary crudo:", summary.rows);
+            console.log(scope, "---------------------------------------------------");
+            console.log("Summary crudo:", summary.rows);
 
             this.scopes[scope] = this.auxAssertScope(scope);
             this.scopes[scope].summary = {
@@ -602,22 +688,26 @@ export class VapaeeService {
             var now_sec: number = Math.floor(now.getTime() / 1000);
             var now_hour: number = Math.floor(now_sec / 3600);
             var start_hour = now_hour - 23;
-            // console.log("now_hour:", now_hour);
-            // console.log("start_hour:", start_hour);
+            console.log("now_hour:", now_hour);
+            console.log("start_hour:", start_hour);
 
             // proceso los datos crudos 
+            var ZERO_TLOS = "0.00000000 TLOS";
+            var price = ZERO_TLOS;
             var crude = {};
+            var last_hh = 0;
             for (var i=0; i<summary.rows.length; i++) {
                 var hh = summary.rows[i].hour;
                 crude[hh] = summary.rows[i];
+                if (last_hh < hh && hh < start_hour) {
+                    last_hh = hh;
+                    price = summary.rows[i].price;
+                }
             }
-            // console.log("crude:", crude);
+            console.log("crude:", crude);
 
             // genero una entrada por cada una de las últimas 24 horas
-            // var first_price = new Asset(, this);
             var last_24h = {};
-            var ZERO_TLOS = "0.00000000 TLOS";
-            var price = ZERO_TLOS;
             var volume = new Asset(ZERO_TLOS, this);
             var first:Asset = null;
             for (var i=0; i<24; i++) {
@@ -651,26 +741,27 @@ export class VapaeeService {
             }            
             var percent = Math.floor(ratio * 10000) / 100;
 
-            // console.log("last_24h:", last_24h);
-            // console.log("first:", first.toString(8));
-            // console.log("last:", last.toString(8));
-            // console.log("diff:", diff.toString(8));
-            // console.log("percent:", percent);
-            // console.log("ratio:", ratio);
-            // console.log("volume:", volume.str);
+            console.log("last_24h:", [last_24h]);
+            console.log("first:", first.toString(8));
+            console.log("last:", last.toString(8));
+            console.log("diff:", diff.toString(8));
+            console.log("percent:", percent);
+            console.log("ratio:", ratio);
+            console.log("volume:", volume.str);
 
             this.scopes[scope].summary.price = last;
             this.scopes[scope].summary.percent_str = (isNaN(percent) ? 0 : percent) + "%";
             this.scopes[scope].summary.percent = isNaN(percent) ? 0 : percent;
             this.scopes[scope].summary.volume = volume;
 
-            // console.log("Summary final:", this.scopes[scope].summary);
-            // console.log("---------------------------------------------------");
+            console.log("Summary final:", this.scopes[scope].summary);
+            console.log("---------------------------------------------------");
+            this.feed.setLoading("summary."+scope, false);
             return summary;
         });
 
         if (this.scopes[scope] && !force) {
-            result = this.scopes[scope].history;
+            result = this.scopes[scope].summary;
         } else {
             result = aux;
         }
@@ -682,12 +773,29 @@ export class VapaeeService {
 
     async getAllTablesSumaries(): Promise<any> {
         return this.waitReady.then(async _ => {
+            var promises = [];
+
             for (var i in this.tokens) {
                 var token = this.tokens[i];
                 if (token != this.telos) {
-                    this.getTableSummary(token, this.telos, true);
+                    var p = this.getTableSummary(token, this.telos, true);
+                    promises.push(p);
                 }
             }
+
+            return Promise.all(promises).then(_ => {
+                this.tokens.sort((a:Token, b:Token) => {
+                    if (this.scopes[a.scope] && this.scopes[b.scope]) {
+                        var a_vol = this.scopes[a.scope].summary.volume;
+                        var b_vol = this.scopes[b.scope].summary.volume;
+                        if(a_vol.amount.isGreaterThan(b_vol.amount)) return -1;
+                        if(a_vol.amount.isLessThan(b_vol.amount)) return 1;    
+                    }        
+                    if(a.appname < b.appname) return -1;
+                    if(a.appname > b.appname) return 1;
+                    return 0;
+                });    
+            });
         })
     }
     
@@ -728,54 +836,6 @@ export class VapaeeService {
             result.push(order);
         }
         return result;
-
-/*
-            for (var i=0; i < orders.rows.length; i++) {
-                var order:Order = {
-                    id: orders.rows[i].id,
-                    price: new Asset(orders.rows[i].price, this),
-                    inverse: new Asset(orders.rows[i].inverse, this),
-                    total: new Asset(orders.rows[i].selling, this),
-                    deposit: new Asset(orders.rows[i].total, this),
-                    telos: new Asset(orders.rows[i].selling, this),
-                    fee: new Asset(orders.rows[i].fee, this),
-                    owner: orders.rows[i].owner
-                }
-                if (order.total.token == this.telos) {
-                    order.telos = order.total;
-                } else if (order.deposit.token == this.telos) {
-                    order.telos = order.deposit;
-                }
-
-                sell.push(order);
-            }
-
-
-            for (var i=0; i < orders.rows.length; i++) {
-                var order:Order = {
-                    id: orders.rows[i].id,
-                    price: new Asset(orders.rows[i].inverse, this),
-                    inverse: new Asset(orders.rows[i].price, this),
-                    total: new Asset(orders.rows[i].total, this),
-                    deposit: new Asset(orders.rows[i].selling, this),
-                    telos: new Asset(orders.rows[i].selling, this),
-                    fee: new Asset(orders.rows[i].fee, this),
-                    owner: orders.rows[i].owner
-                }
-                if (order.total.token == this.telos) {
-                    order.telos = order.total;
-                } else if (order.deposit.token == this.telos) {
-                    order.deposit = order.total;
-                }
-
-                // order.price = order.price.inverse(order.deposit.token);
-
-                buy.push(order);
-            }
-
-*/
-
-
     }
 
     private auxGetLabelForHour(hh:number): string {
@@ -816,6 +876,7 @@ export class VapaeeService {
             deals: 0,
             orders: { sell: [], buy: [] },
             history: [],
+            tx: {},
             summary: {},
             header: { 
                 sell: {total:new Asset("0.0 " + comodity_sym, this), orders:0}, 
@@ -838,6 +899,9 @@ export class VapaeeService {
                 contracts[this.tokens[i].contract] = true;
             }
             for (var contract in contracts) {
+                this.feed.setLoading("balances-"+contract, true);
+            }            
+            for (var contract in contracts) {
                 var result = await this.utils.getTable("accounts", {
                     contract:contract,
                     scope: account || this.current.name
@@ -845,6 +909,7 @@ export class VapaeeService {
                 for (var i in result.rows) {
                     balances.push(new Asset(result.rows[i].balance, this));
                 }
+                this.feed.setLoading("balances-"+contract, false);
             }
             return balances;
         });
@@ -863,7 +928,62 @@ export class VapaeeService {
     }
 
     private fetchHistory(scope:string, page:number = 0, pagesize:number = 25): Promise<TableResult> {
+        var pages = this.getHistoryPagesFor(scope, pagesize);
+        var id = page*pagesize;
+        if (page < pages) {
+            if (this.scopes[scope].tx["id-" + id]) {
+                var result:TableResult = {more:false,rows:[]};
+                for (var i=0; i<pagesize; i++) {
+                    var id_i = id+i;
+                    var trx = this.scopes[scope].tx["id-" + id_i];
+                    if (trx) {
+                        result.rows.push(trx);
+                    }
+                }
+                return Promise.resolve(result);
+            }
+        }
+
         return this.utils.getTable("history", {scope:scope, limit:pagesize, lower_bound:""+(page*pagesize)}).then(result => {
+
+            // console.log("**************");
+            // console.log("History crudo:", result);
+            
+            this.scopes[scope] = this.auxAssertScope(scope);
+            this.scopes[scope].history = [];
+            this.scopes[scope].tx = this.scopes[scope].tx || {}; 
+
+            // console.log("this.scopes[scope].tx:", this.scopes[scope].tx);
+
+            for (var i=0; i < result.rows.length; i++) {
+                var transaction:HistoryTx = {
+                    id: result.rows[i].id,
+                    amount: new Asset(result.rows[i].amount, this),
+                    payment: new Asset(result.rows[i].payment, this),
+                    buyfee: new Asset(result.rows[i].buyfee, this),
+                    sellfee: new Asset(result.rows[i].sellfee, this),
+                    price: new Asset(result.rows[i].price, this),
+                    buyer: result.rows[i].buyer,
+                    seller: result.rows[i].seller,
+                    date: new Date(result.rows[i].date),
+                    isbuy: !!result.rows[i].isbuy
+                }
+                this.scopes[scope].tx["id-" + transaction.id] = transaction;
+            }
+
+            for (var j in this.scopes[scope].tx) {
+                this.scopes[scope].history.push(this.scopes[scope].tx[j]);
+            }
+
+            this.scopes[scope].history.sort(function(a:HistoryTx, b:HistoryTx){
+                if(a.date < b.date) return 1;
+                if(a.date > b.date) return -1;
+                if(a.id < b.id) return 1;
+                if(a.id > b.id) return -1;
+            });            
+
+            // console.log("History final:", this.scopes[scope].history);
+            // console.log("-------------");
             return result;
         });
     }
@@ -881,11 +1001,35 @@ export class VapaeeService {
     }
 
     private fetchTokenStats(token): Promise<TableResult> {
+        this.feed.setLoading("token-stat-"+token.symbol, true);
         return this.utils.getTable("stat", {contract:token.contract, scope:token.symbol}).then(result => {
             token.stat = result.rows[0];
+            if (token.stat.issuers && token.stat.issuers[0] == "everyone") {
+                token.fake = true;
+            }
+            this.feed.setLoading("token-stat-"+token.symbol, false);
             return token;
         });
     }
+
+    private fetchTokensStats(extended: boolean = true) {
+        console.log("Vapaee.fetchTokens()");
+        this.feed.setLoading("token-stats", true);
+        return this.waitReady.then(_ => {
+
+            var priomises = [];
+            for (var i in this.tokens) {
+                priomises.push(this.fetchTokenStats(this.tokens[i]));
+            }
+
+            return Promise.all<any>(priomises).then(result => {
+                this.setTokenstats(this.tokens);
+                this.feed.setLoading("token-stats", false);
+                return this.tokens;
+            });            
+        });
+
+    }    
 
     private fetchTokens(extended: boolean = true) {
         console.log("Vapaee.fetchTokens()");
@@ -900,21 +1044,10 @@ export class VapaeeService {
                 if (data.tokens[i].symbol == "TLOS") {
                     this.telos = data.tokens[i];
                 }
-            }            
-
-            if (!extended) return data;
-
-            var priomises = [];
-            for (var i in data.tokens) {
-                // console.log(data.tokens[i]);
-                priomises.push(this.fetchTokenStats(data.tokens[i]));
             }
 
-            return Promise.all<any>(priomises).then(result => {
-                return data;
-            });
+            return data;
         });
-
     }    
 
 }
@@ -1001,6 +1134,7 @@ export interface Table {
     deals: number;
     orders: TokenOrders;
     history: HistoryTx[];
+    tx: {[id:string]:HistoryTx};
     summary: Summary;
     header: TableHeader;
 }
@@ -1062,8 +1196,9 @@ export interface UserOrders {
 }
 
 export interface OrderRow {
-    orders: Order[];
+    str: string;
     price: Asset;
+    orders: Order[];
     inverse: Asset;
     total: Asset;
     sum: Asset;

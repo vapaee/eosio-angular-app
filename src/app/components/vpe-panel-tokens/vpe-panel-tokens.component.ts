@@ -26,6 +26,17 @@ export class VpePanelTokensComponent implements OnChanges {
         this.token_filter = "";
     }
 
+    get get_tokens() {
+        var tokens = []
+        for (var i in this.tokens) {
+            var token = this.tokens[i];
+            if (token.verified) {
+                tokens.push(token);
+            }
+        }
+        return tokens
+    }
+
     summary(_scope) {
         var scope = this.scopes[_scope];
         var _summary = Object.assign({

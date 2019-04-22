@@ -110,16 +110,25 @@ namespace vapaee {
             // PRINT("  appcontract: ", appcontract.to_string(), "\n");
 
             // check authorization (issuer of appcontract)
+            name everyone = "everyone"_n;
             name issuer = st.owner;
             for (int i=0; i<st.issuers.size(); i++) {
                 // auto issuer_app = apps_table.get(st.issuers[i], (string("app ") + std::to_string((int)st.issuers[i]) + " not found in bgbox::apps").c_str());
                 name issuer_app = st.issuers[i];
-                if (has_auth(issuer_app)) {
+                // if "everyone" is in issuers list then everyone is allowed to issue because this is a fake token
+                if (has_auth(issuer_app) || issuer_app == everyone) {
                     issuer = issuer_app;
                     PRINT("   issuer_app: ", issuer.to_string(), "\n");                    
                 }
             }
-            require_auth( issuer );
+
+            if (issuer != everyone) {
+                // we need sirius issuer signature
+                require_auth( issuer );
+            } else {
+                // for fake token, everyone can issue. No need for signature
+                issuer = st.owner;
+            }
 
             
             eosio_assert( quantity.is_valid(), "invalid quantity" );

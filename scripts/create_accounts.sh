@@ -50,9 +50,9 @@ if [[ src/eosio.token.cpp -nt eosio.token.wasm ]]; then
 fi
 cleos set contract eosio.token $PWD -p eosio.token@active
 cleos push action eosio.token create '[ "eosio", "1000000000.0000 TLOS"]' -p eosio.token@active
-cleos push action eosio.token issue '["alice", "100.0000 TLOS", "memo 100 TLOS"]' -p eosio@active
+cleos push action eosio.token issue '["alice", "1000.0000 TLOS", "memo 100 TLOS"]' -p eosio@active
 cleos push action eosio.token issue '["bob", "100.0000 TLOS", "memo 100 TLOS"]' -p eosio@active
-cleos push action eosio.token issue '["tom", "100.0000 TLOS", "memo 100 TLOS"]' -p eosio@active
+cleos push action eosio.token issue '["tom", "1000.0000 TLOS", "memo 100 TLOS"]' -p eosio@active
 cleos push action eosio.token issue '["kate", "100.0000 TLOS", "memo 100 TLOS"]' -p eosio@active
 
 echo "-------- eosio.token (ACORN) ---------"

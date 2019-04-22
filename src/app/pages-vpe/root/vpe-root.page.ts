@@ -28,8 +28,10 @@ export class VpeRootPage implements OnInit {
     }
     
     ngOnInit() {
-        if ( this.scatter.network.slug != "local" || !this.scatter.connected ) {
-            this.scatter.setNetwork("local");
+        var network = "telos-testnet";
+        network = "telos";
+        if ( this.scatter.network.slug != network || !this.scatter.connected ) {
+            this.scatter.setNetwork(network);
             this.scatter.connectApp("Cards & Tokens").catch(err => console.error(err));    
         }
     }

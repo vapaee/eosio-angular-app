@@ -4,7 +4,6 @@
   - me falta resolver el problema de desuscribir al usuario que ya no tiene depósitos: depusers depuserstable(get_self(), get_self().value);
 - website
   - Trade
-    - manejar errores cuando se genera una órden
     - Gráfica
     - Timezone: que el usuario elija su timezone para mostrar mejor los horarios de las transacciones en el historial
     - cuando se genera una transacción, el historial se actualiza y debería resaltarse temporalmente la reciente transacción.
@@ -17,33 +16,72 @@
     - PWA?
 
 
+-- TODO AHORA --
+
+
+-- ocultar tokens verdaderos --
+telosmain push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io", "/assets/logos/telos.png", "/assets/logos/telos-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["VIITA", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["VIICT", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ACORN", "ACORN", "http://acorns.fun", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["EDNA", "EDNA", "https://github.com/EDNA-LIFE", "/assets/logos/edna.png", "/assets/logos/edna-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TEACH", "Teachology", "http://teachology.io", "/assets/logos/teach.svg", "/assets/logos/teach-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://proxibots.io", "/assets/logos/proxibots.png", "/assets/logos/proxibots-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["CNT", "Cards & Tokens", "http://cardsandtokens.com", "/assets/logos/cnt.svg", "/assets/logos/cnt-lg.svg",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["BOX", "Board Game Box", "http://bgbox.com", "/assets/logos/box.png", "/assets/logos/box-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["VPE", "Vapaée", "https://vapaee.io", "/assets/logos/vapaee.png", "/assets/logos/vapaee-lg.png",false]' -p vapaeetokens@active
+
+-- creo los tokens falsos --
+telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 AAA"]' -p vapaeetokens@active
+telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 BBB"]' -p vapaeetokens@active
+telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 CCC"]' -p vapaeetokens@active
+telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 DDD"]' -p vapaeetokens@active
+telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 EEE"]' -p vapaeetokens@active
+telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 FFF"]' -p vapaeetokens@active
+
+-- registro los tokens falsos como validados --
+telosmain push action vapaeetokens updatetoken '["AAA", "Fake A Token", "https://vapaee.io", "/assets/logos/fake_a_token.png", "/assets/logos/fake_a_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["BBB", "Fake B Token", "https://vapaee.io", "/assets/logos/fake_b_token.png", "/assets/logos/fake_b_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["CCC", "Fake C Token", "https://vapaee.io", "/assets/logos/fake_c_token.png", "/assets/logos/fake_c_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["DDD", "Fake D Token", "https://vapaee.io", "/assets/logos/fake_d_token.png", "/assets/logos/fake_d_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["EEE", "Fake E Token", "https://vapaee.io", "/assets/logos/fake_e_token.png", "/assets/logos/fake_e_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["FFF", "Fake F Token", "https://vapaee.io", "/assets/logos/fake_f_token.png", "/assets/logos/fake_f_token.png", true]' -p vapaeetokens@active
+
+-- agrego el issuer everyone a los tokens falsos --
+telosmain push action vapaeetokens addissuer '["everyone", "AAA"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addissuer '["everyone", "BBB"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addissuer '["everyone", "CCC"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addissuer '["everyone", "DDD"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addissuer '["everyone", "EEE"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addissuer '["everyone", "FFF"]' -p vapaeetokens@active
+
+-- haciendo que el TLOS sea falso --
+telosmain push action vapaeetokens create '["vapaeetokens","10000000000.0000 TLOS"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TLOS", "FAKE Telos", "https://vapaee.io", "/assets/logos/telos-fake.png", "/assets/logos/telos-fake.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens addissuer '["everyone", "TLOS"]' -p vapaeetokens@active
+
+
+
 -- TODO NEXT !! --
-- account:
-  - si el account es "guest" no mostrar los paneles
+- contrato: hay que guardar en el bloque x hora: max, min, enter
+- contrato: hay que revisar cómo se resetea el volumen al entrar en un bloque de hora nuevo. se hace?
+- contrato: hay que hacer un bloque current que siempre tenga el precio actual y el resto de los datos al día
+- sacar el botón DEBUG
+
 
 -- TODO MUST --
-- un botón para vender el 100%
-- min trade: hay que asegurar que la orden cumpla un mínimo.
 - Gráfica
-- home:
-  - logos
-  - textos
-  - tokens principales
-- publishing
-  - dominio vapaee.io
-  - certificado
+
 
 -- TODO bugs --
 - el componente panel-wallet en la página trade se puede hacer click y aparece el cmapo para retirar. No debería aparecer nada.
-- se sabe que si se hace múitiple match con todo el depósito, puede que no haya suficiente para la comisión y falle toda la transacción.
 - cuando toco una orden que no es la primera, el total se calcula sin tener el cuenta los escalones de diferentes precios.
 
 -- TODO detalles --
-- cambiar el contrato para que, intente cobrarte con ACORNS primero y con TLOS después. Si no puede, que te saque un porcentaje de tus ganancias.
 - la lista de tokens debería tener el summary (vol, price, change24h)
 - debería usarse el api para saber cuanto vale el TLOS y hacer regla de tres para saber cuanto vale cada token
 - listar el precio de cada token en USD, sumar todo y mostrar el TOTAl en la seccion account
-- hacer que en la sección account se pueda explorar el estado de cuenta de un account sin tener que estar logueado
 - cambiar la implementación actual del order-form que lista las órdenes y usar el actal panel-user-orders
 
 
@@ -141,6 +179,7 @@ telosmain push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://p
 ---------------------------------------------------------------------
 -- Testnet ----------------------------------------------------------
 ---------------------------------------------------------------------
+cd /var/www/eosio-angular-app/contracts/vapaeetokens
 telostest set contract vapaeetokens $PWD -p vapaeetokens@active
 telostest push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
 telostest push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active

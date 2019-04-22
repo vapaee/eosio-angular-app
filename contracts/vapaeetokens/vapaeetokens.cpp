@@ -7,7 +7,7 @@
 
 #define EXCHANGE_HANDLERS (htransfer)
 
-#define DEBUG_ACTIONS (droptokens)(cancelall)(returnall)(cleartables)(poblate)
+#define DEBUG_ACTIONS (droptokens)(cancelall)(returnall)(cleartables)(hotfix)
 
 EOSIO_DISPATCH_VAPAEETOKENS(
     vapaee::vapaeetokens,

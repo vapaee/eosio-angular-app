@@ -4,6 +4,8 @@ import { LocalStringsService } from 'src/app/services/common/common.services';
 import { ScatterService } from 'src/app/services/scatter.service';
 import { BGBoxService } from 'src/app/services/bgbox.service';
 import { CntService } from 'src/app/services/cnt.service';
+import { VapaeeService } from 'src/app/services/vapaee.service';
+import { Token } from 'src/app/services/utils.service';
 
 
 @Component({
@@ -19,6 +21,7 @@ export class VpeHomePage implements OnInit, OnDestroy {
         public scatter: ScatterService,
         public bgbox: BGBoxService,
         public cnt: CntService,
+        public vapaee: VapaeeService
     ) {
     }
 
@@ -26,5 +29,9 @@ export class VpeHomePage implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+    }
+
+    get tokens(): Token[] {
+        return this.vapaee.tokens;
     }
 }

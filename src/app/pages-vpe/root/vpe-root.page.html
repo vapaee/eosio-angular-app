@@ -1,7 +1,7 @@
-<nav class="navbar drop-shadow navbar-expand-lg navbar-dark bg-primary" (click)="collapseMenu()">
+<nav class="navbar vpe-background-navbar drop-shadow navbar-expand-lg navbar-dark bg-primary" (click)="collapseMenu()">
     <div class="container">
         <a class="navbar-brand" href="http://cardsandtokens.com" target="_blank">
-            <img src="http://app.cardsandtokens.com/assets/cards-and-tokens.png" alt="" class="cnt-logo">
+            <img src="/assets/img/cards-and-tokens.png" alt="" class="cnt-logo">
         </a>        
         
         <div class="flex-grow-1">
@@ -19,11 +19,11 @@
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('home')}">
                     <a class="nav-link" routerLink="{{'/exchange/home'}}" >{{local.string.Home}}</a>
                 </li>
-                <li class="nav-item" [ngClass]="{active: app.stateStartsWith('trade')}">
-                    <a class="nav-link" routerLink="{{'/exchange/trade/cnt.tlos'}}" >{{local.string.Trade}}</a>
-                </li>
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('tokens')}">
                     <a class="nav-link" [routerLink]="'/exchange/tokens'" >{{local.string.Tokens}}</a>
+                </li>
+                <li class="nav-item" [ngClass]="{active: app.stateStartsWith('trade')}">
+                    <a class="nav-link" routerLink="{{'/exchange/trade/aaa.tlos'}}" >{{local.string.Trade}}</a>
                 </li>
                 <li class="nav-item" [ngClass]="{active: app.stateStartsWith('account')}">
                     <a class="nav-link" [routerLink]="'/exchange/account/' + vapaee.current.name" >{{local.string.Account}}</a>

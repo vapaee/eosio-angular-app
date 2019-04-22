@@ -36,8 +36,9 @@ export class TokensPage implements OnInit, OnDestroy {
     get scopes(): TableMap {
         return this.vapaee.scopes;
     }
-
+    /*
     summary(_scope) {
+        console.error("DEPRECATED");
         var scope = this.scopes[_scope];
         var _summary = Object.assign({
             percent: 0,
@@ -48,7 +49,7 @@ export class TokensPage implements OnInit, OnDestroy {
         }, scope ? scope.summary : {});
         return _summary;
     }
-
+    */
 
     ngOnDestroy() {
     }

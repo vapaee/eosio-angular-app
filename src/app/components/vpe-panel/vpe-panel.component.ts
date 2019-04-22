@@ -13,11 +13,13 @@ export class VpePanelComponent implements OnChanges {
 
     @Input() public title: string;
     @Input() public hideheader: boolean;
+    @Input() public hidebackground: boolean;
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService
     ) {
         this.hideheader = false;
+        this.hidebackground = false;
     }
 
     ngOnChanges() {

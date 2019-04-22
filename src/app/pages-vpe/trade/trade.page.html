@@ -1,16 +1,16 @@
 <div class="container-fluid margin-top">
     <div class="card text-white bg-dark">
-        <div class="card-body padding">
+        <div class="card-header vpe-background-card-header padding">
             <div class="row">
                 <div class="col-sm-4 col-md-3 col-padding-right margin-top">
-                    &nbsp;
+                    
                 </div>
                 <div class="col-sm-8 col-md-9 col-padding-left margin-top">
-                    <h1>
-                        <img style="height:40px; width: 40px; margin-top:-6px" [src]="comodity ? comodity.logo : '#'">
-                        {{local.string.Trade}}
+                    <span class="text-xl">
+                        <img style="height:40px; width: 40px; margin-top:-6px" [src]="comodity ? comodity.logolg : '#'">
+                        <span> {{comodity ? comodity.appname : local.string.loading}} </span>
                         <small class="text-muted">({{scope}})</small>
-                    </h1>
+                    </span>
                 </div>
             </div>
         </div>
@@ -22,13 +22,13 @@
         </div>
         <div class="col-sm-8 col-md-9 col-padding-left">
             <vpe-panel-chart></vpe-panel-chart>
-            <vpe-panel-order-editor #orderform [deposits]="deposits" [comodity]="comodity" [currency]="currency" [orders]="orders" [owner]="vapaee.logged"></vpe-panel-order-editor>
+            <vpe-panel-order-editor [hidden]="!vapaee.logged" #orderform [deposits]="deposits" [comodity]="comodity" [currency]="currency" [orders]="orders" [owner]="vapaee.logged"></vpe-panel-order-editor>
             <div class="row">
                 <div class="col-sm-8 col-md-9 col-padding-right">
                     <vpe-panel-orders (onClickRow)="onClickRow($event)" (onClickPrice)="onClickPrice($event)" [headers]="headers" [orders]="orders"></vpe-panel-orders>
                 </div>
                 <div class="col-sm-4 col-md-3 col-padding-left">
-                    <vpe-panel-history [history]="history"></vpe-panel-history>
+                    <vpe-panel-history [scope]="comodity ? comodity.scope : ''" [history]="history"></vpe-panel-history>
                 </div>
             </div>
         </div>

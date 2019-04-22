@@ -15,7 +15,7 @@
             </div>
         </div>            
     </div>
-    <hr>
+    <hr class="line">
     <div class="row margin-top">
         <div class="nowrap text-bold text-sm col-sm-3 col-padding-right">{{local.string.token | titlecase}}</div>
         <div class="nowrap text-bold text-sm-right col-sm-2 col-padding-right col-padding-left">{{local.string.vol | titlecase}}</div>
@@ -26,13 +26,14 @@
         <div class="col-sm-12">
             <perfect-scrollbar style="max-height: 250px; max-width: 100%">
                 <div class="row cursor-pointer margin-bottom active-on-hover" 
-                    *ngFor="let token of tokens | filter:token_filter"
+                    *ngFor="let token of get_tokens | filter:token_filter"
                     [hidden]="token.symbol == 'TLOS'"
                     routerLink="{{'/exchange/trade/' + token.scope}}"
                 >
                     <div class="nowrap col-sm-3 col-padding-right">
                         <img style="height:16px; width: 16px; margin-top:-2px" [src]="token.logo">
-                        {{token.symbol}}                        
+                        {{token.symbol}}
+                        <span class="spinner-border spinner-border-sm" [hidden]="!vapaee.feed.loading('token-stat-'+token.symbol) && !vapaee.feed.loading('summary.'+token.scope)"></span>
                     </div>
                     <div class="nowrap col-sm-2 text-right col-padding-right col-padding-left">
                         {{summary(token.scope).volume.valueToString(2)}}

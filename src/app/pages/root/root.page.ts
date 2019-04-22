@@ -22,6 +22,8 @@ export class RootPage implements OnInit {
         public cnt: CntService,
         private route: ActivatedRoute
     ) {
+        console.error("NOT AUTHORIZED !! redirect -->  https://vapaee.io");
+        window.location.href = "https://vapaee.io";
     }
     
     ngOnInit() {

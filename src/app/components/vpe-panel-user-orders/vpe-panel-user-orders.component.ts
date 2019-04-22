@@ -28,7 +28,7 @@ export class VpePanelUserOrdersComponent implements OnChanges {
     }
 
     ngOnChanges() {
-
+        this._user_orders = null;
     }
 
     clickRow(type:string, row:OrderRow) {
@@ -39,13 +39,47 @@ export class VpePanelUserOrdersComponent implements OnChanges {
         this.onClickPrice.next({type: type, row: row});
     }
 
+    _user_orders: any;
     get user_orders() {
+        if (this._user_orders) return this._user_orders;
         var result = [];
+        var tables = {};
         for (var i in this.userorders) {
-            result.push(this.userorders[i]);
+            var scope = this.userorders[i];
+            var table = scope.table;
+            var sell_scope = table;
+            var buy_scope = table.split(".")[1] + "." + table.split(".")[0];
+            if (table.split(".")[0] == "tlos") {
+                sell_scope = buy_scope;
+                buy_scope = table;
+            }
+            table = sell_scope;
+            tables[table] = tables[table] || {
+                table: table,
+                sell: {
+                    scope: sell_scope,
+                    orders: []
+                },
+                buy: {
+                    scope: buy_scope,
+                    orders: []
+                }
+            };
+
+            if (scope.table == buy_scope) {
+                tables[table].buy.orders = scope.orders;
+            }
+            if (scope.table == sell_scope) {
+                tables[table].sell.orders = scope.orders;
+            }
         }
+        for (var t in tables) {
+            result.push(tables[t]);            
+        }
+        this._user_orders = result;
         return result;
     }
+
     getSymbols(scope) {
         if (scope.split(".")[0] == "tlos")
         return scope.split(".")[1].toUpperCase();
