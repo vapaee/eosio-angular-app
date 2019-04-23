@@ -573,9 +573,9 @@ export class ScatterService {
 
                     // --
                     accountdata.self_delegated_bandwidth = accountdata.self_delegated_bandwidth || {
-                        total: "20.0000 " + this.symbol,
-                        net_weight: "10.0000 " + this.symbol,
-                        cpu_weight: "10.0000 " + this.symbol
+                        total: "0.0000 " + this.symbol,
+                        net_weight: "0.0000 " + this.symbol,
+                        cpu_weight: "0.0000 " + this.symbol
                     }
                     accountdata.self_delegated_bandwidth.total =
                         this.add(accountdata.self_delegated_bandwidth.net_weight, accountdata.self_delegated_bandwidth.cpu_weight);

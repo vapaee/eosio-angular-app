@@ -67,6 +67,24 @@ telosmain push action vapaeetokens addissuer '["everyone", "TLOS"]' -p vapaeetok
 
 
 
+-- creating some orders --
+telosmain push action vapaeetokens order '["viterbotelos", "buy", "10.00000000 BBB", "0.00490000 TLOS"]' -p viterbotelos@active
+telosmain push action vapaeetokens order '["viterbotelos", "sell", "10.00000000 BBB", "0.00690000 TLOS"]' -p viterbotelos@active
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -- TODO NEXT !! --
 - sacar el botón DEBUG
 
