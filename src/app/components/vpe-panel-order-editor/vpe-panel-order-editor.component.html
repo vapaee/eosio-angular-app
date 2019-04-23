@@ -90,7 +90,7 @@
                     <div [hidden]="wants=='buy' || !can_sell">
                         <span type="text" class="form-control form-control-sm btn btn-sm btn-danger" [ngClass]="{disabled: payment ? payment.amount.toNumber() == 0:true}" (click)="sell()" >
                             <span class="spinner-border spinner-border-sm" [hidden]="!loading"></span>
-                            {{local.string.Sell}} {{payment?payment.str:''}}
+                            {{local.string.Sell}} {{amount?amount.str:''}}
                         </span>
                     </div>
                     <div class="text-right" [hidden]="!(wants=='sell' && !can_sell)">
