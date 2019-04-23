@@ -70,13 +70,14 @@
                 <tbody>
                     <tr [hidden]="!get_fake_balances || (get_fake_balances.length > 0 && get_fake_tlos_balance.amount.toNumber() > 0)"><td>
                         <div class="col-sm-12 margin-top text-center text-danger">
-                                <label>{{local.string.thesnofaket}}</label>
+                            <label [hidden]="get_fake_balances.length > 0">{{local.string.thesnofaket}}</label>
+                            <label [hidden]="get_fake_balances.length == 0">{{local.string.thesnofaketelos}}</label>
 
                             <div [hidden]="!vapaee.logged">
                                 <div class="pull-right col-sm-6" [hidden]="get_fake_tlos_balance.amount.toNumber() > 0">
                                     <span class="btn btn-sm btn-primary" (click)="freeFakeTelos()">
                                         <span class="spinner-border spinner-border-sm" [hidden]="!loading_fake_tlos"></span>
-                                        {{local.string.getfftelos | titlecase}}
+                                        {{local.string.getfftelos }}
                                     </span>
                                 </div>
 

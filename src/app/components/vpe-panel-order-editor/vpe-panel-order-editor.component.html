@@ -48,7 +48,7 @@
                         <div class="col text-right nowrap">
                             <span class="cursor-pointer" (click)="sellAll()">
                                 <img style="height:16px; width: 16px; margin-top:-2px" [src]="deposits_comodity.token.logo">
-                                {{deposits_comodity.toString()}}
+                                <span [ngClass]="{'text-danger': !can_sell && wants=='sell'}"> {{deposits_comodity.toString()}} </span>
                             </span>
                         </div>
                     </div>                    
@@ -56,7 +56,7 @@
                 <div class="col-sm-4 text-right nowrap">
                     <span class="cursor-pointer" (click)="buyAll()">
                         <img style="height:16px; width: 16px; margin-top:-2px" [src]="deposits_currency.token.logo">
-                        {{deposits_currency.toString()}}
+                        <span [ngClass]="{'text-danger': !can_buy && wants=='buy'}"> {{deposits_currency.toString()}} </span>
                     </span>
                 </div>
             </div>
@@ -120,14 +120,14 @@
                     <div class="row">
                         <div class="col text-right nowrap" [hidden]="wants=='buy'">
                             <img style="height:16px; width: 16px; margin-top:-2px" [src]="get_amount.token.logo">
-                            {{get_amount.str}}
+                            <span [ngClass]="{'text-danger': !can_sell}"> {{get_amount.str}} </span>
                             &nbsp; <i style="vertical-align: bottom;" class="material-icons"> trending_flat </i> &nbsp;
                             <img style="height:16px; width: 16px; margin-top:-2px" [src]="get_payment.token.logo">
                             {{get_payment.str}}
                         </div>
                         <div class="col text-right nowrap" [hidden]="wants=='sell'">
                             <img style="height:16px; width: 16px; margin-top:-2px" [src]="get_payment.token.logo">
-                            {{get_payment.str}}
+                            <span [ngClass]="{'text-danger': !can_buy}"> {{get_payment.str}} </span>
                             &nbsp; <i style="vertical-align: bottom;" class="material-icons"> trending_flat </i> &nbsp;
                             <img style="height:16px; width: 16px; margin-top:-2px" [src]="get_amount.token.logo">
                             {{get_amount.str}}

@@ -101,7 +101,7 @@ export class VpePanelOrderEditorComponent implements OnChanges {
                     }
                 }
             }
-            // Does he/she have enough comodity?
+            // Does he/she have enough currency?
             if (this.can_buy) {
                 if (this.money.amount.isLessThan(this.payment.amount)) {
                     this.can_buy = false;

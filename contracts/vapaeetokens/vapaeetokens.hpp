@@ -158,21 +158,12 @@ CONTRACT vapaeetokens : public eosio::contract {
                 }
             }
 
-            // name order_type(order_str);
-
             if (order_str == string("deposit")) {
                 vapaee::token::exchange e(get_code());
                 e.handler_transfer(from, to, quantity, memo);                
             }
         }
         
-        /*
-        ACTION cancel2(name owner, name type, const symbol_code & token_a, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
-            PRINT("\nACTION vapaeetokens.cancel2()\n");
-            vapaee::token::exchange e;
-            e.action_cancel(owner, type, token_a, token_p, orders);
-        };
-        //*/
 
         ACTION deps2earn(const asset & quantity) {
             PRINT("\nACTION vapaeetokens.deps2earn()\n");

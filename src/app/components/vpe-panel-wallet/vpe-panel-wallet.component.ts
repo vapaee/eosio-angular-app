@@ -116,6 +116,12 @@ export class VpePanelWalletComponent implements OnChanges {
         return resutl;
     }
 
+    private setquiet(name:string) {
+        this.deposit = new Asset();
+        this.loading_fake = false;
+        this.loading_fake_tlos = false;
+    }
+
     freeFakeTokens() {
         this.loading_fake = true;
         this.vapaee.getSomeFreeFakeTokens().then(_ => {
@@ -132,7 +138,7 @@ export class VpePanelWalletComponent implements OnChanges {
             this.loading_fake_tlos = false;
         }).catch(_ => {
             this.loading_fake_tlos = false;
-        });        
+        });
     }    
 
     ngOnChanges() {

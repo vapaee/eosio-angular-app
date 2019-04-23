@@ -32,6 +32,10 @@ telosmain push action vapaeetokens updatetoken '["CNT", "Cards & Tokens", "http:
 telosmain push action vapaeetokens updatetoken '["BOX", "Board Game Box", "http://bgbox.com", "/assets/logos/box.png", "/assets/logos/box-lg.png",false]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["VPE", "Vapaée", "https://vapaee.io", "/assets/logos/vapaee.png", "/assets/logos/vapaee-lg.png",false]' -p vapaeetokens@active
 
+
+telosmain push action vapaeetokens addtoken '["telosdacdrop","TLOSDAC",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TLOSDAC", "TelosDAC", "https://telosdac.io/", "/assets/logos/telosdac.png", "/assets/logos/telosdac-lg.png", false]' -p vapaeetokens@active
+
 -- creo los tokens falsos --
 telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 AAA"]' -p vapaeetokens@active
 telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 BBB"]' -p vapaeetokens@active
@@ -64,9 +68,6 @@ telosmain push action vapaeetokens addissuer '["everyone", "TLOS"]' -p vapaeetok
 
 
 -- TODO NEXT !! --
-- contrato: hay que guardar en el bloque x hora: max, min, enter
-- contrato: hay que revisar cómo se resetea el volumen al entrar en un bloque de hora nuevo. se hace?
-- contrato: hay que hacer un bloque current que siempre tenga el precio actual y el resto de los datos al día
 - sacar el botón DEBUG
 
 

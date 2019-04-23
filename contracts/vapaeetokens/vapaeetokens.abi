@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sun Apr 21 22:38:48 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Mon Apr 22 21:41:37 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -93,11 +93,6 @@
             ]
         },
         {
-            "name": "cancelall",
-            "base": "",
-            "fields": []
-        },
-        {
             "name": "claim",
             "base": "",
             "fields": [
@@ -124,11 +119,6 @@
                     "type": "symbol_code"
                 }
             ]
-        },
-        {
-            "name": "cleartables",
-            "base": "",
-            "fields": []
         },
         {
             "name": "close",
@@ -221,11 +211,6 @@
             ]
         },
         {
-            "name": "droptokens",
-            "base": "",
-            "fields": []
-        },
-        {
             "name": "earnings_table",
             "base": "",
             "fields": [
@@ -278,16 +263,6 @@
                 {
                     "name": "isbuy",
                     "type": "bool"
-                }
-            ]
-        },
-        {
-            "name": "hotfix",
-            "base": "",
-            "fields": [
-                {
-                    "name": "code",
-                    "type": "symbol_code"
                 }
             ]
         },
@@ -490,11 +465,6 @@
                     "type": "name"
                 }
             ]
-        },
-        {
-            "name": "returnall",
-            "base": "",
-            "fields": []
         },
         {
             "name": "sell_order_table",
@@ -934,18 +904,8 @@
             "ricardian_contract": ""
         },
         {
-            "name": "cancelall",
-            "type": "cancelall",
-            "ricardian_contract": ""
-        },
-        {
             "name": "claim",
             "type": "claim",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "cleartables",
-            "type": "cleartables",
             "ricardian_contract": ""
         },
         {
@@ -966,16 +926,6 @@
         {
             "name": "dotick",
             "type": "dotick",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "droptokens",
-            "type": "droptokens",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "hotfix",
-            "type": "hotfix",
             "ricardian_contract": ""
         },
         {
@@ -1001,11 +951,6 @@
         {
             "name": "restake",
             "type": "restake",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "returnall",
-            "type": "returnall",
             "ricardian_contract": ""
         },
         {
