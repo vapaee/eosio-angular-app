@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AccountPage } from '../pages/account/account.page';
 import { EosioTokenMathService } from './eosio.token-math.service';
+import { Feedback } from './feedback.service';
 // import { EOS, Scatter, AccountData, Account, Endpoint, Eosconf, Network, ScatterJSDef } from './scatter.datatypes.service';
 
 // declare var ScatterJS:any;
@@ -224,6 +225,7 @@ export class ScatterService {
     private symbol: string;
     private _connected: boolean;
     private lib: Scatter;
+    public feed: Feedback;
     private ScatterJS: ScatterJSDef;
     private _network: Network;
     private _networks: {[key:string]:Network};
@@ -258,6 +260,7 @@ export class ScatterService {
         private http: HttpClient,
         public tokenMath: EosioTokenMathService
     ) {
+        this.feed = new Feedback();
         this._networks_slugs = [];
         this._networks = {};
         this._network = {
@@ -307,7 +310,7 @@ export class ScatterService {
                     this._network = n;
                     this.resetIdentity();
                     this.initScatter();
-                    this.onNetworkChange.next(this.getNetwork(name));    
+                    this.onNetworkChange.next(this.getNetwork(name));
                 }
             } else {
                 console.error("ERROR: Scatter.setNetwork() unknown network name-index. Got ("
@@ -423,7 +426,8 @@ export class ScatterService {
     // connect_count: number = 0;
     connectApp(appTitle:string = "") {
         // this.connect_count++;
-        // var resolve_num = this.connect_count;    
+        // var resolve_num = this.connect_count;
+        this.feed.setLoading("connect", true);
         if (appTitle != "") this.appTitle = appTitle;
         console.log(`ScatterService.connectApp(${this.appTitle})`);
         const connectionOptions = {initTimeout:1800}
@@ -437,14 +441,16 @@ export class ScatterService {
                     console.log("this.lib.connect()", connected);
                     this._connected = connected;
                     if(!connected) {
-                        this.error = "ERROR: can not connect to Scatter. Is it up and running?";
-                        console.error(this.error);
-                        reject(this.error);
+                        this.feed.setError("connect", "ERROR: can not connect to Scatter. Is it up and running?");
+                        console.error(this.feed.error);
+                        reject(this.feed.error);
+                        this.feed.setLoading("connect", false);
                         return false;
                     }
                     // Get a proxy reference to eosjs which you can use to sign transactions with a user's Scatter.
                     console.log("ScatterService.setConnected()");
                     this.setConnected("connected");
+                    this.feed.setLoading("connect", false);
                     if (this.logged) {
                         this.login().then(() => {
                             console.log("ScatterService.setReady()");
@@ -658,6 +664,7 @@ export class ScatterService {
 
     login() {
         console.log("ScatterService.login()");
+        this.feed.setLoading("login", true);
         return new Promise<any>((resolve, reject) => {
             if (this.lib.identity) {
                 this.setIdentity(this.lib.identity);
@@ -668,6 +675,7 @@ export class ScatterService {
                         .then( (identity)  => {
                             this.setIdentity(identity);
                             this.setLogged();
+                            this.feed.setLoading("login", false);
                             resolve(identity);
                         })
                         .catch(reject);
@@ -678,6 +686,7 @@ export class ScatterService {
 
     logout() {
         console.log("ScatterService.logout()");
+        this.feed.setLoading("login", false);
         return new Promise<any>((resolve, reject) => {
             this.connectApp().then(() => {
                 this.lib.forgotten = true;
@@ -685,6 +694,7 @@ export class ScatterService {
                     .then( (err)  => {
                         console.log("disconnect", err);
                         this.resetIdentity();
+                        this.feed.setLoading("login", false);
                         resolve("logout");
                     })
                     .catch(reject);

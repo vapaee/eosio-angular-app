@@ -241,12 +241,23 @@ export class VapaeeService {
     // --------------------------------------------------------------
     // Getters 
 
+    getBalance(token:Token) {
+        for (var i in this.balances) {
+            if (this.balances[i].token.symbol == token.symbol) {
+                return this.balances[i];
+            }
+        }
+        return new Asset("0 " + token.symbol, this);
+    }
+
     async getSomeFreeFakeTokens(symbol:string = null) {
-        var _token = symbol;
+        console.log("VapaeeService.getSomeFreeFakeTokens()");
+        var _token = symbol;    
         this.feed.setLoading("freefake-"+_token || "token", true);
         return this.waitTokenstats.then(_ => {
             var token = null;
-            for (var i=0; true; i++) {
+            var counts = 0;
+            for (var i=0; i<100; i++) {
                 if (symbol) {
                     if (this.tokens[i].symbol == symbol) {
                         token = this.tokens[i];
@@ -265,6 +276,10 @@ export class VapaeeService {
                     } else {
                         token = null;
                     }
+                }
+
+                if (i<100 && token && this.getBalance(token).amount.toNumber() > 0) {
+                    token = null;
                 }
 
                 // console.log(i, "token: ", token);
@@ -790,7 +805,7 @@ export class VapaeeService {
                         var b_vol = this.scopes[b.scope].summary.volume;
                         if(a_vol.amount.isGreaterThan(b_vol.amount)) return -1;
                         if(a_vol.amount.isLessThan(b_vol.amount)) return 1;    
-                    }        
+                    }
                     if(a.appname < b.appname) return -1;
                     if(a.appname > b.appname) return 1;
                     return 0;

@@ -45,12 +45,12 @@ telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 EEE"]
 telosmain push action vapaeetokens create '["vapaeetokens","100000000.0000 FFF"]' -p vapaeetokens@active
 
 -- registro los tokens falsos como validados --
-telosmain push action vapaeetokens updatetoken '["AAA", "Fake A Token", "https://vapaee.io", "/assets/logos/fake_a_token.png", "/assets/logos/fake_a_token.png", true]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["BBB", "Fake B Token", "https://vapaee.io", "/assets/logos/fake_b_token.png", "/assets/logos/fake_b_token.png", true]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["CCC", "Fake C Token", "https://vapaee.io", "/assets/logos/fake_c_token.png", "/assets/logos/fake_c_token.png", true]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["DDD", "Fake D Token", "https://vapaee.io", "/assets/logos/fake_d_token.png", "/assets/logos/fake_d_token.png", true]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["EEE", "Fake E Token", "https://vapaee.io", "/assets/logos/fake_e_token.png", "/assets/logos/fake_e_token.png", true]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["FFF", "Fake F Token", "https://vapaee.io", "/assets/logos/fake_f_token.png", "/assets/logos/fake_f_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["AAA", "A Token", "https://vapaee.io", "/assets/logos/fake_a_token.png", "/assets/logos/fake_a_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["BBB", "B Token", "https://vapaee.io", "/assets/logos/fake_b_token.png", "/assets/logos/fake_b_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["CCC", "C Token", "https://vapaee.io", "/assets/logos/fake_c_token.png", "/assets/logos/fake_c_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["DDD", "D Token", "https://vapaee.io", "/assets/logos/fake_d_token.png", "/assets/logos/fake_d_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["EEE", "E Token", "https://vapaee.io", "/assets/logos/fake_e_token.png", "/assets/logos/fake_e_token.png", true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["FFF", "F Token", "https://vapaee.io", "/assets/logos/fake_f_token.png", "/assets/logos/fake_f_token.png", true]' -p vapaeetokens@active
 
 -- agrego el issuer everyone a los tokens falsos --
 telosmain push action vapaeetokens addissuer '["everyone", "AAA"]' -p vapaeetokens@active
@@ -62,7 +62,7 @@ telosmain push action vapaeetokens addissuer '["everyone", "FFF"]' -p vapaeetoke
 
 -- haciendo que el TLOS sea falso --
 telosmain push action vapaeetokens create '["vapaeetokens","10000000000.0000 TLOS"]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["TLOS", "FAKE Telos", "https://vapaee.io", "/assets/logos/telos-fake.png", "/assets/logos/telos-fake.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TLOS", "Telos FAKE", "https://vapaee.io", "/assets/logos/telos-fake.png", "/assets/logos/telos-fake.png",true]' -p vapaeetokens@active
 telosmain push action vapaeetokens addissuer '["everyone", "TLOS"]' -p vapaeetokens@active
 
 
@@ -86,7 +86,8 @@ telosmain push action vapaeetokens order '["viterbotelos", "sell", "10.00000000 
 
 
 -- TODO NEXT !! --
-- sacar el botón DEBUG
+- después de generar cualquier cambio en la blockchain hay que refrescar los recursos del usuario (RAM)
+
 
 
 -- TODO MUST --
