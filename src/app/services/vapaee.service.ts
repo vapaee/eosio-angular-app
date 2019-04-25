@@ -4,6 +4,8 @@ import { ScatterService, Account, AccountData } from './scatter.service';
 import { Utils, Token, TableResult, TableParams } from './utils.service';
 import BigNumber from "bignumber.js";
 import { Feedback } from './feedback.service';
+import { AnalyticsService } from './common/common.services';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable()
 export class VapaeeService {
@@ -49,7 +51,9 @@ export class VapaeeService {
         this.setReady = resolve;
     });
     constructor(
-        private scatter: ScatterService
+        private scatter: ScatterService,
+        private cookies: CookieService, 
+        public analytics: AnalyticsService,
     ) {
         this.scopes = {};
         this.current = this.default;
@@ -118,6 +122,8 @@ export class VapaeeService {
         this.resetCurrentAccount(this.default.name);
         this.updateLogState();
         this.onLoggedAccountChange.next(this.logged);
+        this.analytics.setUserId(0);
+        this.cookies.delete("login");
         setTimeout(_  => { this.last_logged = this.logged; }, 400);
     }
     
@@ -130,6 +136,8 @@ export class VapaeeService {
         this.getUserOrders();
         this.onLoggedAccountChange.next(this.logged);
         this.last_logged = this.logged;
+        this.analytics.setUserId(this.logged);
+        this.cookies.set("login", this.logged);
     }
 
     onLoggedChange() {
@@ -170,10 +178,14 @@ export class VapaeeService {
                 this.loginState = "account-ok";
             }
             this.feed.setLoading("log-state", false);
-        }).catch(e => {
-            this.feed.setLoading("log-state", false);
-            throw e;
         });
+
+        var timer = setInterval(_ => {
+            if (!this.feed.loading("connect")) {
+                this.feed.setLoading("log-state", false);
+                clearInterval(timer);
+            }
+        }, 200);
     }
 
     private async getAccountData(name: string): Promise<AccountData>  {
@@ -415,15 +427,15 @@ export class VapaeeService {
                 
     }
 
-    async updateTrade(comodity:Token, currency:Token): Promise<any> {
-        console.log("**** VapaeeService.updateCurrentUser() ****");
+    async updateTrade(comodity:Token, currency:Token, updateUser:boolean = true): Promise<any> {
+        console.log("VapaeeService.updateTrade()");
         return Promise.all([
             this.getTransactionHistory(comodity, currency, -1, -1, true),
             this.getSellOrders(comodity, currency, true),
             this.getBuyOrders(comodity, currency, true),
             this.getTableSummary(comodity, currency, true),
             this.getOrderTables(),
-            this.updateCurrentUser()
+            updateUser ? this.updateCurrentUser(): null
         ]);
     }
 
@@ -688,8 +700,8 @@ export class VapaeeService {
         var result = null;
         aux = this.waitReady.then(async _ => {
             var summary = await this.fetchSummary(scope);
-            console.log(scope, "---------------------------------------------------");
-            console.log("Summary crudo:", summary.rows);
+            // console.log(scope, "---------------------------------------------------");
+            // console.log("Summary crudo:", summary.rows);
 
             this.scopes[scope] = this.auxAssertScope(scope);
             this.scopes[scope].summary = {
@@ -703,8 +715,8 @@ export class VapaeeService {
             var now_sec: number = Math.floor(now.getTime() / 1000);
             var now_hour: number = Math.floor(now_sec / 3600);
             var start_hour = now_hour - 23;
-            console.log("now_hour:", now_hour);
-            console.log("start_hour:", start_hour);
+            // console.log("now_hour:", now_hour);
+            // console.log("start_hour:", start_hour);
 
             // proceso los datos crudos 
             var ZERO_TLOS = "0.00000000 TLOS";
@@ -719,7 +731,7 @@ export class VapaeeService {
                     price = summary.rows[i].price;
                 }
             }
-            console.log("crude:", crude);
+            // console.log("crude:", crude);
 
             // genero una entrada por cada una de las últimas 24 horas
             var last_24h = {};
@@ -756,21 +768,21 @@ export class VapaeeService {
             }            
             var percent = Math.floor(ratio * 10000) / 100;
 
-            console.log("last_24h:", [last_24h]);
-            console.log("first:", first.toString(8));
-            console.log("last:", last.toString(8));
-            console.log("diff:", diff.toString(8));
-            console.log("percent:", percent);
-            console.log("ratio:", ratio);
-            console.log("volume:", volume.str);
+            // console.log("last_24h:", [last_24h]);
+            // console.log("first:", first.toString(8));
+            // console.log("last:", last.toString(8));
+            // console.log("diff:", diff.toString(8));
+            // console.log("percent:", percent);
+            // console.log("ratio:", ratio);
+            // console.log("volume:", volume.str);
 
             this.scopes[scope].summary.price = last;
             this.scopes[scope].summary.percent_str = (isNaN(percent) ? 0 : percent) + "%";
             this.scopes[scope].summary.percent = isNaN(percent) ? 0 : percent;
             this.scopes[scope].summary.volume = volume;
 
-            console.log("Summary final:", this.scopes[scope].summary);
-            console.log("---------------------------------------------------");
+            // console.log("Summary final:", this.scopes[scope].summary);
+            // console.log("---------------------------------------------------");
             this.feed.setLoading("summary."+scope, false);
             return summary;
         });

@@ -22,6 +22,7 @@ export class TradePage implements OnInit, OnDestroy {
     comodity:Token;
     currency:Token;
     _orders:TokenOrders;
+    timer:number;
     private onStateSubscriber: Subscriber<string>;
 
     @ViewChild(VpePanelOrderEditorComponent) orderform: VpePanelOrderEditorComponent;
@@ -38,23 +39,25 @@ export class TradePage implements OnInit, OnDestroy {
     ) {
         this._orders = {sell:[],buy:[]};
         this.onStateSubscriber = new Subscriber<string>(this.onStateChange.bind(this));
-    }      
+    }
+    
+    async updateAll(updateUser:boolean) {
+        this.scope = this.route.snapshot.paramMap.get('scope');
+        var com:string = this.scope.split(".")[0];
+        var cur:string = this.scope.split(".")[1];
+        this.comodity = await this.vapaee.getToken(com);
+        this.currency = await this.vapaee.getToken(cur);
+        this.vapaee.updateTrade(this.comodity, this.currency, updateUser);
+    }
 
     async init() {
         console.log("TradePage.init() <-- ");
         this.orderform.reset();
         this.comodity = null;
         this.currency = null;
-        setTimeout(async _ => {
-            this.scope = this.route.snapshot.paramMap.get('scope');
-            var com:string = this.scope.split(".")[0];
-            var cur:string = this.scope.split(".")[1];
-            this.comodity = await this.vapaee.getToken(com);
-            this.currency = await this.vapaee.getToken(cur);        
-            this.vapaee.updateTrade(this.comodity, this.currency).then(_ => {
-                
-            });    
-        }, 0);
+        
+        setTimeout(_ => { this.updateAll(true); }, 0);
+        this.timer = window.setInterval(_ => { this.updateAll(false); }, 15000);
     }
 
     get deposits(): Asset[] {
@@ -107,6 +110,7 @@ export class TradePage implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.onStateSubscriber.unsubscribe();
+        clearInterval(this.timer);
     }
 
     ngOnInit() {

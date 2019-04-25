@@ -7,6 +7,9 @@ import { FormsModule } from '@angular/forms';
 
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
+
+import { CookieService } from 'ngx-cookie-service';
+
 // perfect scrollbar
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
@@ -112,6 +115,7 @@ import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-i
         FormsModule
     ],
     providers: [
+        CookieService,
         ScatterService,
         BGBoxService,
         VapaeeService,

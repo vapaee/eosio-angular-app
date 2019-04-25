@@ -44,7 +44,11 @@ export class Feedback {
         return false;
     }
 
-    setError(key:string, err: string) {
+    setError(key:string, err: string = "") {
+        if (!err) {
+            err = key;
+            key = "default";
+        }
         if (this.scopes[key]) {
             this.scopes[key].msg = err;
             this.scopes[key].msgtype = "error";

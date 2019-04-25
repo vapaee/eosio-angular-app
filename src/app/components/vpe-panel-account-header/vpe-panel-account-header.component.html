@@ -45,7 +45,7 @@
                 <div [ngClass]="{'d-none':vapaee.loginState != 'no-scatter'}" [hidden]="current.data.total_balance">
                     <div class="pull-right text-center">
                         <span class="btn btn-sm btn-primary" (click)="scatter.connectApp()">
-                            <span class="spinner-border spinner-border-sm" [hidden]="!vapaee.feed.loading('log-state')"></span>
+                            <span class="spinner-border spinner-border-sm" [hidden]="!scatter.feed.loading('connect')"></span>
                             {{local.string.retry | titlecase}}
                         </span>
                     </div>
@@ -54,7 +54,7 @@
                 <div [ngClass]="{'d-none':vapaee.loginState != 'no-logged'}" [hidden]="current.data.total_balance">
                     <div class="pull-right text-center">
                         <span class="btn btn-sm btn-primary" (click)="vapaee.login()">
-                                <span class="spinner-border spinner-border-sm" [hidden]="!vapaee.feed.loading('login') && !vapaee.feed.loading('log-state')"></span>
+                            <span class="spinner-border spinner-border-sm" [hidden]="!vapaee.feed.loading('login') && !vapaee.feed.loading('log-state')"></span>
                             {{local.string.LoginWScatter}}
                         </span>
                     </div>

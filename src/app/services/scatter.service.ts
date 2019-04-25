@@ -442,8 +442,8 @@ export class ScatterService {
                     this._connected = connected;
                     if(!connected) {
                         this.feed.setError("connect", "ERROR: can not connect to Scatter. Is it up and running?");
-                        console.error(this.feed.error);
-                        reject(this.feed.error);
+                        console.error(this.feed.error("connect"));
+                        reject(this.feed.error("connect"));
                         this.feed.setLoading("connect", false);
                         return false;
                     }

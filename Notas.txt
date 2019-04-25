@@ -16,7 +16,132 @@
     - PWA?
 
 
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------
+-- Steemit -----------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+- title: Vapaée - first Telos DEX ------------------------------------------------------------------------
+- tags: telos cardsandtokens dex eos tokens --------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+<center><h1>Introducing Vapaée DEX</h1>first Telos DEX completely on chain</center>
+<center><img src="https://cdn.steemitimages.com/DQmYiWyYkMLm81WGWbt9BVshVpiiKQATJdgZK124FsNWntJ/vapaee.io-DEX.png">
+<a href="https://vapaee.io">vapaee.io</a></center>
+
+# Intro
+
+As you may know by now, I'm the one behind the [Cards & Tokens](http://cardsandtokens.com), which is composed by [four different modules](https://github.com/vapaee/cards-and-tokens-white-paper#modules). One of them is called Vapaée Tokens (contract name vapaeetokens) and it implements all kind of token related services, **INCLUDING EXCHANGE !!**.
+
+# Last Worker Proposal
+
+Last month I [introduced a worker proposal](https://chainspector.io/dashboard/working-proposals/7) to get funds to buy the resources for this platform and it was approved... So, **THANK YOU VERY MUCH** to the **TELOS COMMUNITY** for supporting this project!!! Now I have enough resources to deploy the four contracts on Telos blockchain so it's my turn to return some value to the community.
+
+# We need a DEX on Telos
+
+A few days after I released the last WP, I was talking to Douglas Horn from [GoodBlock.io](https://goodblock.io/) and I was saying to him how difficult is, for an indie develloper like me, to get one Token (specifically CNT in my case) listed on a regular exchange. So he dropped the following comment...
+
+<center>
+<img src="https://cdn.steemitimages.com/DQmdXSEEZfc3mJg4uZVZtaMpx3GbCrgVEKFhYFMPZ9oT4Yd/captura-telegram.jpg">
+[telegram link](https://t.me/cardsandtokens/39)
+</center>
+
+... to which I never wrote back, until now. The priorities has change and we need a DEX on chain so that the entire Telos community can benefit from it. That's why I decided to quit trying to get my CNT listed on third party exchanges and create our own DEX on Telos.
+
+<center>
+<img src="https://cdn.steemitimages.com/DQmbum5GUgVca2vUjbRUbeU1DDg3Lkx7rqc1KNvgAugkohm/freedom-telos.jpg">
+</center>
+
+... LOL!! sorry for that...
+
+<hr>
+<br>
+<center>
+<h1>Vapaee.io</h1>
+first DEX on Telos blockchain<br>
+<a href="https://vapaee.io">vapaee.io</a>
+</center>
+
+### Alpha version release
+
+It's finally online for everyone to test it. Right now the alfa-v1.0.7 version was released and deployed on Telos Mainnet. This version in completely functional but is still in alpha (we need some testing and a good graphic chart for the website).
+
+### Fake Tokens 
+
+All the Telos alt-tokens are already registered but you will no be able to trade them yet. For that, I've created 6 different **FAKE TOKENS** (plus one **FAKE TLOS**) that are registered as well but they are enabled to be traded.
+
+### Current features - How to use it?
+
+You can Login with Scatter and go to account page. There you can claim some **FAKE TOKENS** that act like any normal token, except for the fact that anyone can "claim" (issue) any amount of tokens. They worth nothing but are useful for testing !!!
+Remember that there are 6 **FAKE TOKENS** and one **FAKE TLOS** to simulate real TLOS. You can claim both.
+
+Once you have your fake tokens, you have to deposit any amount into the contract (it's a normal transfer with memo: "deposit"). Then your 4 digits tokens converts to 8 digits tokens allowing much more precision to make trade orders.
+
+Finally go to trade page and select the token you want to trade and make an offer like any other exchange. It should be very intuitive but I'm very open to suggestions!!
+
+When you think you're done, return to account page and **withdraw all your tokens almost instantly, without any requirements or delays !!!**.
+
+### Screenshots
+
+<center>
+  <img src="https://cdn.steemitimages.com/DQmYpDEiYjeZVmhmSgfhHsPBxMMi1T59wSF9mZQYqHHD3AZ/cap-1-home.jpg">
+  [Home page](https://vapaee.io/exchange/home)
+</center>
+
+<center>
+  <img src="https://cdn.steemitimages.com/DQmeEHrrkWy4SWkNtcNqBARG54GjdYWD1xCeKUCNfvf8X9n/cap-2-tokens.jpg">
+  [Tokens listing page](https://vapaee.io/exchange/tokens)
+</center>
+
+<center>
+  <img src="https://cdn.steemitimages.com/DQmYXrFHbbArYxS6KJzPThrqq243625DEYJoRpnfnr6ZeQH/cap-3-trade.jpg">
+  [Trading page](https://vapaee.io/exchange/trade/aaa.tlos)
+</center>
+
+<center>
+  <img src="https://cdn.steemitimages.com/DQmWjst1GHymVC79BKQUd6a2yRNsPNvNDY9esrA75JiJieb/cap-4-account.jpg">
+  [Account page](https://vapaee.io/exchange/account/guest)
+</center>
+
+
+# Next Worker Proposal
+
+I will write a new Worker Proposal to ask for funds to finish this work, plus adding a lot of killer features (like auctioning, USD price for alt-tokens, create your own token webform page, and more). Plus, possible work in coordination with @louisthomas to create a review video (that will bring a lot of attention to the blokchain) about the hole [Cards & Tokens](http://cardsandtokens.com) platform and this particular DEX first module [vapaee.io](https://vapaee.io).
+
+# Thanks
+
+As usual, thanks to all of you out there supporting my work. Thanks a lot to the Telos Community for being such a great group of humans to work with. Their support means a lot to me, and I'm willing to continue working hard to make this blockchain a real success !!!
+With the support of all of you, Telos will be an **EPIC WIN !!!**
+
+# GO Telos !!!
+<center>
+<img src="https://cdn.steemitimages.com/DQmTwqHjV1h4Q1FTTpUWysQiCGwdrNSrf4J7Xgio3bJFyTC/telos_logo250px.png">
+</center>
+
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+
 -- TODO AHORA --
+Hi, Thomas.
+
+Sorry that I was missing and abandoned all social contact this last days. I was at home, very focussed on finishing a release of last work. It is a DEX on Telos:
+
+https://vapaee.io
+
+But is not finished yet, so I plan to ask the community for funds to end this work and add a lot of extra features.
+
+If you join me on this one, I can include your review video as part of the commitment and ask more fonds to cover your 0.3 BTC fair fees. 
+
+I told you about this possibility before, remember?
+---------------
+
+
+What do you say? I'll do all the paperwork. You just have endorse my publications (if someone ask you about it).
+
 
 
 -- ocultar tokens verdaderos --
