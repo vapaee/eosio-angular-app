@@ -1,16 +1,35 @@
--- WP --
-- Crítico
-  - Gráfica
+
+
+
+
+
+- Basic (for free)
+  - trading history chart
   - Sqrl suport
-- mejoras:
+
+- Premium
+  - Home loading
   - Responsive
   - Agregar max y min de las últimas 24h
   - Precios en USD - En realidad en cualquier moneda (x regla de tres) - combo box
+  - página del Token X (title, description, link, contacts, transaction history, top N holders)
+  - activity feedback: how many users, transactions per day, deposits, withdraws, earnings
+
+- Deluxe
+  - Auctioning
+  - Vapaee Token / Pasive Income
   - Crear / Registrar / Actualizar tu propio Token (estandar)
-- Wish list
-  - difíciles
-    - Invertir currency / comodity
-  - fáciles
+  - Timezone: que el usuario elija su timezone para mostrar mejor los horarios de las transacciones en el historial
+  - Invertir currency / comodity
+
+- bugs conocidos:
+  - al comprar más de una fila te calcula mal el costo total porque debería tener encuenta los diferentes niveles de precios
+  - hay que desuscribir al usuario que ya no tiene depósitos y no se hace: depusers
+  - los valores cuando son muy pequeños y tienen 8 dígitos de decimal aparecen expresados en potencias de e-10. No debe pasar!!
+
+
+
+-- descripción --
     - página del Token X:
       - título, web link, contract name
       - precio, (col, max, min) 24h
@@ -18,14 +37,15 @@
       - telegram gourps (project & contacts)
       - history completo (paginado)
       - top 100 token holders list (ordenado por quien tiene más)
-    - desuscribir al usuario que ya no tiene depósitos: depusers
-    - Timezone: que el usuario elija su timezone para mostrar mejor los horarios de las transacciones en el historial
-    - los valores cuando son muy pequeños y tienen 8 dígitos de decimal aparecen expresados en potencias de e-10. No debe pasar!!
 
 
 
 
 
+
+
+Leer esto luego:
+https://cryptodaily.co.uk/2019/04/liberland-initiates-decentralized-autonomous-government-with-eosio
 
 
 

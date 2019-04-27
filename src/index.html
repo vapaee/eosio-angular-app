@@ -1,5 +1,75 @@
 <!doctype html>
 <html lang="en">
+  <style>
+body[loading] div[loader] {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}    
+body[loading] div[loader] div[inner] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}    
+body[loading] div[loader] div[inner] .lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+body[loading] div[loader] div[inner] .lds-ellipsis div {
+  position: absolute;
+  top: 27px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #fff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+body[loading] div[loader] div[inner] .lds-ellipsis div:nth-child(1) {
+  left: 6px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+body[loading] div[loader] div[inner] .lds-ellipsis div:nth-child(2) {
+  left: 6px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+body[loading] div[loader] div[inner] .lds-ellipsis div:nth-child(3) {
+  left: 26px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+body[loading] div[loader] div[inner] .lds-ellipsis div:nth-child(4) {
+  left: 45px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(19px, 0);
+  }
+}
+
+  </style>
 <head>
     <meta property="og:type" content="website">
     <meta property="path" content="">
@@ -24,7 +94,9 @@
   <link rel="icon" type="image/png" href="/assets/img/vapaee16.png">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<body>
+<body loading="true">
+  <div loader><div inner><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div></div>
   <app-root></app-root>
+  
 </body>
 </html>
