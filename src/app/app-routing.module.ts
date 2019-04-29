@@ -17,6 +17,7 @@ import { TradePage } from './pages-vpe/trade/trade.page';
 import { TokensPage } from './pages-vpe/tokens/tokens.page';
 import { VpeHomePage } from './pages-vpe/home/home.page';
 import { VpeAccountPage } from './pages-vpe/account/account.page';
+import { VpeWPPage } from './pages-vpe/wp/wp.page';
 
 const routes: Routes = [
   { path: '',                            data: { state: "root" }, redirectTo: '/exchange/home', pathMatch: 'full' },
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'exchange',                    data: { state: "root" }, component: VpeRootPage,
     children: [
       { path: '',                        data: { state: "root" }, redirectTo: '/exchange/home', pathMatch: 'full' },
+      { path: 'wp',                      data: { state: "wp" }, component: VpeWPPage },
       { path: 'home',                    data: { state: "home" }, component: VpeHomePage },
       { path: 'trade/:scope',            data: { state: "trade" }, component: TradePage },
       { path: 'tokens',                  data: { state: "tokens" }, component: TokensPage, children: [

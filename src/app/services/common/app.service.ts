@@ -34,6 +34,8 @@ export class AppService {
                 console.log("AppService. onRoute()", [this]);
                 this.analytics.sendPageView(window.location.href);
                 this.onStateChange.next(this.state);
+                window.document.body.classList.add(this.state);
+                window.document.body.classList.remove(this.prev_state);
             }
         });
         window.document.body.removeAttribute("loading");

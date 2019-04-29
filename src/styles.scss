@@ -5,6 +5,11 @@ body, html {
     overflow: hidden;
 }
 
+body.wp {
+    // overflow: auto;
+    //height: unset;
+}
+
 .text-title {
     font-size: 30px;
     font-weight: bold;

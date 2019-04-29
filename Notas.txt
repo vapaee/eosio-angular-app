@@ -1,14 +1,8 @@
-
-
-
-
-
 - Basic (for free)
   - trading history chart
   - Sqrl suport
 
 - Premium
-  - Home loading
   - Responsive
   - Agregar max y min de las últimas 24h
   - Precios en USD - En realidad en cualquier moneda (x regla de tres) - combo box
@@ -21,14 +15,14 @@
   - Crear / Registrar / Actualizar tu propio Token (estandar)
   - Timezone: que el usuario elija su timezone para mostrar mejor los horarios de las transacciones en el historial
   - Invertir currency / comodity
+  - Contract propagate events to participants and the apps that owns the tokens involved
+  - Skins
 
 - bugs conocidos:
   - al comprar más de una fila te calcula mal el costo total porque debería tener encuenta los diferentes niveles de precios
   - hay que desuscribir al usuario que ya no tiene depósitos y no se hace: depusers
   - los valores cuando son muy pequeños y tienen 8 dígitos de decimal aparecen expresados en potencias de e-10. No debe pasar!!
-
-
-
+  - si el usuario no tiene el network Telos mainnet seteado no le salta el pop de login con scatter no hay mensaje de error-
 -- descripción --
     - página del Token X:
       - título, web link, contract name
@@ -40,6 +34,9 @@
 
 
 
+// { "voter" : "viterbotelos", "ballot_id" : 16, "direction" : 1 }
+telosmain push action eosio.trail castvote '["viterbotelos",16,1]' -p viterbotelos
+telosmain get table eosio.trail viterbotelos votereceipts -l 40
 
 
 
@@ -117,36 +114,7 @@ telosmain push action vapaeetokens order '["viterbotelos", "sell", "10.00000000 
 
 -- TODO NEXT !! --
 - después de generar cualquier cambio en la blockchain hay que refrescar los recursos del usuario (RAM)
-
-
-
--- TODO MUST --
-- Gráfica
-
-
--- TODO bugs --
-- el componente panel-wallet en la página trade se puede hacer click y aparece el cmapo para retirar. No debería aparecer nada.
-- cuando toco una orden que no es la primera, el total se calcula sin tener el cuenta los escalones de diferentes precios.
-
--- TODO detalles --
-- la lista de tokens debería tener el summary (vol, price, change24h)
-- debería usarse el api para saber cuanto vale el TLOS y hacer regla de tres para saber cuanto vale cada token
-- listar el precio de cada token en USD, sumar todo y mostrar el TOTAl en la seccion account
-- cambiar la implementación actual del order-form que lista las órdenes y usar el actal panel-user-orders
-
-
-
-
-
--- TODO PARTE 2: Working proposal --
-- Gráfica
-- que se vena todo en dólares
-- subastas
-- vapaee tokens - pasive income eco
-- better UI
-
-
-
+- el withdraw tiene que convertir en earnings todo monto menor a 0.0001 y sacárselo del usuario.
 
 
 

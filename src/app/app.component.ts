@@ -4,7 +4,7 @@ import { AppService } from './services/common/app.service';
 @Component({
     selector: 'app-root',
     template: '<router-outlet></router-outlet>',
-    styles: ['']
+    styles: ['display: block;']
 })
 export class AppComponent {
   

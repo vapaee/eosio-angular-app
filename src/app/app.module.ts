@@ -47,6 +47,7 @@ import { ProfilePage } from './pages-cnt/profile/profile.page';
 import { InventoryPage } from './pages-cnt/inventory/inventory.page';
 import { CardsPage } from './pages-cnt/cards/cards.page';
 import { AlbumsPage } from './pages-cnt/albums/albums.page';
+import { VpeWPPage } from './pages-vpe/wp/wp.page';
 
 import { IdenticonComponent } from './components/identicon/identicon.component';
 import { EosioAccountComponent } from './components/eosio-account/eosio-account.component';
@@ -64,6 +65,7 @@ import { VpePanelTokensComponent } from './components/vpe-panel-tokens/vpe-panel
 import { VpePanelOrderEditorComponent } from './components/vpe-panel-order-editor/vpe-panel-order-editor.component';
 import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-input.component';
 
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -74,6 +76,7 @@ import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-i
         AppsPage,
         RegisterPage,
         RootPage,
+        VpeWPPage,
         AccountPage,
         IdenticonComponent,
         EosioAccountComponent,
