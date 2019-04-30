@@ -19,7 +19,7 @@ export class VpeWPPage implements OnInit, OnDestroy {
 
     public utils: Utils;
     public feed: Feedback;
-    public proposalID: string = "16";
+    public proposalID: string = "17";
     public user_voted_us: boolean;
     public user_dismiss: boolean;
     constructor(
