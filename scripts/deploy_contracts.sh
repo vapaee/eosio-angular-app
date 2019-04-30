@@ -41,6 +41,7 @@ VAPAEETOKENS_HOME=$HOME/contracts/vapaeetokens
 SNAPSNAPSNAP_HOME=$HOME/contracts/snapsnapsnap
 BOARDGAMEBOX_HOME=$HOME/contracts/boardgamebox
 LOCALSTRINGS_HOME=$HOME/contracts/localstrings
+REVELATION21_HOME=$HOME/contracts/revelation21
 
 # echo "-------- bounds ---------"
 # cd $BOUNDS_HOME
@@ -112,6 +113,13 @@ if [[ cardsntokens.cpp -nt cardsntokens.wasm || cardsntokens.hpp -nt cardsntoken
     eosio-cpp -o cardsntokens.wasm cardsntokens.cpp --abigen -I ../includes
 fi
 cleos $NET set contract cardsntokens $PWD -p cardsntokens@active
+
+echo "-------- revelation21 ---------"
+cd $REVELATION21_HOME
+if [[ revelation21.cpp -nt revelation21.wasm || revelation21.hpp -nt revelation21.wasm || $force == true ]]; then
+    eosio-cpp -o revelation21.wasm revelation21.cpp --abigen -I ../includes
+fi
+cleos $NET set contract revelation21 $PWD -p revelation21@active
 
 echo "-------- localstrings ---------"
 cd $LOCALSTRINGS_HOME
