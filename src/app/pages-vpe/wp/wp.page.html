@@ -25,6 +25,41 @@
                         </div>
                     </div>
                     <hr class="line">
+
+
+
+
+                    <div class="margin-top">
+                        <div class="row margin-top">
+                            <div class="col-sm-12" [hidden]="!feed.error('voting')">
+                                <div class="alert alert-danger">
+                                    <div class="pull-right">
+                                        <button type="button" class="close text-white" (click)="resetError()">
+                                            <i class="material-icons" style="font-size: 100%;">cancel</i>
+                                        </button>
+                                    </div>
+                                    {{feed.error("voting")}}
+                                </div>
+                            </div>                                 
+                            <div class="col-sm-12 margin-top" [hidden]="!this.user_voted_us || this.user_dismiss">
+                                <div class="alert alert-success text-center text-md" role="alert">
+                                    <div class="pull-right">
+                                        <button type="button" class="close text-white" data-dismiss="alert" (click)="dismiss()">
+                                            <i class="material-icons" style="font-size: 100%;">cancel</i>
+                                        </button>                
+                                    </div>
+                                    <b>Thank you for supporting this proposal !!</b>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 text-center margin-top-lg" [hidden]="this.user_voted_us">
+                                <button type="button" class="btn btn-warning text-md" (click)="voteForUs()">
+                                    <span class="spinner-border" [hidden]="!feed.loading('voting') && !feed.loading('user-voted')"></span>
+                                    Please, support this project !!
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="margin-top-lg">
                         <div class="row margin-top">
                             <div class="col text-justify text-lg" id="intro">
