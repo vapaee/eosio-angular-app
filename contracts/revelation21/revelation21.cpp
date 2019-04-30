@@ -234,8 +234,8 @@ void token::try_ubi_claim( name from, const symbol& sym, name payer, stats& stat
         //   one year maximum of accumulation are lost.
         time_type lost_days = 0;
         if (claim_amount > max_past_claim_days) {
-        lost_days = claim_amount - max_past_claim_days;
-        claim_amount = max_past_claim_days;
+            lost_days = claim_amount - max_past_claim_days;
+            claim_amount = max_past_claim_days;
         }
         // You always claim for the next 30 days, counting today. This is the advance-payment part
         //   of the UBI claim.

@@ -57,12 +57,12 @@ namespace eosio {
         private:
             typedef uint16_t time_type;
 
-            struct [[eosio::table]] account {
+            TABLE account {
                 asset     balance;
                 uint64_t primary_key()const { return balance.symbol.code().raw(); }
             };
 
-            struct [[eosio::table]] currency_stats {
+            TABLE currency_stats {
                 asset    supply;
                 asset    max_supply;
                 name     issuer;
