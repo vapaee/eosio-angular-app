@@ -175,3 +175,7 @@ cleos --url https://telos.eos.barcelona push action acornaccount transfer '["vpe
 echo "-- personal --"
 cleos --url https://telos.eos.barcelona push action acornaccount open '["viterbotelos", "4,ACORN", "viterbotelos"]' -p viterbotelos@active
 cleos --url https://telos.eos.barcelona push action acornaccount open '["squirrelboss", "4,ACORN", "squirrelboss"]' -p squirrelboss@active
+
+
+
+cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p user1.jc

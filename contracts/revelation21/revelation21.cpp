@@ -182,22 +182,29 @@ void token::close( name owner, const symbol& symbol ) {
     eosio_assert( it->balance.amount == 0, "Cannot close because the balance is not zero." );
 
     // delete extras table row too
-    extras xtrs( _self, owner.value );
-    auto itx = xtrs.find( symbol.code().raw() );
-    // users cannot close their token records if they have already received income for the
-    // current day. if this is not stopped, users can print infinite money by repeatedly closing and reopening.
-    eosio_assert( itx->last_claim_day < get_today(), "Cannot close() yet: income was already claimed for today." );
-    xtrs.erase( itx );
+    if (can_claim_UBI(owner)) {
+        extras xtrs( _self, owner.value );
+        auto itx = xtrs.find( symbol.code().raw() );
+        // users cannot close their token records if they have already received income for the
+        // current day. if this is not stopped, users can print infinite money by repeatedly closing and reopening.
+        eosio_assert( itx->last_claim_day < get_today(), "Cannot close() yet: income was already claimed for today." );
+        xtrs.erase( itx );
+    }
 
     acnts.erase( it );
 }
 
 void token::create_extra_record( name owner, name ram_payer, uint64_t sym_code_raw ) {
+    if (!can_claim_UBI(owner)) return;
     extras xtrs( _self, owner.value );
     xtrs.emplace( ram_payer, [&]( auto& a ){
         a.symbol_code_raw = sym_code_raw;
-        a.last_claim_day = get_today() - 1;
-        
+        a.last_claim_day = 18047; // 30 de mayo
+        // 18016 - 29 de abril
+        // 18017 - 30 de abril
+        // 18018 - 1 de mayo
+        // 18019 - 2 de mayo
+        // 18047 - 30 de mayo
         // if we are in an everything-goes, free EOSIO public chain, then
         //   open() needs to add a two-day grace period for any UBI claims
         //   to mitigate money printing by repeated account creation/destruction.

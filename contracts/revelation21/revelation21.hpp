@@ -26,21 +26,27 @@ namespace eosio {
 
     using std::string;
 
-    class [[eosio::contract("wubi")]] token : public contract {
+    class [[eosio::contract("revelation21")]] token : public contract {
         public:
             using contract::contract;
 
-            ACTION create(name issuer, asset maximum_supply);
+            [[eosio::action]]
+            void create(name issuer, asset maximum_supply);
 
-            ACTION issue( name to, asset quantity, string memo );
+            [[eosio::action]]
+            void issue( name to, asset quantity, string memo );
 
-            ACTION retire( asset quantity, string memo );
+            [[eosio::action]]
+            void retire( asset quantity, string memo );
 
-            ACTION transfer( name from, name to, asset quantity, string  memo );
+            [[eosio::action]]
+            void transfer( name from, name to, asset quantity, string  memo );
 
-            ACTION open( name owner, const symbol& symbol, name ram_payer );
+            [[eosio::action]]
+            void open( name owner, const symbol& symbol, name ram_payer );
 
-            ACTION close( name owner, const symbol& symbol );
+            [[eosio::action]]
+            void close( name owner, const symbol& symbol );
     
             static asset get_supply( name token_contract_account, symbol_code sym_code ) {
                 stats statstable( token_contract_account, sym_code.raw() );
@@ -57,12 +63,12 @@ namespace eosio {
         private:
             typedef uint16_t time_type;
 
-            TABLE account {
+            struct [[eosio::table]] account {
                 asset     balance;
                 uint64_t primary_key()const { return balance.symbol.code().raw(); }
             };
 
-            TABLE currency_stats {
+            struct [[eosio::table]] currency_stats {
                 asset    supply;
                 asset    max_supply;
                 name     issuer;
@@ -130,7 +136,7 @@ namespace eosio {
             //   any UBI (that is measured as whole days, so if you create an account at 11:59:59 PM, you have to wait
             //   one day plus one second, which is why we require two whole days). That's a bit inconvenient for the
             //   user, but it is necessary to avoid completely unbounded, zero-cost money printing.
-            static const bool unbounded_UBI_account_creation = true; 
+            static const bool unbounded_UBI_account_creation = false; 
             
             // When UBI can be claimed, claim this amount of days. "1" means today's income only, and from 2 and
             //   onwards you are granting advance payments for future days.
@@ -141,7 +147,7 @@ namespace eosio {
             static const int64_t claim_days = 1;
 
             // Unclaimed UBI accumulates to this maximum days.
-            static const int64_t max_past_claim_days = 360;
+            static const int64_t max_past_claim_days = 36000;
         };
 
 } /// namespace eosio

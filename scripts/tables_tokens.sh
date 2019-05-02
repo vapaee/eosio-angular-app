@@ -56,3 +56,20 @@ show_balance vapaeetokens alice VPE
 show_balance vapaeetokens tom VPE
 show_balance vapaeetokens kate VPE
 
+
+echo "********* revelation21 HEART *******************************************************"
+cleos get currency stats revelation21 HEART
+
+show_balance revelation21 bob HEART
+show_balance revelation21 alice HEART
+show_balance revelation21 tom HEART
+show_balance revelation21 kate HEART
+show_balance revelation21 user1.jc HEART
+show_balance revelation21 user2.jc HEART
+show_balance revelation21 user3.jc HEART
+
+show_table revelation21 kate extras
+show_table revelation21 tom extras
+show_table revelation21 user1.jc extras
+show_table revelation21 user2.jc extras
+show_table revelation21 user3.jc extras
