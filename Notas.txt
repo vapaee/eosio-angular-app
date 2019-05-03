@@ -37,21 +37,24 @@ cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p use
   - Responsive
   - Agregar max y min de las últimas 24h
   - Precios en USD - En realidad en cualquier moneda (x regla de tres) - combo box
-  - página del Token X (title, description, link, contacts, transaction history, top N holders)
-  - activity feedback: how many users, transactions per day, deposits, withdraws, earnings
+  - Activity feedback: how many users, transactions per day, deposits, withdraws, earnings
+  - Review Video: 
 
 - Deluxe
-  - Auctioning
-  - Vapaee Token / Pasive Income
+  - Página del Token X (title, description, link, contacts, transaction history, top N holders)
+  - Specific Token interaction: transfer, open, claim.
   - Crear / Registrar / Actualizar tu propio Token (estandar)
   - Timezone: que el usuario elija su timezone para mostrar mejor los horarios de las transacciones en el historial
   - Invertir currency / comodity
-  - Contract propagate events to participants and the apps that owns the tokens involved
+  - Events: Contract propagate events to participants and the apps that owns the tokens involved
   - Skins
 
 - Golden
-  - 
-
+  - Auctioning
+  - Vapaee Token / Pasive Income
+  - More skins
+  - Proper source code delivery / Documentation
+  - Help / video tutorials
 
 
 
