@@ -429,7 +429,7 @@ export class ScatterService {
         // var resolve_num = this.connect_count;
         this.feed.setLoading("connect", true);
         if (appTitle != "") this.appTitle = appTitle;
-        console.log(`ScatterService.connectApp(${this.appTitle})`);
+        console.log(`ScatterService.connectApp(${this.appTitle})`, "this._connected: ", this._connected);
         const connectionOptions = {initTimeout:1800}
         if (this._connected) return Promise.resolve(); // <---- avoids a loop
         var promise = new Promise<any>((resolve, reject) => {
@@ -460,6 +460,10 @@ export class ScatterService {
                         console.log("ScatterService.setReady()");
                         this.setReady("ready");
                     }
+                }).catch(e => {
+                    console.error(e);
+                    this.feed.setLoading("connect", false);
+                    throw e;
                 });    
             });    
         });

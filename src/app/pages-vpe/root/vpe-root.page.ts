@@ -32,7 +32,7 @@ export class VpeRootPage implements OnInit {
         network = "telos";
         if ( this.scatter.network.slug != network || !this.scatter.connected ) {
             this.scatter.setNetwork(network);
-            this.scatter.connectApp("Cards & Tokens").catch(err => console.error(err));    
+            this.scatter.connectApp("Vapaée - Telos DEX").catch(err => console.error(err));    
         }
     }
 
@@ -49,6 +49,7 @@ export class VpeRootPage implements OnInit {
         console.log("CNT", [this.cnt]);
         console.log("BOX", [this.bgbox]);
         console.log("VPE", [this.vapaee]);
+        console.log("Scatter", [this.scatter]);
         console.log("--------------------------------");
     }
 

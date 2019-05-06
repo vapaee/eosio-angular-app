@@ -1,10 +1,10 @@
-<div class="margin-top-lg container">
+<div class="margin-top-lg------container----">
     <div class="row">
         <div class="col">
 
 
-            <div class="card text-white bg-dark vpe-background-panel margin-top">
-                <div class="card-body padding-lg">
+            <div class="card text-white bg-dark vpe-background-panel">
+                <div class="card-body padding-lg container">
                         
     
                     <div class="margin-top-lg">
@@ -27,13 +27,9 @@
                     <hr class="line">
 
 
-                    <!--div class="margin-top-lg">
-                        user: {{vapaee.current.name|json}}<br>
-                        user_is_registered: {{user_is_registered|json}}<br>
-                        user_voted_us: {{user_voted_us|json}}<br>
-                    </div-->
 
-                    <div class="margin-top">
+
+                    <!--div class="margin-top">
                         <div class="row margin-top">
                             <div class="col-sm-12" [hidden]="!feed.error('voting')">
                                 <div class="alert alert-danger">
@@ -55,58 +51,25 @@
                                     <b>Thank you for supporting this proposal !!</b>
                                 </div>
                             </div>
-                            <div class="col-sm-12 text-center margin-top-lg" [hidden]="this.user_voted_us || feed.loading('voting')">
+                            <div class="col-sm-12 text-center margin-top-lg" [hidden]="this.user_voted_us">
                                 <button type="button" class="btn btn-warning text-md" (click)="voteForUs()">
-                                    <span class="spinner-border spinner-border-sm" [hidden]="!feed.loading('user-voted')"></span>
-                                    <span>Please, support this project !!</span>
+                                    <span class="spinner-border" [hidden]="!feed.loading('voting') && !feed.loading('user-voted')"></span>
+                                    Please, support this project !!
                                 </button>
                             </div>
-
-                            <div class="col-sm-12 text-center margin-top-lg" [hidden]="this.user_voted_us || !feed.loading('voting')">
-                                <div class="alert alert-info text-left text-md" role="alert">
-                                    <div [ngClass]="{'d-none':vapaee.loginState != 'no-logged'}" [hidden]="vapaee.current.data.total_balance">
-                                        <div class="pull-right text-center">
-                                            <span class="btn btn-sm btn-primary" (click)="vapaee.login()">
-                                                <span class="spinner-border spinner-border-sm" [hidden]="!vapaee.feed.loading('login') && !vapaee.feed.loading('log-state')"></span>
-                                                {{local.string.LoginWScatter}}
-                                            </span>
-                                        </div>
-                                        <span>{{local.string.NotLogged}}</span>
-                                    </div>                                    
-                                    <span class="nowrap"> Step 1: Register voter
-                                        <span class="spinner-border spinner-border-sm" [hidden]="!feed.loading('regvoter')"></span>
-                                        <span [hidden]="feed.loading('regvoter')">
-                                            <i style="vertical-align: sub;" class="material-icons"> check </i>
-                                        </span>
-                                    </span><br>
-                                    <span class="nowrap"> Step 2: Update voting power
-                                        <span class="spinner-border spinner-border-sm" [hidden]="!feed.loading('mirrorcast')"></span>
-                                        <span [hidden]="feed.loading('mirrorcast')">
-                                            <i style="vertical-align: sub;" class="material-icons"> check </i>
-                                        </span>
-                                    </span><br>
-                                    <span class="nowrap"> Step 3: Vote for this project
-                                        <span class="spinner-border spinner-border-sm" [hidden]="!feed.loading('voting')"></span>
-                                    </span><br>                                    
-                                </div>
-                            </div>                            
                         </div>
-                    </div>
-
-                    <!--div class="margin-top-lg">
-                        <pre>{{feed.scopes|json}}</pre>
                     </div-->
 
-                    <div class="margin-top-lg">                      
+                    <div class="margin-top-lg">
                         <div class="row margin-top">
                             <div class="col text-justify text-sm" id="intro">
                                 <strong>Note:</strong> if you prefer a version of this same document in black text with a white background,
                                 you can read it from <a href="https://github.com/vapaee/worker-proposal-2-Vapaee.io-DEX-and-review-video" target="_blanck">this page on github.</a>
                             </div>
-                        </div>
+                        </div>                        
                         <div class="row margin-top">
                             <div class="col text-justify text-lg" id="intro">
-                                Intro
+                                <br>Intro
                             </div>
                         </div>
                         <div class="row margin-top">
@@ -129,7 +92,7 @@
                         </div>
                         <div class="row margin-top">
                             <div class="col text-justify text-lg" id="budget-summary">
-                                Budget Summary
+                                <br>Budget Summary
                             </div>
                         </div>
                         <div class="row margin-top">
@@ -137,6 +100,7 @@
                                 <p>This worker proposal is for <strong>3 cycles of 140K TLOS each</strong>. Only 30K of the first cycle will be sold
                                     in the market. The rest will remain as a future personal investment and, hopefully, will never be sold,
                                     but used as currency.</p>
+                                    <div style="height: 30px"></div>
                                 <ul>
                                     <li>
                                         <p><strong>Cycle 1</strong> - 140K TLOS</p>
@@ -170,7 +134,7 @@
                 
                         <div class="row margin-top">
                             <div class="col text-justify text-lg" id="versions">
-                                Versions
+                                <br>Versions
                             </div>
                         </div>
                 
@@ -192,8 +156,9 @@
                                     <ul>
 
 
-
+                                    
                                     <li class="margin-top-lg">
+                                        <div style="height: 130px"></div>
                                         <p><span class="text-lg"><strong>Basic</strong> (v1.x.x)</span><br>
                                             This one is already deployed and ready to test. It only requires 2 more important features such as trading
                                             history chart and Sqrl wallet support. The rest is already up and running on Telos main net.
@@ -212,6 +177,7 @@
 
 
                                     <li class="margin-top-lg">
+                                        <div style="height: 50px"></div>
                                         <p><span class="text-lg"><strong>Premium</strong> (v2.x.x)</span><br>
                                             This one is a refined and more polished version than the previous one, which includes basically a lot
                                             of work in the presentation layer or the front-end, that in this case would be the website. In this cycle, I have
@@ -240,6 +206,7 @@
 
 
                                     <li class="margin-top-lg">
+                                        <div style="height: 50px"></div>
                                         <p><span class="text-lg"><strong>Deluxe</strong> (v3.x.x)</span><br>
                                             This advanced version aims to have an independent software, managed by its own users (and not so much by me).
                                             Again, there will be a lot of work in the interface but also modifications in the contract to be able to support these features.<br>
@@ -281,6 +248,7 @@
 
 
                                     <li class="margin-top-lg">
+                                        <div style="height: 230px"></div>
                                         <p><span class="text-lg"><strong>Golden</strong> (v4.x.x)</span><br>
                                             This last version will include two new major token related features plus a proper final product 
                                             delivery. It will require big tech changes on the smart contract and a lot of work on tutorials, 
@@ -322,7 +290,7 @@
                 
                         <div class="row margin-top">
                             <div class="col text-justify text-lg" id="review-video-by-louis-thomas">
-                                Review Video by Louis Thomas
+                                <br>Review Video by Louis Thomas
                             </div>
                         </div>
                 
@@ -344,7 +312,7 @@
                 
                         <div class="row margin-top">
                             <div class="col text-justify text-lg" id="readmap">
-                                Roadmap
+                                <br>Roadmap
                             </div>
                         </div>
                 
@@ -368,7 +336,7 @@
                             </div>
                         </div>                
                 
-                        <!--div style="height: 50px"></div-->
+                        <div style="height: 347px"></div>
                     </div>
                         
                 </div>
@@ -380,5 +348,3 @@
         </div>
     </div>
 </div>
-<br><br><br><br>
-

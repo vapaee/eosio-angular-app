@@ -83,10 +83,12 @@ export class VapaeeService {
 
     get logged() {
         if (this.scatter.logged && !this.scatter.account) {
+            /*
             console.error("WARNING!!!");
             console.log(this.scatter);
             console.log(this.scatter.username);
             console.error("*******************");
+            */
         }
         return this.scatter.logged ?
             (this.scatter.account ? this.scatter.account.name : this.scatter.default.name) :
@@ -102,7 +104,7 @@ export class VapaeeService {
         this.feed.setLoading("login", true);
         this.logout();
         this.feed.setLoading("logout", false);
-        this.scatter.login().then(() => {
+        return this.scatter.login().then(() => {
             this.updateLogState();
             this.feed.setLoading("login", false);
         }).catch(e => {
@@ -474,7 +476,7 @@ export class VapaeeService {
         this.feed.setLoading("history."+scope, true);
         aux = this.waitOrdertables.then(async _ => {
             if (pagesize == -1) {
-                pagesize = 4;                
+                pagesize = 100;                
             }
             if (page == -1) {
                 var pages = this.getHistoryPagesFor(scope, pagesize);

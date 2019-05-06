@@ -21,6 +21,7 @@ import { VpeWPPage } from './pages-vpe/wp/wp.page';
 
 const routes: Routes = [
   { path: '',                            data: { state: "root" }, redirectTo: '/exchange/home', pathMatch: 'full' },
+  // { path: 'wp',                          data: { state: "wp" }, component: VpeWPPage },
   { path: 'cnt',                         data: { state: "root" }, component: CntRootPage,
     children: [
       { path: 'cards',                   data: { state: "cards" }, component: CardsPage },

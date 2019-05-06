@@ -5,19 +5,7 @@ https://t.me/HelloTelos/68039
 
 
 
-
--- responder --
-https://t.me/HelloTelos/68882
-https://t.me/HelloTelos/68887
-Tengo que subir la última versión del WP y avisar que lo voy a publicar mañana.
-
-
-
-
-
-
-
-
+-- TODO --
 
 
 
@@ -63,6 +51,8 @@ cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p use
   - hay que desuscribir al usuario que ya no tiene depósitos y no se hace: depusers
   - los valores cuando son muy pequeños y tienen 8 dígitos de decimal aparecen expresados en potencias de e-10. No debe pasar!!
   - si el usuario no tiene el network Telos mainnet seteado no le salta el pop de login con scatter no hay mensaje de error-
+  - el en el form de orders aparece la cantidad de TLOS que tenés. Si le hacés click debería intentar comprar todo lo posible con esa plata pero no hace nada.
+  - Si hay un deal en la trade page, hay que reordenar los tokens por vol-24h porque puede pasar que la última transacción te cambie el orden.
 -- descripción --
     - página del Token X:
       - título, web link, contract name
@@ -71,13 +61,29 @@ cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p use
       - telegram gourps (project & contacts)
       - history completo (paginado)
       - top 100 token holders list (ordenado por quien tiene más)
-
-
+{
+  "app":"Vapaée - Telos DEX"
+  "with appkey":"appkey:1611268022122023418913243788219221212391992462042413559152218171"
+}
+--------------------------
+{
+  "app": "Vapaée - Telos DEX",
+  "with appkey": "4c7dbd7d49439e146032e2aa7f791e79bc90c9a39033d42d91bb012fa20327c7"
+}
+{
+  "app": "Vapaée - Telos DEX",
+  "with key": "ac3b9f0f651eb9d7c906555ee2ac1a581600a29c9358a4173609dba87446fdd5",
+  "using network": [
+    {
+      "blockchain": "eos",
+      "chainId": "4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11"
+    }
+  ]
+}
 
 // { "voter" : "viterbotelos", "ballot_id" : 16, "direction" : 1 }
 telosmain push action eosio.trail castvote '["viterbotelos",16,1]' -p viterbotelos
 telosmain get table eosio.trail viterbotelos votereceipts -l 40
-
 
 
 
@@ -99,6 +105,9 @@ telosmain push action vapaeetokens updatetoken '["CNT", "Cards & Tokens", "http:
 telosmain push action vapaeetokens updatetoken '["BOX", "Board Game Box", "http://bgbox.com", "/assets/logos/box.png", "/assets/logos/box-lg.png",false]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["VPE", "Vapaée", "https://vapaee.io", "/assets/logos/vapaee.png", "/assets/logos/vapaee-lg.png",false]' -p vapaeetokens@active
 
+
+telosmain push action vapaeetokens addtoken '["revelation21","HEART",4,"revelation21"]' -p revelation21@active
+telosmain push action vapaeetokens updatetoken '["HEART", "Beatitude", "https://steemit.com/@steemchurch", "/assets/logos/beautitude.png", "/assets/logos/beautitude-lg.png",false]' -p revelation21@active
 
 telosmain push action vapaeetokens addtoken '["telosdacdrop","TLOSDAC",4,"vapaeetokens"]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["TLOSDAC", "TelosDAC", "https://telosdac.io/", "/assets/logos/telosdac.png", "/assets/logos/telosdac-lg.png", false]' -p vapaeetokens@active
