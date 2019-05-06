@@ -1,12 +1,8 @@
-
--- TODO ---
-https://telosuk.io/telos-mobile-wallets-released-worker-proposals-by-douglas-horn-guest-presenter-carshare-48/
-https://t.me/HelloTelos/68039
-
-
-
 -- TODO --
-
+- publicación hablando de los Fakes que me quieren embaucar.
+- investigar como interactuar con SQRL Wallet
+- Gráfica del DEX
+- Hablar con SirKnight 
 
 
 
