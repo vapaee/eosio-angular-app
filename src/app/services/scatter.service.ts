@@ -414,8 +414,8 @@ export class ScatterService {
         this.error = "";
         if ((<any>window).ScatterJS) {
             this.ScatterJS = (<any>window).ScatterJS;
-            this.lib = this.ScatterJS.scatter;  
             this.ScatterJS.plugins( new ScatterEOS() );
+            this.lib = this.ScatterJS.scatter;  
             (<any>window).ScatterJS = null;
         }
         console.log("EOSJS()",[this.network.eosconf]);
@@ -476,7 +476,7 @@ export class ScatterService {
         this.error = "";
         this.lib.identity = identity;
         this.lib.forgotten = false;
-        this.account = this.lib.identity.accounts.find(x => x.blockchain === 'eos');
+        this.account = this.lib.identity.accounts.find(x => x.blockchain === "eos" || x.blockchain === "tlos");
         console.log("ScatterService.setIdentity() -> ScatterService.queryAccountData() : " , [this.account.name]);
         this.queryAccountData(this.account.name).then(account => {
             this.account.data = account;

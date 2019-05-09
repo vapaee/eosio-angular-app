@@ -1,8 +1,20 @@
 -- TODO --
 - publicación hablando de los Fakes que me quieren embaucar.
-- investigar como interactuar con SQRL Wallet
 - Gráfica del DEX
 - Hablar con SirKnight 
+
+no pude ver este link en la IM: https://t.me/HelloTelos/70055
+contactar a Loius Thomas: https://louisthomas.co.uk/contact/
+comprar entradas para este evento: https://criptodinero.es/bitcoinday-montevideo/bitcoinday-montevideo-criptomonedas-blockchain-uruguay/
+
+
+
+
+
+
+
+
+
 
 
 
@@ -12,8 +24,9 @@
 cleos push action revelation21 open '["kate", "4,HEART", "kate"]' -p kate@active
 cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p user1.jc@active
 
+----------------------- VERSIONES DE VAPAÉE DEX --------------------
 
-- Basic (for free)
+- Basic
   - trading history chart
   - Sqrl suport: https://github.com/Telos-Foundation/Sqrl-JS-Example-Project.git
 
@@ -49,6 +62,8 @@ cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p use
   - si el usuario no tiene el network Telos mainnet seteado no le salta el pop de login con scatter no hay mensaje de error-
   - el en el form de orders aparece la cantidad de TLOS que tenés. Si le hacés click debería intentar comprar todo lo posible con esa plata pero no hace nada.
   - Si hay un deal en la trade page, hay que reordenar los tokens por vol-24h porque puede pasar que la última transacción te cambie el orden.
+  - cuando no estás logueado se ven los paneles de resources en /exchange/account cuando estás en baja resolución y no deberían mostrarse
+  - el loading del botón de vender (en trade page) no para de girar nunca a pesar de que la transacción se haga con éxito.
 -- descripción --
     - página del Token X:
       - título, web link, contract name
