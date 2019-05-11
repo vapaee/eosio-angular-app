@@ -476,7 +476,7 @@ export class ScatterService {
         this.error = "";
         this.lib.identity = identity;
         this.lib.forgotten = false;
-        this.account = this.lib.identity.accounts.find(x => x.blockchain === 'eos' || x.blockchain === 'tlos');
+        this.account = this.lib.identity.accounts.find(x => x.blockchain === "eos" || x.blockchain === "tlos");
         console.log("ScatterService.setIdentity() -> ScatterService.queryAccountData() : " , [this.account.name]);
         this.queryAccountData(this.account.name).then(account => {
             this.account.data = account;
