@@ -1,18 +1,16 @@
 #include <vapaee/token/tables/_aux.hpp>
 
-        // TABLE tablesummary -----------
+        // TABLE blockhistory -----------
         // scope: xxx.tlos
-        TABLE tablesummary_table {
-            name label;
+        TABLE blockhistory_table {
+            uint64_t hour;
             asset price;    // current price for this hour (and last)
             asset entrance; // first price for this hour
             asset max;      // max price for this hour
             asset min;      // min price for this hour            
             asset volume;
-            uint64_t hour;
             time_point_sec date;
-            // uint64_t history;
-            uint64_t primary_key() const { return label.value; }
+            uint64_t primary_key() const { return hour; }
         };
-        typedef eosio::multi_index< "tablesummary"_n, tablesummary_table > tablesummary;
+        typedef eosio::multi_index< "blockhistory"_n, blockhistory_table > blockhistory;
         // ------------------------------------

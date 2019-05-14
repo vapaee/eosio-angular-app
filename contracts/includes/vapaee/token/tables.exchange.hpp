@@ -7,4 +7,5 @@
 #include "tables/earnings.hpp"
 #include "tables/history.hpp"
 #include "tables/tablesummary.hpp"
+#include "tables/blockhistory.hpp"
 #include "tables/userorders.hpp"

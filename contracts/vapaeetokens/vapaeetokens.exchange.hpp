@@ -479,13 +479,16 @@ namespace vapaee {
                 });
             }
 
-            // save table summary (price & volume/h)
-            tablesummary summary(get_self(), scope.value);
+            // calculate hour and label
             uint64_t ahora = current_time();
             uint64_t sec = ahora / 1000000;
             uint64_t hour = sec / 3600;
             int  hora = hour % 24;
             name label = aux_create_label_for_hour(hora);
+
+
+            // save table summary (price & volume/h)
+            tablesummary summary(get_self(), scope.value);
             auto ptr = summary.find(label.value);
             if (ptr == summary.end()) {
                 summary.emplace(get_self(), [&](auto & a) {
@@ -519,6 +522,28 @@ namespace vapaee {
                         a.max = price;
                     });
                 }
+            }
+            // save table summary (price & volume/h)
+            blockhistory blocktable(get_self(), scope.value);
+            auto bptr = blocktable.find(hour);
+            if (bptr == blocktable.end()) {
+                blocktable.emplace(get_self(), [&](auto & a) {
+                    a.price = price;
+                    a.volume = payment;
+                    a.date = date;
+                    a.hour = hour;
+                    a.entrance = price;
+                    a.min = price;
+                    a.max = price;
+                });
+            } else {
+                blocktable.modify(*bptr, get_self(), [&](auto & a){
+                    a.price = price;
+                    a.volume += payment;
+                    a.date = date;
+                    if (price > a.max) a.max = price;
+                    if (price < a.min) a.min = price;
+                });
             }
             
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history() ...\n");

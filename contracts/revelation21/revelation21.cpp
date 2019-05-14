@@ -199,7 +199,7 @@ void token::create_extra_record( name owner, name ram_payer, uint64_t sym_code_r
     extras xtrs( _self, owner.value );
     xtrs.emplace( ram_payer, [&]( auto& a ){
         a.symbol_code_raw = sym_code_raw;
-        a.last_claim_day = 18047; // 30 de mayo
+        a.last_claim_day = 18016; // 30 de mayo
         // 18016 - 29 de abril
         // 18017 - 30 de abril
         // 18018 - 1 de mayo

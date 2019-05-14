@@ -2,12 +2,19 @@
 - publicación hablando de los Fakes que me quieren embaucar.
 - contactar a Loius Thomas: https://louisthomas.co.uk/contact/
 - Gráfica del DEX
+  - almacenar los datos de cada hora en una tabla separada
+    - crear la tabla
+    - copiar el bloque q se almacena para summary en esta tabla
+    - hacer pruebas localmente y verificar que funciona
+    - deployar en mainnet
+    - hacer compras para generar algunos datos para tener
+  - investigar que opciones prehechas existen de gáficas
 
 
 
-
-
-
+----- CHART -----
+http://techanjs.org/
+https://developers.google.com/chart/interactive/docs/gallery/candlestickchart
 
 
 
@@ -268,9 +275,10 @@ telostest get table snapsnapsnap 1 snapshots --lower viterbotelos
 telosmain get table snapshots.tf 1 snapshots --lower viterbotelos
 cleos --url https://telos.eos.barcelona get table snapshots.tf 1 snapshots --lower geytinzygige
 
+ 
 
-
-
+Phaser con Angular para videojuegos
+https://github.com/weichen2046/phaser3-angular6-helloworld
 
 
 

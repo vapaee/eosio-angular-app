@@ -15,7 +15,7 @@ cleos push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]
 cleos push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io", "/assets/logos/telos.png", "/assets/logos/telos-lg.png",true]' -p vapaeetokens@active
 echo "-- register VIITA --" 
 cleos push action vapaeetokens addtoken '["eosio.token","VIITA",4,"vapaeetokens"]' -p vapaeetokens@active
-cleos push action vapaeetokens updatetoken '["VIITA", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png",false, true]' -p vapaeetokens@active
+cleos push action vapaeetokens updatetoken '["VIITA", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png",true]' -p vapaeetokens@active
 echo "-- register VIICT --" 
 cleos push action vapaeetokens addtoken '["eosio.token","VIICT",0,"vapaeetokens"]' -p vapaeetokens@active
 cleos push action vapaeetokens updatetoken '["VIICT", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png",true]' -p vapaeetokens@active

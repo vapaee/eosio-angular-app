@@ -60,6 +60,11 @@ export class TradePage implements OnInit, OnDestroy {
         this.timer = window.setInterval(_ => { this.updateAll(false); }, 15000);
     }
 
+    async destroy() {
+        console.log("TradePage.destroy() <-- ");
+        clearInterval(this.timer);
+    }
+
     get deposits(): Asset[] {
         return this.vapaee.deposits;
     }
@@ -110,7 +115,7 @@ export class TradePage implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.onStateSubscriber.unsubscribe();
-        clearInterval(this.timer);
+        this.destroy();
     }
 
     ngOnInit() {
@@ -119,20 +124,21 @@ export class TradePage implements OnInit, OnDestroy {
     }
 
     onClickRow(e:{type:string, row:OrderRow}) {
-        console.log("**************** onClickRow", e);
+        // console.log("**************** onClickRow", e);
         this.orderform.setPrice(e.row.price.clone());
         this.orderform.setAmount(e.row.sum.clone());
         this.orderform.wantsTo(e.type == "sell" ? "buy" : "sell");
     }
 
     onClickPrice(e) {
-        console.log("**************** onClickPrice", e);
+        // console.log("**************** onClickPrice", e);
         this.orderform.setPrice(e.row.price.clone());
     }
     
     onStateChange(state:string) {
         console.log("TradePage.onStateChange("+state+")");
         if (state == "trade") {
+            this.destroy();
             this.init();
         }
     } 

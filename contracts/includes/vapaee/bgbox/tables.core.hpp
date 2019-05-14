@@ -1,3 +1,5 @@
+#pragma once
+
 #include "tables/accounts.hpp"
 #include "tables/items.hpp"
 #include "tables/contspec.hpp"
