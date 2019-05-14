@@ -52,7 +52,7 @@ export class TradePage implements OnInit, OnDestroy {
 
     async init() {
         console.log("TradePage.init() <-- ");
-        this.orderform.reset();
+        this.orderform ? this.orderform.reset() : null;
         this.comodity = null;
         this.currency = null;
         

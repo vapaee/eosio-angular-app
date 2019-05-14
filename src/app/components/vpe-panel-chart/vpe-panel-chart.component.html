@@ -1,5 +1,20 @@
 <vpe-panel [title]="local.string.chart">
     <div class="background">
-        <div class="text-lg text-center"><br>{{local.string.chart}}<br>{{local.string.comingsoon}}<br><br></div>
+        <!-- 
+            <div class="text-lg text-center"><br>{{local.string.chart}}<br>{{local.string.comingsoon}}<br><br></div>
+        -->
+        <google-chart
+            [data]="chartData"
+            (mouseWheel)="mouseWheel($event)"
+        ></google-chart>
+            
+            <!--
+            (chartReady)="ready($event)"
+            (chartError)="error($event)"
+            (chartSelect)="select($event)"
+            (mouseOver)="mouseOver($event)"
+            (mouseOut)="mouseOut($event)"
+        -->
+
     </div>
 </vpe-panel>

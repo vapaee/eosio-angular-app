@@ -6,7 +6,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
-
+import { VapaeeGoogleChartsModule } from './services/google-chart-service/google-charts.module';
 
 import { CookieService } from 'ngx-cookie-service';
 
@@ -36,6 +36,7 @@ import { ScatterService } from './services/scatter.service';
 import { BGBoxService } from './services/bgbox.service';
 import { CntService } from './services/cnt.service';
 import { VapaeeService } from './services/vapaee.service';
+
 
 import { CntRootPage } from './pages-cnt/root/cntroot.page';
 import { VpeRootPage } from './pages-vpe/root/vpe-root.page';
@@ -115,6 +116,7 @@ import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-i
         CommonServicesModule,
         PerfectScrollbarModule,
         Ng2SearchPipeModule,
+        VapaeeGoogleChartsModule,
         FormsModule
     ],
     providers: [
