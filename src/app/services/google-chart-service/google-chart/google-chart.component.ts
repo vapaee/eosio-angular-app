@@ -79,6 +79,7 @@ export class GoogleChartComponent implements OnChanges, GoogleChartComponentInte
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
+    console.log("GoogleChartComponent.ngOnChanges()", changes);
     const key = 'data';
     if(changes[key]) {
 
@@ -110,7 +111,18 @@ export class GoogleChartComponent implements OnChanges, GoogleChartComponentInte
     }
   }
 
+  public redraw(dataTable:any[] = null, options = null): void {
+    console.log("GoogleChartComponent.redraw()", dataTable);
+    this.data.options = options || this.data.options;
+    this.data.dataTable = dataTable || this.data.dataTable;
+    if (this.data.opt_firstRowIsData && Array.isArray(this.data.dataTable)) {
+      this.data.dataTable = google.visualization.arrayToDataTable(this.data.dataTable, true);
+    }
+    this.draw();
+  }
+
   public draw(): void {
+    console.log("GoogleChartComponent.draw()");
     this.wrapper.setDataTable(this.data.dataTable);
     this.convertOptions();
     this.wrapper.setOptions(this.options);

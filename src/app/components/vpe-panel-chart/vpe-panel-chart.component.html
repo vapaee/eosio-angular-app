@@ -5,6 +5,7 @@
         -->
         <google-chart
             [data]="chartData"
+            (chartReady)='ready($event)'
             (mouseWheel)="mouseWheel($event)"
         ></google-chart>
             

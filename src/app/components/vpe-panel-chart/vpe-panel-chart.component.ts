@@ -2,7 +2,8 @@ import { Component, Input, OnChanges, Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { VapaeeService } from 'src/app/services/vapaee.service';
 import { LocalStringsService } from 'src/app/services/common/common.services';
-import { GoogleChartInterface } from 'src/app/services/google-chart-service/google-charts-interfaces';
+import { GoogleChartInterface, GoogleChartComponentInterface } from 'src/app/services/google-chart-service/google-charts-interfaces';
+import { GoogleChartComponent } from 'src/app/services/google-chart-service';
 
 
 // https://www.devrandom.it/software/ng2-google-charts/
@@ -20,6 +21,7 @@ export class VpePanelChartComponent implements OnChanges {
 
     data:any[];
     zoom:number;
+    component:GoogleChartComponentInterface;
 
     constructor(
         public vapaee: VapaeeService,
@@ -42,66 +44,31 @@ export class VpePanelChartComponent implements OnChanges {
             ['Thu', 77, 70, 66, 50],
             ['Fri', 68, 66, 22, 15]
             // Treat first row as data as well.
-        ]
-    }
-    
-    //*/
-    chartData:GoogleChartInterface = {        
-        chartType: 'CandlestickChart',
-        dataTable: [
-            ['Sat', 19, 23, 34, 45],
-            ['Sun', 24, 35, 57, 78],
-            ['Mon', 20, 28, 38, 60],
-            ['Tue', 31, 38, 55, 66],
-            ['Wed', 50, 55, 77, 80],
-            ['Thu', 77, 70, 66, 50],
-            ['Fri', 68, 66, 22, 15],
-            ['Sat', 19, 23, 34, 45],
-            ['Sun', 24, 35, 57, 78],
-            ['Mon', 20, 28, 38, 60],
-            ['Tue', 31, 38, 55, 66],
-            ['Wed', 50, 55, 77, 80],
-            ['Thu', 77, 70, 66, 50],
-            ['Fri', 68, 66, 22, 15]
-            // Treat first row as data as well.
-        ],
-        opt_firstRowIsData: true,
-        options: {
-            legend:'none'
-        }
-    }
-    /*/
-    get chartData(): GoogleChartInterface {
-        var data:GoogleChartInterface = {        
+        ];
+        this._chartData = {        
             chartType: 'CandlestickChart',
-            dataTable: [
-                ['Sat', 19, 23, 34, 45],
-                ['Sun', 24, 35, 57, 78],
-                ['Mon', 20, 28, 38, 60],
-                ['Tue', 31, 38, 55, 66],
-                ['Wed', 50, 55, 77, 80],
-                ['Thu', 77, 70, 66, 50],
-                ['Fri', 68, 66, 22, 15],
-                ['Sat', 19, 23, 34, 45],
-                ['Sun', 24, 35, 57, 78],
-                ['Mon', 20, 28, 38, 60],
-                ['Tue', 31, 38, 55, 66],
-                ['Wed', 50, 55, 77, 80],
-                ['Thu', 77, 70, 66, 50],
-                ['Fri', 68, 66, 22, 15]
-                // Treat first row as data as well.
-            ],
+            dataTable: this.recreateDataTable(),
             opt_firstRowIsData: true,
             options: {
                 legend:'none'
             }
-        };
-        return data;
-    }
-    //*/
+        }
+    }    
+    
+    public _chartData:GoogleChartInterface;
+    
+    counter = 0;
+    get chartData(): GoogleChartInterface {
+        this.counter++
+        if (this.counter>10000) {
+            console.error("chartData() canceled", this.counter);
+            return null;
+        }
+        return this._chartData;
+    }    
 
     ready(event) {
-        console.log("ready", event);
+        this.component = this.chartData.component;
     }
 
     error(event) {
@@ -120,9 +87,22 @@ export class VpePanelChartComponent implements OnChanges {
         console.log("mouseOut", event);
     }
 
+    private recreateDataTable() {
+        var data = [];
+        for (var i=0; i<this.zoom; i++) {
+            data.push(this.data[this.data.length - this.zoom + i]);    
+        }
+        return data;
+    }
+
     mouseWheel(event) {
         console.log("mouseWheel", event);
-        
+        this.zoom -= event.delta;
+        if (this.zoom < 5) this.zoom = 5;
+        if (this.zoom > this.data.length) this.zoom = this.data.length;
+        // this.recreateChartData();
+        console.log(this._chartData);
+        this.component.redraw(this.recreateDataTable(), null);
     }
 
 

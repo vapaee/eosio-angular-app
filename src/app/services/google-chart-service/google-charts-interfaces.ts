@@ -13,6 +13,7 @@ export interface GoogleChartComponentInterface {
   mouseOut: EventEmitter<ChartMouseOutEvent>;
   wrapper: any;
 
+  redraw(dataTable:any[], options:any): void;
   draw(): void;
 }
 
