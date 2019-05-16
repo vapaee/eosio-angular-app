@@ -28,31 +28,40 @@ export class VpePanelChartComponent implements OnChanges {
         public local: LocalStringsService
     ) {
         this.zoom = 5;
-        this.data = [
-            ['Sat', 19, 23, 34, 45],
-            ['Sun', 24, 35, 57, 78],
-            ['Mon', 20, 28, 38, 60],
-            ['Tue', 31, 38, 55, 66],
-            ['Wed', 50, 55, 77, 80],
-            ['Thu', 77, 70, 66, 50],
-            ['Fri', 68, 66, 22, 15],
-            ['Sat', 19, 23, 34, 45],
-            ['Sun', 24, 35, 57, 78],
-            ['Mon', 20, 28, 38, 60],
-            ['Tue', 31, 38, 55, 66],
-            ['Wed', 50, 55, 77, 80],
-            ['Thu', 77, 70, 66, 50],
-            ['Fri', 68, 66, 22, 15]
-            // Treat first row as data as well.
-        ];
-        this._chartData = {        
-            chartType: 'CandlestickChart',
-            dataTable: this.recreateDataTable(),
-            opt_firstRowIsData: true,
-            options: {
-                legend:'none'
+        setTimeout(_ => {
+            this.data = [
+                ['Sat', 19, 23, 34, 45],
+                ['Sun', 24, 35, 57, 78],
+                ['Mon', 20, 28, 38, 60],
+                ['Tue', 31, 38, 55, 66],
+                ['Wed', 50, 55, 77, 80],
+                ['Thu', 77, 70, 66, 50],
+                ['Fri', 68, 66, 22, 15],
+                ['Sat', 19, 23, 34, 45],
+                ['Sun', 24, 35, 57, 78],
+                ['Mon', 20, 28, 38, 60],
+                ['Tue', 31, 38, 55, 66],
+                ['Wed', 50, 55, 77, 80],
+                ['Thu', 77, 70, 66, 50],
+                ['Fri', 68, 66, 22, 15]
+                // Treat first row as data as well.
+            ];
+            this._chartData = {        
+                chartType: 'CandlestickChart',
+                dataTable: this.recreateDataTable(),
+                opt_firstRowIsData: true,
+
+                // https://developers.google.com/chart/interactive/docs/gallery/candlestickchart#data-format
+                options: {
+                    legend:'none',
+                    // backgroundColor: "#1f211f",
+                    // height: 600,
+                    bar: {
+                        groupWidth: "80%"
+                    }
+                }
             }
-        }
+        }, 0);
     }    
     
     public _chartData:GoogleChartInterface;

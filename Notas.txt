@@ -8,7 +8,9 @@
     - hacer pruebas localmente y verificar que funciona
     - deployar en mainnet
     - hacer compras para generar algunos datos para tener
-  - investigar que opciones prehechas existen de gáficas
+  - corregir bugs de la gráfica
+    - cuando hay un rezise de pantalla, la gráfica debe redibujarse
+    - cuando prepare los datos tengo que tener en cuenta los gaps de no-data in between blockes que sí, tienen data (para generar líneas horizontales en cuando no hay movimiento)
 
 
 https://www.youtube.com/watch?v=1unkluyh2Ks&feature=push-u-sub&attr_tag=RWT7l-NIxhXrdKBg%3A6

@@ -4,6 +4,7 @@
             <div class="text-lg text-center"><br>{{local.string.chart}}<br>{{local.string.comingsoon}}<br><br></div>
         -->
         <google-chart
+            *ngIf="data"
             [data]="chartData"
             (chartReady)='ready($event)'
             (mouseWheel)="mouseWheel($event)"
