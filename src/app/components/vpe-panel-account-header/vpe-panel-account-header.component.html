@@ -34,14 +34,14 @@
                     </span>
                 </div>
 
-<div [hidden]="!vapaee.logged">
+<!--div [hidden]="!vapaee.logged">
     <div class="pull-right">
         <span class="btn btn-sm btn-primary" (click)="freeFakeTokens()">
             <span class="spinner-border spinner-border-sm" [hidden]="!loading_fake"></span>
             {{local.string.getfftokens | titlecase}}
         </span>
     </div>
-</div> 
+</div--> 
                 <div [ngClass]="{'d-none':vapaee.loginState != 'no-scatter'}" [hidden]="current.data.total_balance">
                     <div class="pull-right text-center">
                         <span class="btn btn-sm btn-primary" (click)="scatter.connectApp()">

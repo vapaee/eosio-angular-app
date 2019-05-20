@@ -1,10 +1,12 @@
 <div class="container-fluid margin-top">
+    <!--
     <div class="row">
         <div class="col">
             <vpe-panel-chart></vpe-panel-chart>
         </div>
     </div>
-    <!-- 
+    -->
+    
     <div class="card text-white bg-dark">
         <div class="card-header vpe-background-card-header padding">
             <div class="row">
@@ -28,7 +30,7 @@
             <vpe-panel-wallet [deposits]="deposits" [balances]="balances"></vpe-panel-wallet>
         </div>
         <div class="col-sm-8 col-md-9 col-padding-left">
-            <vpe-panel-chart></vpe-panel-chart>
+            <vpe-panel-chart [data]="chartData"></vpe-panel-chart>
             <vpe-panel-order-editor [hidden]="!vapaee.logged" #orderform [deposits]="deposits" [comodity]="comodity" [currency]="currency" [orders]="orders" [owner]="vapaee.logged"></vpe-panel-order-editor>
             <div class="row">
                 <div class="col-sm-8 col-md-9 col-padding-right">
@@ -40,5 +42,5 @@
             </div>
         </div>
     </div>
-    -->
+    
 </div>

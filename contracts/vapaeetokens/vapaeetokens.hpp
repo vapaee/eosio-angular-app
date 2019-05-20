@@ -205,10 +205,10 @@ CONTRACT vapaeetokens : public eosio::contract {
                 e.action_clear_tables_orders_and_history();
             };
 
-            ACTION hotfix (symbol_code & code) {
+            ACTION hotfix (int max, name scope) {
                 PRINT("\nACTION vapaeetokens.hotfix()\n");
                 vapaee::token::exchange e;
-                e.action_hotfix(code);
+                e.action_hotfix(max, scope);
             };
 
         )

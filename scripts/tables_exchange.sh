@@ -56,10 +56,12 @@ show_table vapaeetokens vapaeetokens tokens
 show_table vapaeetokens tlos.$token sellorders
 show_table vapaeetokens $token.tlos sellorders
 
-show_balance bob
-show_balance alice
-show_balance tom
-show_balance kate
+if [ "$NET" == "" ]; then
+    show_balance bob
+    show_balance alice
+    show_balance tom
+    show_balance kate   
+fi
 show_balance vapaeetokens
 
 show_table vapaeetokens vapaeetokens depusers

@@ -18,6 +18,7 @@ import { TokensPage } from './pages-vpe/tokens/tokens.page';
 import { VpeHomePage } from './pages-vpe/home/home.page';
 import { VpeAccountPage } from './pages-vpe/account/account.page';
 import { VpeWPPage } from './pages-vpe/wp/wp.page';
+import { VpeComingSoonPage } from './pages-vpe/coming-soon/coming-soon.page';
 
 const routes: Routes = [
   { path: '',                            data: { state: "root" }, redirectTo: '/exchange/home', pathMatch: 'full' },
@@ -33,6 +34,16 @@ const routes: Routes = [
   { path: 'exchange',                    data: { state: "root" }, component: VpeRootPage,
     children: [
       { path: '',                        data: { state: "root" }, redirectTo: '/exchange/home', pathMatch: 'full' },
+      /*/
+      { path: 'wp',                      data: { state: "wp" }, component: VpeComingSoonPage },
+      { path: 'home',                    data: { state: "home" }, component: VpeComingSoonPage },
+      { path: 'trade/:scope',            data: { state: "trade" }, component: VpeComingSoonPage },
+      { path: 'tokens',                  data: { state: "tokens" }, component: VpeComingSoonPage, children: [
+          { path: ':symbol',             data: { state: "edit" }, component: VpeComingSoonPage }
+      ] },
+      { path: 'account',                 data: { state: "guest" }, component: VpeComingSoonPage},
+      { path: 'account/:name',           data: { state: "account" }, component: VpeComingSoonPage }
+      /*/
       { path: 'wp',                      data: { state: "wp" }, component: VpeWPPage },
       { path: 'home',                    data: { state: "home" }, component: VpeHomePage },
       { path: 'trade/:scope',            data: { state: "trade" }, component: TradePage },
@@ -41,6 +52,7 @@ const routes: Routes = [
       ] },
       { path: 'account',                 data: { state: "guest" }, component: VpeAccountPage},
       { path: 'account/:name',           data: { state: "account" }, component: VpeAccountPage }
+      //*/
     ]
   },
   { path: ':network',                    data: { state: "root" }, component: RootPage,

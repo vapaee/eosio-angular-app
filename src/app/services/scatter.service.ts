@@ -234,7 +234,7 @@ export class ScatterService {
     private eos: EOS;
     public onNetworkChange:Subject<Network> = new Subject();
     public onLogggedStateChange:Subject<boolean> = new Subject();
-    public account: Account;
+    public _account: Account;
     private setReady: Function;
     public waitReady: Promise<any> = new Promise((resolve) => {
         this.setReady = resolve;
@@ -285,6 +285,15 @@ export class ScatterService {
             this.setEndpoints();
         });
         this._account_queries = {};
+    }
+
+    get account(): Account {
+        if (!this._account || !this._account.name) {
+            if (this.lib && this.lib.identity && this.lib.identity.accounts) {
+                this._account = this.lib.identity.accounts.find(x => x.blockchain === "eos" || x.blockchain === "tlos");
+            }            
+        }        
+        return this._account;
     }
 
     get default(): Account {
@@ -423,28 +432,50 @@ export class ScatterService {
         this.setEosjs("eosjs");
     }
 
+    reconnectTimer;
+    reconnectTime = 100;
+    retryConnectingApp() {
+        clearInterval(this.reconnectTimer);
+        this.reconnectTimer = setInterval(_ => {
+            // console.log("ScatterService.reconnectTimer()");
+            if (this._connected) {
+                // console.error("ScatterService.retryConnectingApp() limpio el intervalo");
+                clearInterval(this.reconnectTimer);
+            } else {
+                if (this.account) {
+                    // console.error("ScatterService.retryConnectingApp()  existe account pero no está conectado");
+                    this.connectApp();
+                }
+            }
+        },this.reconnectTime);
+        this.reconnectTime += 1000*Math.random();
+        if (this.reconnectTime > 4000) this.reconnectTime = 4000;
+    }
+
     // connect_count: number = 0;
     connectApp(appTitle:string = "") {
         // this.connect_count++;
         // var resolve_num = this.connect_count;
         this.feed.setLoading("connect", true);
         if (appTitle != "") this.appTitle = appTitle;
-        console.log(`ScatterService.connectApp(${this.appTitle})`, "this._connected: ", this._connected);
+        console.log(`ScatterService.connectApp(${this.appTitle})`);
         const connectionOptions = {initTimeout:1800}
         if (this._connected) return Promise.resolve(); // <---- avoids a loop
         var promise = new Promise<any>((resolve, reject) => {
             this.waitConnected.then(resolve);
             if (this._connected) return; // <---- avoids a loop
             this.waitEosjs.then(() => {
+                console.log("ScatterService.waitEosjs() eos OK");
                 this.lib.connect(this.appTitle, connectionOptions).then(connected => {
                     // si está logueado this.lib.identity se carga sólo y ya está disponible
-                    console.log("this.lib.connect()", connected);
+                    console.log("ScatterService.lib.connect()", connected);
                     this._connected = connected;
                     if(!connected) {
                         this.feed.setError("connect", "ERROR: can not connect to Scatter. Is it up and running?");
                         console.error(this.feed.error("connect"));
                         reject(this.feed.error("connect"));
                         this.feed.setLoading("connect", false);
+                        this.retryConnectingApp();
                         return false;
                     }
                     // Get a proxy reference to eosjs which you can use to sign transactions with a user's Scatter.
@@ -476,7 +507,10 @@ export class ScatterService {
         this.error = "";
         this.lib.identity = identity;
         this.lib.forgotten = false;
-        this.account = this.lib.identity.accounts.find(x => x.blockchain === "eos" || x.blockchain === "tlos");
+        this._account = this.lib.identity.accounts.find(x => x.blockchain === "eos" || x.blockchain === "tlos");
+        if (!this.account) {
+            console.error("ScatterService.setIdentity()", [identity]);
+        }
         console.log("ScatterService.setIdentity() -> ScatterService.queryAccountData() : " , [this.account.name]);
         this.queryAccountData(this.account.name).then(account => {
             this.account.data = account;
@@ -666,6 +700,7 @@ export class ScatterService {
         });
     }
 
+    // loginTimer;
     login() {
         console.log("ScatterService.login()");
         this.feed.setLoading("login", true);
@@ -674,13 +709,18 @@ export class ScatterService {
                 this.setIdentity(this.lib.identity);
                 resolve(this.lib.identity);
             } else {
+                var loginTimer = setTimeout( _ => {
+                    this.feed.setLoading("login", false);
+                    reject("connection timeout");
+                }, 3000);
                 this.connectApp().then(() => {
                     this.lib.getIdentity({"accounts":[this.network.eosconf]})
                         .then( (identity)  => {
+                            clearTimeout(loginTimer);
                             this.setIdentity(identity);
                             this.setLogged();
                             this.feed.setLoading("login", false);
-                            resolve(identity);
+                            resolve(identity);                            
                         })
                         .catch(reject);
                 }).catch(reject);    

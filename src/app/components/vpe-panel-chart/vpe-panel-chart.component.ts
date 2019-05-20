@@ -19,103 +19,148 @@ import { GoogleChartComponent } from 'src/app/services/google-chart-service';
 })
 export class VpePanelChartComponent implements OnChanges {
 
-    data:any[];
+    @Input() data:any[];
     zoom:number;
     component:GoogleChartComponentInterface;
+    zomm_min: number = 5;
 
     constructor(
         public vapaee: VapaeeService,
         public local: LocalStringsService
     ) {
-        this.zoom = 5;
-        setTimeout(_ => {
-            this.data = [
-                ['Sat', 19, 23, 34, 45],
-                ['Sun', 24, 35, 57, 78],
-                ['Mon', 20, 28, 38, 60],
-                ['Tue', 31, 38, 55, 66],
-                ['Wed', 50, 55, 77, 80],
-                ['Thu', 77, 70, 66, 50],
-                ['Fri', 68, 66, 22, 15],
-                ['Sat', 19, 23, 34, 45],
-                ['Sun', 24, 35, 57, 78],
-                ['Mon', 20, 28, 38, 60],
-                ['Tue', 31, 38, 55, 66],
-                ['Wed', 50, 55, 77, 80],
-                ['Thu', 77, 70, 66, 50],
-                ['Fri', 68, 66, 22, 15]
-                // Treat first row as data as well.
-            ];
-            this._chartData = {        
-                chartType: 'CandlestickChart',
-                dataTable: this.recreateDataTable(),
-                opt_firstRowIsData: true,
-
-                // https://developers.google.com/chart/interactive/docs/gallery/candlestickchart#data-format
-                options: {
-                    legend:'none',
-                    // backgroundColor: "#1f211f",
-                    // height: 600,
-                    bar: {
-                        groupWidth: "80%"
-                    }
-                }
-            }
-        }, 0);
-    }    
+        this.zoom = 24;
+    }
     
     public _chartData:GoogleChartInterface;
     
-    counter = 0;
+    // counter = 0;
     get chartData(): GoogleChartInterface {
-        this.counter++
-        if (this.counter>10000) {
-            console.error("chartData() canceled", this.counter);
-            return null;
-        }
         return this._chartData;
     }    
 
     ready(event) {
-        this.component = this.chartData.component;
+        this.component = event.component;
+        console.assert(!!this.component, "ERROR: ", event);
     }
 
     error(event) {
-        console.log("error", event);
+        //console.log("error", event);
     }
 
     select(event) {
-        console.log("select", event);
+        //console.log("select", event);
     }
 
     mouseOver(event) {
-        console.log("mouseOver", event);
+        //console.log("mouseOver", event);
     }
 
     mouseOut(event) {
-        console.log("mouseOut", event);
+        //console.log("mouseOut", event);
     }
 
-    private recreateDataTable() {
+    private recreateDataTable() {        
         var data = [];
-        for (var i=0; i<this.zoom; i++) {
-            data.push(this.data[this.data.length - this.zoom + i]);    
+        var zoom = this.zoom
+        if (zoom > this.data.length) {
+            zoom = this.data.length;
         }
+        for (var i=0; i<zoom; i++) {
+            data.push(this.data[this.data.length - zoom + i]);    
+        }
+        // console.log("********************* recreateDataTable()", data);
         return data;
     }
 
+    private prepareChartDataStyles() {
+        var current = "green";
+        for (var i=0; i<this.data.length; i++) {
+            var row = this.data[i];
+            // console.log("--->", this.data[i]);
+            if (row[2] > row[3]) {
+                current = "red";
+            } else if (row[2] < row[3]) {
+                current = "green";
+            }
+            // this.data[i].push("color: blue");
+        }        
+    }
+
     mouseWheel(event) {
-        console.log("mouseWheel", event);
+        //console.log("mouseWheel", event);
         this.zoom -= event.delta;
-        if (this.zoom < 5) this.zoom = 5;
+        if (this.zoom < this.zomm_min) this.zoom = this.zomm_min;
         if (this.zoom > this.data.length) this.zoom = this.data.length;
         // this.recreateChartData();
-        console.log(this._chartData);
+        //console.log(this._chartData);
         this.component.redraw(this.recreateDataTable(), null);
     }
 
-
+    timer;
     ngOnChanges() {
-
+        //console.log("********************* ngOnChanges()", this.data);
+        // if (this.data && this.data.length > 0) {
+        if (this.data) {
+            this._chartData = null;
+            clearTimeout(this.timer);
+            this.timer = setTimeout(_ => {
+                if (this.data.length > 0 && this.data[0].length == 5 ){
+                    this.prepareChartDataStyles();
+                }
+                var data = this.recreateDataTable();
+                var baseline = 0; 
+                if (data.length > 0) {
+                    baseline = data[data.length-1][3]
+                    // console.log("--------------------------------------->", data[data.length-1], baseline);
+                }
+                
+                this._chartData = {        
+                    chartType: 'CandlestickChart',
+                    dataTable: data,
+                    opt_firstRowIsData: true,
+    
+                    // https://developers.google.com/chart/interactive/docs/gallery/candlestickchart#data-format
+                    options: {
+                        legend:'none',
+                        backgroundColor: "#0e1110",
+                        candlestick: {
+                            fallingColor: { strokeWidth: 0, fill: '#a52714' }, // red
+                            risingColor: { strokeWidth: 0, fill: '#0f9d58' }   // green
+                        },
+                        colors: ["#444400"],
+                        height: 300,
+                        bar: {
+                            groupWidth: "80%"
+                        },
+                        hAxis: {
+                            textStyle: {
+                                color: "#AAA"
+                            }
+                        },
+                        vAxis: {
+                            gridlines: {
+                                color: '#888',
+                                // count: 10
+                            },
+                            minorGridlines: {
+                                color: '#222',
+                                // count: 10
+                            },
+                            textStyle: {
+                                color: "white"
+                            },
+                            baseline: baseline,
+                            baselineColor: "#dddd00",
+                            // format: "#,### TLOS",
+                            title: 'Price',
+                            titleTextStyle: {
+                                color: 'white'
+                            }
+                        }
+                        
+                    }
+                }
+            }, 20);
+        }
     }
 }

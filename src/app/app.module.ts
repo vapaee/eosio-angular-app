@@ -65,6 +65,8 @@ import { VpePanelChartComponent } from './components/vpe-panel-chart/vpe-panel-c
 import { VpePanelTokensComponent } from './components/vpe-panel-tokens/vpe-panel-tokens.component';
 import { VpePanelOrderEditorComponent } from './components/vpe-panel-order-editor/vpe-panel-order-editor.component';
 import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-input.component';
+import { DatePipe } from '@angular/common';
+import { VpeComingSoonPage } from './pages-vpe/coming-soon/coming-soon.page';
 
 
 @NgModule({
@@ -104,7 +106,8 @@ import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-i
         VpeHomePage,
         InventoryPage,
         CardsPage,
-        AlbumsPage
+        AlbumsPage,
+        VpeComingSoonPage
     ],
     entryComponents: [
         LoadingOverall
@@ -120,6 +123,7 @@ import { VpeTokenInputComponent } from './components/vpe-token-input/vpe-token-i
         FormsModule
     ],
     providers: [
+        DatePipe,
         CookieService,
         ScatterService,
         BGBoxService,

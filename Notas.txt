@@ -2,24 +2,49 @@
 - publicación hablando de los Fakes que me quieren embaucar.
 - contactar a Loius Thomas: https://louisthomas.co.uk/contact/
 - Gráfica del DEX
-  - almacenar los datos de cada hora en una tabla separada
-    - crear la tabla
-    - copiar el bloque q se almacena para summary en esta tabla
-    - hacer pruebas localmente y verificar que funciona
-    - deployar en mainnet
-    - hacer compras para generar algunos datos para tener
   - corregir bugs de la gráfica
     - cuando hay un rezise de pantalla, la gráfica debe redibujarse
-    - cuando prepare los datos tengo que tener en cuenta los gaps de no-data in between blockes que sí, tienen data (para generar líneas horizontales en cuando no hay movimiento)
+- ponerle un timeout a el botón de loguearse poque a veces el Scatter no presenta el loguin a la primera.
+- sacar los textos y botones de tokens falsos
++ tengo que agregar una entrada más a la tabla tablesummary que tenga los datos de la última hora
+  - tengo que hacer una función que me permita obtener rápido el blocke de la última hora (calculando si corresponden el volumen, los máximos y mínimos).
+- ajustar los tamaños de los fancy-scroll para que el último item se vea por la mitad (y se entienda que continúa)
 
 
-https://www.youtube.com/watch?v=1unkluyh2Ks&feature=push-u-sub&attr_tag=RWT7l-NIxhXrdKBg%3A6
+telosmain push action vapaeetokens updatetoken '["DDD", "D Token", "https://vapaee.io", "/assets/logos/fake_d_token.png", "/assets/logos/fake_d_token.png",false]' -p vapaeetokens@active
+
+
+----- BASIC release ----
++ re escribir parte del WP tachando el texto del video y explicando que voy a devolver esa guita.
+- resaltar el botón del navbar del WP
+- poder hacer click en la cantidad de TLOS que tengo y que se llenen los campos para generar una orden de compra la mas grande que pueda pagar.
+
+
+- confirmar los tokens:
+telosmain push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TLOSDAC", "TelosDAC", "https://telosdac.io/", "/assets/logos/telosdac.png", "/assets/logos/telosdac-lg.png",true]' -p vapaeetokens@active
+  confirmados:
+telosmain push action vapaeetokens updatetoken '["EDNA", "EDNA", "https://github.com/EDNA-LIFE", "/assets/logos/edna.png", "/assets/logos/edna-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TEACH", "Teachology", "http://teachology.io", "/assets/logos/teach.svg", "/assets/logos/teach-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://proxibots.io", "/assets/logos/proxibots.png", "/assets/logos/proxibots-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io", "/assets/logos/telos.png", "/assets/logos/telos-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["CNT", "Cards & Tokens", "http://cardsandtokens.com", "/assets/logos/cnt.svg", "/assets/logos/cnt-lg.svg",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ACORN", "Acorn", "http://acorns.fun", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["HEART", "Beatitude", "https://steemit.com/@steemchurch", "/assets/logos/beautitude.png", "/assets/logos/beautitude-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["OLIVE", "Olive", "http://democratic.money/olive", "/assets/logos/olive.png", "/assets/logos/olive-lg.png",true]' -p vapaeetokens@active
+
+
+
+
 
 
 
 ----- CHART -----
 http://techanjs.org/
 https://developers.google.com/chart/interactive/docs/gallery/candlestickchart
+
+
+
 
 
 
@@ -75,6 +100,9 @@ cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p use
   - Si hay un deal en la trade page, hay que reordenar los tokens por vol-24h porque puede pasar que la última transacción te cambie el orden.
   - cuando no estás logueado se ven los paneles de resources en /exchange/account cuando estás en baja resolución y no deberían mostrarse
   - el loading del botón de vender (en trade page) no para de girar nunca a pesar de que la transacción se haga con éxito.
+  - en el order editor cuando tenés el precio en cero no te deja apretar el botón de vender pero no te avisa que está mal
+
+
 -- descripción --
     - página del Token X:
       - título, web link, contract name
@@ -113,23 +141,26 @@ Leer esto luego:
 https://cryptodaily.co.uk/2019/04/liberland-initiates-decentralized-autonomous-government-with-eosio
 
 
-
--- ocultar tokens verdaderos --
-telosmain push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io", "/assets/logos/telos.png", "/assets/logos/telos-lg.png",false]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["VIITA", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png",false]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["VIICT", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png",false]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png",false]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["ACORN", "ACORN", "http://acorns.fun", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png",false]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["EDNA", "EDNA", "https://github.com/EDNA-LIFE", "/assets/logos/edna.png", "/assets/logos/edna-lg.png",false]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["TEACH", "Teachology", "http://teachology.io", "/assets/logos/teach.svg", "/assets/logos/teach-lg.png",false]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://proxibots.io", "/assets/logos/proxibots.png", "/assets/logos/proxibots-lg.png",false]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["CNT", "Cards & Tokens", "http://cardsandtokens.com", "/assets/logos/cnt.svg", "/assets/logos/cnt-lg.svg",false]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["BOX", "Board Game Box", "http://bgbox.com", "/assets/logos/box.png", "/assets/logos/box-lg.png",false]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["VPE", "Vapaée", "https://vapaee.io", "/assets/logos/vapaee.png", "/assets/logos/vapaee-lg.png",false]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["BOX", "Board Game Box", "http://bgbox.com", "/assets/logos/box.png", "/assets/logos/box-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["VPE", "Vapaée", "https://vapaee.io", "/assets/logos/vapaee.png", "/assets/logos/vapaee-lg.png",true]' -p vapaeetokens@active
+
+-- ocultar tokens verdaderos --
+telosmain push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io", "/assets/logos/telos.png", "/assets/logos/telos-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ACORN", "Acorn", "http://acorns.fun", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["EDNA", "EDNA", "https://github.com/EDNA-LIFE", "/assets/logos/edna.png", "/assets/logos/edna-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TEACH", "Teachology", "http://teachology.io", "/assets/logos/teach.svg", "/assets/logos/teach-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://proxibots.io", "/assets/logos/proxibots.png", "/assets/logos/proxibots-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["CNT", "Cards & Tokens", "http://cardsandtokens.com", "/assets/logos/cnt.svg", "/assets/logos/cnt-lg.svg",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["OLIVE", "Olive", "http://democratic.money/olive", "/assets/logos/olive.png", "/assets/logos/olive-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["HEART", "Beatitude", "https://steemit.com/@steemchurch", "/assets/logos/beautitude.png", "/assets/logos/beautitude-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TLOSDAC", "TelosDAC", "https://telosdac.io/", "/assets/logos/telosdac.png", "/assets/logos/telosdac-lg.png",true]' -p vapaeetokens@active
 
 
-telosmain push action vapaeetokens addtoken '["revelation21","HEART",4,"revelation21"]' -p revelation21@active
-telosmain push action vapaeetokens updatetoken '["HEART", "Beatitude", "https://steemit.com/@steemchurch", "/assets/logos/beautitude.png", "/assets/logos/beautitude-lg.png",false]' -p revelation21@active
+telosmain push action vapaeetokens addtoken '["revelation21","HEART",4,"revelation21"]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["HEART", "Beatitude", "https://steemit.com/@steemchurch", "/assets/logos/beautitude.png", "/assets/logos/beautitude-lg.png",false]' -p vapaeetokens@active
 
 telosmain push action vapaeetokens addtoken '["telosdacdrop","TLOSDAC",4,"vapaeetokens"]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["TLOSDAC", "TelosDAC", "https://telosdac.io/", "/assets/logos/telosdac.png", "/assets/logos/telosdac-lg.png", false]' -p vapaeetokens@active
@@ -214,9 +245,6 @@ telosmain push action vapaeetokens order '["viterbotelos", "sell", "10.00000000 
       Si timer < next => reagendar y actualizar timer
 
 
-
-
-
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------
 -- Mainnet ----------------------------------------------------------
@@ -229,38 +257,83 @@ telosmain push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]
 telosmain push action vapaeetokens setsnapshot '["snapshots.tf",1,"CNT",0,0,10000,0,"CNT Token Airdrop - Cards & Tokens - http://cardsandtokens.com"]' -p vapaeetokens@active
 
 telosmain set contract boardgamebox $PWD -p boardgamebox@active
+--
+telosmain push action vapaeetokens hotfix '[20, "aaa.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "bbb.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "ccc.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "ddd.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "eee.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "fff.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "aaa.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "bbb.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "ccc.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "ddd.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "eee.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "fff.tlos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "tlos.aaa"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "tlos.bbb"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "tlos.ccc"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "tlos.ddd"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "tlos.eee"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[20, "tlos.fff"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[10, "viterbotelos"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[10, "user11111111"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[10, "user22222222"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[10, "user33333333"]' -p vapaeetokens@active
+telosmain push action vapaeetokens hotfix '[10, "vapaeetokens"]' -p vapaeetokens@active
+
+
+telosmain push action vapaeetokens hotfix '[0, "eee.tlos"]' -p vapaeetokens@active
 
 
 
 
 echo "-- register CNT --" 
-telosmain push action vapaeetokens addtoken '["vapaeetokens","CNT",4,"vapaeetokens"]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["CNT", "Cards & Tokens", "http://cardsandtokens.com", "/assets/logos/cnt.svg", "/assets/logos/cnt-lg.svg", true]' -p vapaeetokens@active
 echo "-- register TLOS --" 
-telosmain push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io", "/assets/logos/telos.png", "/assets/logos/telos-lg.png", true]' -p vapaeetokens@active
+echo "-- register QBE --" 
+telosmain push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png", true]' -p vapaeetokens@active
+echo "-- register ACORN --" 
+telosmain push action vapaeetokens updatetoken '["ACORN", "ACORN", "http://acorns.fun", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png", true]' -p vapaeetokens@active
+echo "-- register EDNA --" 
+telosmain push action vapaeetokens updatetoken '["EDNA", "EDNA", "https://github.com/EDNA-LIFE", "/assets/logos/edna.png", "/assets/logos/edna-lg.png", true]' -p vapaeetokens@active
+echo "-- register TEACH --" 
+telosmain push action vapaeetokens updatetoken '["TEACH", "Teachology", "http://teachology.io", "/assets/logos/teach.svg", "/assets/logos/teach-lg.png", true]' -p vapaeetokens@active
+echo "-- register ROBO --" 
+telosmain push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://proxibots.io", "/assets/logos/proxibots.png", "/assets/logos/proxibots-lg.png", true]' -p vapaeetokens@active
+
+telosmain push action vapaeetokens addtoken '["vapaeetokens","CNT",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["qubicletoken","QBE",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["acornaccount","ACORN",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["oliveaccount","OLIVE",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["revelation21","HEART",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["ednazztokens","EDNA",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["teachology14","TEACH",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["proxibotstkn","ROBO",4,"vapaeetokens"]' -p vapaeetokens@active
+telosmain push action vapaeetokens addtoken '["telosdacdrop","TLOSDAC",4,"vapaeetokens"]' -p vapaeetokens@active
+
+telosmain push action vapaeetokens updatetoken '["TLOS", "Telos", "https://telosfoundation.io", "/assets/logos/telos.png", "/assets/logos/telos-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ACORN", "Acorn", "http://acorns.fun", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["EDNA", "EDNA", "https://github.com/EDNA-LIFE", "/assets/logos/edna.png", "/assets/logos/edna-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["TEACH", "Teachology", "http://teachology.io", "/assets/logos/teach.svg", "/assets/logos/teach-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://proxibots.io", "/assets/logos/proxibots.png", "/assets/logos/proxibots-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["CNT", "Cards & Tokens", "http://cardsandtokens.com", "/assets/logos/cnt.svg", "/assets/logos/cnt-lg.svg",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["OLIVE", "Olive", "http://democratic.money/olive", "/assets/logos/olive.png", "/assets/logos/olive-lg.png",true]' -p vapaeetokens@active
+telosmain push action vapaeetokens updatetoken '["HEART", "Beatitude", "https://steemit.com/@steemchurch", "/assets/logos/beautitude.png", "/assets/logos/beautitude-lg.png",true]' -p revelation21@active
+telosmain push action vapaeetokens updatetoken '["TLOSDAC", "TelosDAC", "https://telosdac.io/", "/assets/logos/telosdac.png", "/assets/logos/telosdac-lg.png",true]' -p vapaeetokens@active
+
+
+
+
 echo "-- register VIITA --" 
 telosmain push action vapaeetokens addtoken '["viitasphere1","VIITA",4,"vapaeetokens"]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["VIITA", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png", true]' -p vapaeetokens@active
 echo "-- register VIICT --" 
 telosmain push action vapaeetokens addtoken '["viitasphere1","VIICT",0,"vapaeetokens"]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["VIICT", "Viitasphere", "https://viitasphere.com", "/assets/logos/viitasphere.png", "/assets/logos/viitasphere-lg.png", false]' -p vapaeetokens@active
-echo "-- register QBE --" 
-telosmain push action vapaeetokens addtoken '["qubicletoken","QBE",4,"vapaeetokens"]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png", true]' -p vapaeetokens@active
-echo "-- register ACORN --" 
-telosmain push action vapaeetokens addtoken '["acornaccount","ACORN",4,"vapaeetokens"]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["ACORN", "ACORN", "http://acorns.fun", "/assets/logos/acorn.svg", "/assets/logos/acorn-lg.png", true]' -p vapaeetokens@active
-echo "-- register EDNA --" 
-telosmain push action vapaeetokens addtoken '["ednazztokens","EDNA",4,"vapaeetokens"]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["EDNA", "EDNA", "https://github.com/EDNA-LIFE", "/assets/logos/edna.png", "/assets/logos/edna-lg.png", true]' -p vapaeetokens@active
-echo "-- register TEACH --" 
-telosmain push action vapaeetokens addtoken '["teachology14","TEACH",4,"vapaeetokens"]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["TEACH", "Teachology", "http://teachology.io", "/assets/logos/teach.svg", "/assets/logos/teach-lg.png", true]' -p vapaeetokens@active
-echo "-- register ROBO --" 
-telosmain push action vapaeetokens addtoken '["proxibotstkn","ROBO",4,"vapaeetokens"]' -p vapaeetokens@active
-telosmain push action vapaeetokens updatetoken '["ROBO", "Proxibots", "https://proxibots.io", "/assets/logos/proxibots.png", "/assets/logos/proxibots-lg.png", true]' -p vapaeetokens@active
-
 
 
 

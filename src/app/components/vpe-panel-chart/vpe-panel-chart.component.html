@@ -1,10 +1,12 @@
 <vpe-panel [title]="local.string.chart">
+        
     <div class="background">
         <!-- 
             <div class="text-lg text-center"><br>{{local.string.chart}}<br>{{local.string.comingsoon}}<br><br></div>
+            *ngIf="chartData && chartData.dataTable && chartData.dataTable.length > 0"
         -->
         <google-chart
-            *ngIf="data"
+            *ngIf="chartData && chartData.dataTable && chartData.dataTable.length > 0"
             [data]="chartData"
             (chartReady)='ready($event)'
             (mouseWheel)="mouseWheel($event)"

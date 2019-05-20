@@ -23,7 +23,9 @@ export class TradePage implements OnInit, OnDestroy {
     currency:Token;
     _orders:TokenOrders;
     timer:number;
+    _chartData:any[];
     private onStateSubscriber: Subscriber<string>;
+    private onBlocklistSubscriber: Subscriber<any[][]>;
 
     @ViewChild(VpePanelOrderEditorComponent) orderform: VpePanelOrderEditorComponent;
    
@@ -39,6 +41,7 @@ export class TradePage implements OnInit, OnDestroy {
     ) {
         this._orders = {sell:[],buy:[]};
         this.onStateSubscriber = new Subscriber<string>(this.onStateChange.bind(this));
+        this.onBlocklistSubscriber = new Subscriber<any[][]>(this.onBlocklistChange.bind(this));
     }
     
     async updateAll(updateUser:boolean) {
@@ -51,17 +54,18 @@ export class TradePage implements OnInit, OnDestroy {
     }
 
     async init() {
-        console.log("TradePage.init() <-- ");
+        // console.log("TradePage.init() <-- ");
         this.orderform ? this.orderform.reset() : null;
         this.comodity = null;
         this.currency = null;
+        this._chartData = [];
         
         setTimeout(_ => { this.updateAll(true); }, 0);
         this.timer = window.setInterval(_ => { this.updateAll(false); }, 15000);
     }
 
     async destroy() {
-        console.log("TradePage.destroy() <-- ");
+        // console.log("TradePage.destroy() <-- ");
         clearInterval(this.timer);
     }
 
@@ -105,6 +109,24 @@ export class TradePage implements OnInit, OnDestroy {
         // return scope ? (scope.summary ? scope.summary : _summary) : _summary;
     }
 
+
+    private regenerateChartData() {
+        if (this.vapaee.scopes[this.scope]) {
+            // console.log("-----------------------------------------");
+            // console.log(this.scope, this.vapaee.scopes[this.scope].blocklist);
+            // console.log("-----------------------------------------");
+            this._chartData = this.vapaee.scopes[this.scope].blocklist;
+            // console.log("this._chartData", this._chartData);
+        } else {
+            // console.error("No existe todavía el scope ", this.scope);
+        }
+    }
+
+    get chartData() {
+        if (!this._chartData) this.regenerateChartData();
+        return this._chartData;
+    }
+
     get scopes() {
         return this.vapaee.scopes;
     }
@@ -115,12 +137,14 @@ export class TradePage implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.onStateSubscriber.unsubscribe();
+        this.onBlocklistSubscriber.unsubscribe();
         this.destroy();
     }
 
     ngOnInit() {
         this.init();
         this.app.onStateChange.subscribe(this.onStateSubscriber);
+        this.vapaee.onBlocklistChange.subscribe(this.onBlocklistSubscriber);
     }
 
     onClickRow(e:{type:string, row:OrderRow}) {
@@ -136,10 +160,15 @@ export class TradePage implements OnInit, OnDestroy {
     }
     
     onStateChange(state:string) {
-        console.log("TradePage.onStateChange("+state+")");
+        // console.log("TradePage.onStateChange("+state+")");
         if (state == "trade") {
             this.destroy();
             this.init();
         }
+    } 
+    
+    onBlocklistChange(blocks:any[][]) {
+        // console.log("TradePage.onBlocklistChange()",blocks);
+        this.regenerateChartData();
     } 
 }

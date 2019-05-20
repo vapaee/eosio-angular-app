@@ -322,10 +322,7 @@ cleos push action vapaeetokens order '["alice", "buy", "5.00000000 TEACH", "0.29
 
 
 
-
-
-
-
+# telosmain push action vapaeetokens cancel '["viterbotelos", "buy", "DDD", "TLOS", [0]]' -p viterbotelos
 
 #
 #echo "-- 1 sell orders -> 1 buy order --"

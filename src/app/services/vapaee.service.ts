@@ -6,6 +6,7 @@ import BigNumber from "bignumber.js";
 import { Feedback } from './feedback.service';
 import { AnalyticsService } from './common/common.services';
 import { CookieService } from 'ngx-cookie-service';
+import { DatePipe } from '@angular/common';
 
 @Injectable()
 export class VapaeeService {
@@ -34,6 +35,7 @@ export class VapaeeService {
     public onCurrentAccountChange:Subject<string> = new Subject();
     public onHistoryChange:Subject<string> = new Subject();
     public onSummaryChange:Subject<string> = new Subject();
+    public onBlocklistChange:Subject<any[][]> = new Subject();
     vapaeetokens:string = "vapaeetokens";    
     
     private setOrdertables: Function;
@@ -54,6 +56,7 @@ export class VapaeeService {
         private scatter: ScatterService,
         private cookies: CookieService, 
         public analytics: AnalyticsService,
+        private datePipe: DatePipe
     ) {
         this.scopes = {};
         this.current = this.default;
@@ -64,11 +67,7 @@ export class VapaeeService {
         this.updateLogState();  
         this.fetchTokens().then(data => {
             this.tokens = data.tokens;
-            this.tokens.sort(function(a:Token, b:Token) {
-                if(a.appname < b.appname) return -1;
-                if(a.appname > b.appname) return 1;
-                return 0;
-            });
+            this.resortTokens();
             this.zero_telos = new Asset("0.0000 TLOS", this);
             this.setReady();
             this.fetchTokensStats();
@@ -96,7 +95,9 @@ export class VapaeeService {
     }
 
     get account() {
-        return this.scatter.logged ? this.scatter.account : {};
+        return this.scatter.logged ? 
+        this.scatter.account :
+        this.scatter.default;
     }
 
     // --
@@ -159,6 +160,12 @@ export class VapaeeService {
             this.current.name = profile;
             if (profile != "guest") {
                 this.current.data = await this.getAccountData(this.current.name);
+            } else {
+                console.error("------------------------------------------");
+                console.error("------------------------------------------");
+                console.error("WARNING!!! current is guest", [profile, this.account, this.current]);
+                console.error("------------------------------------------");
+                console.error("------------------------------------------");
             }
             // this.scopes = {};
             this.balances = [];
@@ -171,13 +178,15 @@ export class VapaeeService {
     }
 
     private updateLogState() {
-        console.log("VapaeeService.updateLogState()", [this]);
         this.loginState = "no-scatter";
         this.feed.setLoading("log-state", true);
+        // console.error("VapaeeService.updateLogState() ", this.loginState);
         this.scatter.waitConnected.then(() => {
             this.loginState = "no-logged";
+            // console.error("VapaeeService.updateLogState()   ", this.loginState);
             if (this.scatter.logged) {
                 this.loginState = "account-ok";
+                // console.error("VapaeeService.updateLogState()     ", this.loginState);
             }
             this.feed.setLoading("log-state", false);
         });
@@ -206,7 +215,7 @@ export class VapaeeService {
             total: amount.toString(8),
             price: price.toString(8)
         }).then(async result => {
-            var _ = await this.updateTrade(amount.token, price.token);
+            this.updateTrade(amount.token, price.token);
             return result;
         });
     }
@@ -221,7 +230,7 @@ export class VapaeeService {
             currency: currency.symbol,
             orders: orders
         }).then(async result => {
-            var _ = await this.updateTrade(comodity, currency);
+            this.updateTrade(comodity, currency);
             return result;
         });
     }
@@ -367,7 +376,7 @@ export class VapaeeService {
                 balances = await this.fetchBalances(account);
             }
             this.balances = balances;
-            console.log("VapaeeService balances updated");
+            // console.log("VapaeeService balances updated");
             this.feed.setLoading("balances", false);
             return this.balances;
         });
@@ -439,7 +448,10 @@ export class VapaeeService {
             this.getTableSummary(comodity, currency, true),
             this.getOrderTables(),
             updateUser ? this.updateCurrentUser(): null
-        ]);
+        ]).then(r => {
+            this.resortTokens();
+            return r;
+        });
     }
 
     async updateCurrentUser(): Promise<any> {
@@ -456,6 +468,18 @@ export class VapaeeService {
             this.feed.setLoading("current", false);
             throw e;
         });
+    }
+
+    getBlockHistoryTotalPagesFor(scope:string, pagesize: number) {
+        if (!this.scopes || !this.scopes[scope]) return 0;
+        var total = this.scopes[scope].blocks;
+        var mod = total % pagesize;
+        var dif = total - mod;
+        var pages = dif / pagesize;
+        if (mod > 0) {
+            pages +=1;
+        }
+        return pages;
     }
 
     getHistoryTotalPagesFor(scope:string, pagesize: number) {
@@ -480,11 +504,11 @@ export class VapaeeService {
         this.feed.setLoading("history."+scope, true);
         aux = this.waitOrdertables.then(async _ => {
             if (pagesize == -1) {
-                pagesize = 100;                
+                pagesize = 10;                
             }
             if (page == -1) {
                 var pages = this.getHistoryTotalPagesFor(scope, pagesize);
-                page = pages-2;
+                page = pages-3;
                 if (page < 0) page = 0;
             }
 
@@ -512,6 +536,14 @@ export class VapaeeService {
         return result;
     }
 
+
+    private auxHourToLabel(hour:number): string {
+        var d = new Date(hour * 1000 * 60 * 60);
+        var label = d.getHours() == 0 ? this.datePipe.transform(d, 'dd/MM') : d.getHours() + "h";
+        
+        return label;
+    }
+
     async getBlockHistory(comodity:Token, currency:Token, page:number = -1, pagesize:number = -1, force:boolean = false): Promise<any> {
         var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
         if (comodity == this.telos) {
@@ -521,21 +553,74 @@ export class VapaeeService {
         var result = null;
         this.feed.setLoading("block-history."+scope, true);
 
-        /*
+        aux = this.waitOrdertables.then(async _ => {
+            if (pagesize == -1) {
+                pagesize = 10;
+            }
+            if (page == -1) {
+                var pages = this.getHistoryTotalPagesFor(scope, pagesize);
+                page = pages-3;
+                if (page < 0) page = 0;
+            }
+            var promises = [];
+            for (var i=0; i<pages; i++) {
+                var promise = this.fetchBlockHistory(scope, i, pagesize);
+                promises.push(promise);
+            }
 
-        
-        */
+            return Promise.all(promises).then(_ => {
+                this.feed.setLoading("block-history."+scope, false);
+                this.scopes[scope].blocklist = [];
+                var now = new Date();
+                var hora = 1000 * 60 * 60;
+                var hour = Math.floor(now.getTime()/hora);
+                // console.log("->", hour);
+                var last_block = null;
+                var last_hour = null;
+                for (var i in this.scopes[scope].block) {
+                    var block:HistoryBlock = this.scopes[scope].block[i];
+                    var label = this.auxHourToLabel(block.hour);
+                    // console.log("->", i, label, block);
+                    var obj:any[] = [label];
+                    if (last_block) {
+                        var dif = block.hour - last_block.hour;
+                        for (var j=1; j<dif; j++) {
+                            var label_i = this.auxHourToLabel(last_block.hour+j);
+                            // console.log("-->", j, label_i, block);
+                            var price = last_block.price.amount.toNumber();
+                            var aux = [label_i, price, price, price, price];
+                            this.scopes[scope].blocklist.push(aux);
+                        }
+                    }
+                    obj.push(block.max.amount.toNumber());
+                    obj.push(block.entrance.amount.toNumber());
+                    obj.push(block.price.amount.toNumber());
+                    obj.push(block.min.amount.toNumber());
+                    this.scopes[scope].blocklist.push(obj);
+                    last_block = block;
+                }
 
-
-        // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-
-
+                if (last_block && hour != last_block.hour) {
+                    var dif = hour - last_block.hour;
+                    for (var j=1; j<=dif; j++) {
+                        var label_i = this.auxHourToLabel(last_block.hour+j);
+                        var price = last_block.price.amount.toNumber();
+                        var aux = [label_i, price, price, price, price];
+                        this.scopes[scope].blocklist.push(aux);
+                    }
+                }
+                
+                // console.log("---------------->", this.scopes[scope].blocklist);
+                this.onBlocklistChange.next(this.scopes[scope].blocklist);
+                return this.scopes[scope].block;
+            }).catch(e => {
+                this.feed.setLoading("block-history."+scope, false);
+                throw e;
+            });
+        });
 
         if (this.scopes[scope] && !force) {
-            result = this.scopes[scope].history;
+            result = this.scopes[scope].block;
         } else {
             result = aux;
         }
@@ -702,7 +787,7 @@ export class VapaeeService {
     }
     
     async getOrderTables(): Promise<any> {
-        console.log("VapaeeService.getOrderTables()");
+        // console.log("VapaeeService.getOrderTables()");
         var tables = await this.fetchOrderTables();
 
         for (var i in tables.rows) {
@@ -718,6 +803,7 @@ export class VapaeeService {
                 this.scopes[scope].header.sell.total = new Asset(tables.rows[i].total, this);
                 this.scopes[scope].header.sell.orders = tables.rows[i].orders;
                 this.scopes[scope].deals = tables.rows[i].deals;
+                this.scopes[scope].blocks = tables.rows[i].blocks;
             }
         }
 
@@ -939,10 +1025,13 @@ export class VapaeeService {
         var currency_sym = scope.split(".")[1].toUpperCase();
         return this.scopes[scope] || {
             scope: scope,
-            deals: 0,
             orders: { sell: [], buy: [] },
+            deals: 0,
             history: [],
             tx: {},
+            blocks: 0,
+            block: {},
+            blocklist: [],
             summary: {},
             header: { 
                 sell: {total:new Asset("0.0 " + comodity_sym, this), orders:0}, 
@@ -993,10 +1082,59 @@ export class VapaeeService {
         });
     }
 
+    private fetchBlockHistory(scope:string, page:number = 0, pagesize:number = 25): Promise<TableResult> {
+        var pages = this.getBlockHistoryTotalPagesFor(scope, pagesize);
+        var id = page*pagesize;
+        // console.log("VapaeeService.fetchBlockHistory(", scope, ",",page,",",pagesize,"): id:", id, "pages:", pages);
+        if (page < pages) {
+            if (this.scopes[scope].block["id-" + id]) {
+                var result:TableResult = {more:false,rows:[]};
+                for (var i=0; i<pagesize; i++) {
+                    var id_i = id+i;
+                    var block = this.scopes[scope].block["id-" + id_i];
+                    if (block) {
+                        result.rows.push(block);
+                    } else {
+                        break;
+                    }
+                }
+                if (result.rows.length == pagesize) {
+                    // we have the complete page in memory
+                    // console.log("VapaeeService.fetchHistory(", scope, ",",page,",",pagesize,"): result:", result.rows.map(({ id }) => id));
+                    return Promise.resolve(result);
+                }                
+            }
+        }
+
+        return this.utils.getTable("blockhistory", {scope:scope, limit:pagesize, lower_bound:""+(page*pagesize)}).then(result => {
+            // console.log("**************");
+            // console.log("block History crudo:", result);
+            this.scopes[scope] = this.auxAssertScope(scope);
+            this.scopes[scope].block = this.scopes[scope].block || {}; 
+            // console.log("this.scopes[scope].block:", this.scopes[scope].block);
+            for (var i=0; i < result.rows.length; i++) {
+                var block:HistoryBlock = {
+                    id: result.rows[i].id,
+                    hour: result.rows[i].hour,
+                    price: new Asset(result.rows[i].price, this),
+                    entrance: new Asset(result.rows[i].entrance, this),
+                    max: new Asset(result.rows[i].max, this),
+                    min: new Asset(result.rows[i].min, this),
+                    volume: new Asset(result.rows[i].volume, this),
+                    date: new Date(result.rows[i].date)
+                }
+                this.scopes[scope].block["id-" + block.id] = block;
+            }   
+            // console.log("block History final:", this.scopes[scope].block);
+            // console.log("-------------");
+            return result;
+        });
+    }    
+
     private fetchHistory(scope:string, page:number = 0, pagesize:number = 25): Promise<TableResult> {
-        // console.log("VapaeeService.fetchHistory(", scope, ",",page,",",pagesize,"): ");
         var pages = this.getHistoryTotalPagesFor(scope, pagesize);
         var id = page*pagesize;
+        // console.log("VapaeeService.fetchHistory(", scope, ",",page,",",pagesize,"): id:", id, "pages:", pages);
         if (page < pages) {
             if (this.scopes[scope].tx["id-" + id]) {
                 var result:TableResult = {more:false,rows:[]};
@@ -1005,9 +1143,15 @@ export class VapaeeService {
                     var trx = this.scopes[scope].tx["id-" + id_i];
                     if (trx) {
                         result.rows.push(trx);
+                    } else {
+                        break;
                     }
                 }
-                return Promise.resolve(result);
+                if (result.rows.length == pagesize) {
+                    // we have the complete page in memory
+                    // console.log("VapaeeService.fetchHistory(", scope, ",",page,",",pagesize,"): result:", result.rows.map(({ id }) => id));
+                    return Promise.resolve(result);
+                }                
             }
         }
 
@@ -1115,7 +1259,15 @@ export class VapaeeService {
 
             return data;
         });
-    }    
+    }
+
+    private resortTokens() {
+        this.tokens.sort(function(a:Token, b:Token) {
+            if(a.appname < b.appname) return -1;
+            if(a.appname > b.appname) return 1;
+            return 0;
+        });    
+    }
 
 }
 
@@ -1199,9 +1351,13 @@ export interface TableMap {
 export interface Table {
     scope: string;
     deals: number;
+    blocks: number;
+    blocklist: any[][];
+    block: {[id:string]:HistoryBlock};
     orders: TokenOrders;
     history: HistoryTx[];
     tx: {[id:string]:HistoryTx};
+    
     summary: Summary;
     header: TableHeader;
 }
@@ -1240,6 +1396,17 @@ export interface HistoryTx {
     seller: string;
     date: Date;
     isbuy: boolean;
+}
+
+export interface HistoryBlock {
+    id: number;
+    hour: number;
+    price: Asset;
+    entrance: Asset;
+    max: Asset;
+    min: Asset;
+    volume: Asset;
+    date: Date;
 }
 
 export interface Order {

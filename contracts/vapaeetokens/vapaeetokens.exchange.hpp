@@ -410,9 +410,18 @@ namespace vapaee {
             name tmp_name;
             asset tmp_asset;
             asset tmp_pay;
+            asset last_price = price;
             symbol_code A = amount.symbol.code();
             symbol_code B = payment.symbol.code();
             name scope = aux_get_history_scope_for_symbols(A, B);
+            
+            // find out last price
+            tablesummary summary(get_self(), scope.value);
+            auto ptr = summary.find(name("lastone").value);
+            if (ptr != summary.end()) {
+                last_price = ptr->price;
+            }
+
             bool is_buy = false;
             PRINT(" -> scope: ", scope.to_string(), "\n");
             if (scope == aux_get_scope_for_tokens(B, A)) {
@@ -468,6 +477,7 @@ namespace vapaee {
                     a.pay = payment.symbol.code();
                     a.orders = 0;
                     a.deals = 1;
+                    a.blocks = 1;
                     a.total = asset(0, amount.symbol);
                 });
             } else {
@@ -488,8 +498,7 @@ namespace vapaee {
 
 
             // save table summary (price & volume/h)
-            tablesummary summary(get_self(), scope.value);
-            auto ptr = summary.find(label.value);
+            ptr = summary.find(label.value);
             if (ptr == summary.end()) {
                 summary.emplace(get_self(), [&](auto & a) {
                     a.label = label;
@@ -497,9 +506,11 @@ namespace vapaee {
                     a.volume = payment;
                     a.date = date;
                     a.hour = hour;
-                    a.entrance = price;
+                    a.entrance = last_price;
                     a.min = price;
                     a.max = price;
+                    if (last_price > a.max) a.max = last_price;
+                    if (last_price < a.min) a.min = last_price;
                 });
             } else {
                 if (ptr->hour == hour) {
@@ -517,24 +528,67 @@ namespace vapaee {
                         a.volume = payment;
                         a.date = date;
                         a.hour = hour;
-                        a.entrance = price;
+                        a.entrance = last_price;
                         a.min = price;
                         a.max = price;
+                        if (last_price > a.max) a.max = last_price;
+                        if (last_price < a.min) a.min = last_price;
                     });
                 }
             }
+
+            ptr = summary.find(label.value);
+            asset volume = ptr->volume;
+            asset entrance = ptr->entrance;
+            asset min = ptr->min;
+            asset max = ptr->max;
+
+            // save current block
+            ptr = summary.find(name("lastone").value);
+            if (ptr == summary.end()) {
+                summary.emplace(get_self(), [&](auto & a) {
+                    a.label = name("lastone");
+                    a.price = price;
+                    a.volume = volume;
+                    a.date = date;
+                    a.hour = hour;
+                    a.entrance = entrance;
+                    a.min = min;
+                    a.max = max;
+                });
+            } else {
+                summary.modify(*ptr, get_self(), [&](auto & a){
+                    a.price = price;
+                    a.volume = volume;
+                    a.date = date;
+                    a.hour = hour;
+                    a.entrance = entrance;
+                    a.min = min;
+                    a.max = max;
+                });
+            }
+
             // save table summary (price & volume/h)
             blockhistory blocktable(get_self(), scope.value);
-            auto bptr = blocktable.find(hour);
-            if (bptr == blocktable.end()) {
+            uint64_t id = blocktable.available_primary_key();
+            auto index = blocktable.template get_index<"hour"_n>();
+            auto bptr = index.find(hour);
+            if (bptr == index.end()) {
                 blocktable.emplace(get_self(), [&](auto & a) {
+                    a.id = id;
                     a.price = price;
                     a.volume = payment;
                     a.date = date;
                     a.hour = hour;
-                    a.entrance = price;
+                    a.entrance = last_price;
                     a.min = price;
                     a.max = price;
+                    if (last_price > a.max) a.max = last_price;
+                    if (last_price < a.min) a.min = last_price;
+                });
+                // update how many blocks do we have
+                orderstables.modify(*orders_itr, same_payer, [&](auto & a){
+                    a.blocks += 1;
                 });
             } else {
                 blocktable.modify(*bptr, get_self(), [&](auto & a){
@@ -542,7 +596,7 @@ namespace vapaee {
                     a.volume += payment;
                     a.date = date;
                     if (price > a.max) a.max = price;
-                    if (price < a.min) a.min = price;
+                    if (price < a.min) a.min = price;                    
                 });
             }
             
@@ -1224,13 +1278,79 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::action_cancel_all_orders() ...\n");
         }
 
-        void action_hotfix(symbol_code & code) {
+        void action_hotfix(int num, name account) {
             PRINT("vapaee::token::exchange::action_poblate_user_orders_table()\n");
             require_auth(get_self());
+            int count = 0;
 
-            tokens tokenstable(get_self(), get_self().value);
-            auto tk_itr = tokenstable.find(code.raw());
-            tokenstable.erase(*tk_itr);           
+
+            // Borrar ordertables
+            tokens table0(get_self(), get_self().value);
+            for (auto ptr = table0.begin(); ptr != table0.end(); ptr = table0.begin()) {
+                table0.erase(*ptr);
+                if (count++ > num) break;
+            }
+
+            // Borrar ordertables
+            ordertables table(get_self(), get_self().value);
+            for (auto ptr = table.begin(); ptr != table.end(); ptr = table.begin()) {
+                table.erase(*ptr);
+                if (count++ > num) break;
+            }
+
+            // Borrar earnings
+            earnings table1(get_self(), get_self().value);
+            auto eptr_1 = table1.find(symbol_code("AAA").raw());
+            auto eptr_2 = table1.find(symbol_code("BBB").raw());
+            auto eptr_3 = table1.find(symbol_code("CCC").raw());
+            auto eptr_4 = table1.find(symbol_code("DDD").raw());
+            auto eptr_5 = table1.find(symbol_code("EEE").raw());
+            auto eptr_6 = table1.find(symbol_code("FFF").raw());
+            if (eptr_1 != table1.end()) table1.erase(*eptr_1);
+            if (eptr_2 != table1.end()) table1.erase(*eptr_2);
+            if (eptr_3 != table1.end()) table1.erase(*eptr_3);
+            if (eptr_4 != table1.end()) table1.erase(*eptr_4);
+            if (eptr_5 != table1.end()) table1.erase(*eptr_5);
+            if (eptr_6 != table1.end()) table1.erase(*eptr_6);            
+
+            
+ 
+            // Borrar history
+            history table2(get_self(), account.value);
+            for (auto ptr = table2.begin(); ptr != table2.end(); ptr = table2.begin()) {
+                table2.erase(*ptr);
+                if (count++ > num) break;
+            }
+             
+            // Borrar blocks
+            blockhistory table3(get_self(), account.value);
+            for (auto ptr = table3.begin(); ptr != table3.end(); ptr = table3.begin()) {
+                table3.erase(*ptr);
+                if (count++ > num) break;
+            }
+            
+            // Borrar blocks
+            tablesummary table4(get_self(), account.value);
+            for (auto ptr = table4.begin(); ptr != table4.end(); ptr = table4.begin()) {
+                table4.erase(*ptr);
+                if (count++ > num) break;
+            }
+
+            // Borrar deposits
+            deposits table5(get_self(), account.value);
+            for (auto ptr = table5.begin(); ptr != table5.end(); ptr = table5.begin()) {
+                table5.erase(*ptr);
+                if (count++ > num) break;
+            }
+
+            // Borrar earnings
+            earnings table6(get_self(), get_self().value);
+            for (auto ptr = table6.begin(); ptr != table6.end(); ptr = table6.begin()) {
+                table6.erase(*ptr);
+                if (count++ > num) break;
+            }
+
+            
             PRINT("vapaee::token::exchange::action_poblate_user_orders_table() ...\n");
         }
 

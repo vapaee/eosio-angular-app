@@ -34,6 +34,7 @@ import { ChartHTMLTooltip } from './chart-html-tooltip';
 export class GoogleChartComponent implements OnChanges, GoogleChartComponentInterface {
 
   @Input() public data: GoogleChartInterface;
+  private innerdata: GoogleChartInterface;
 
   @Output() public chartReady: EventEmitter<ChartReadyEvent>;
   @Output() public chartReadyOneTime: EventEmitter<ChartReadyEvent>;
@@ -79,51 +80,63 @@ export class GoogleChartComponent implements OnChanges, GoogleChartComponentInte
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    console.log("GoogleChartComponent.ngOnChanges()", changes);
-    const key = 'data';
-    if(changes[key]) {
-
-      if(!this.data) {
-        return;
-      }
-
-      this.options = this.data.options;
-      if (!this.options) {
-        this.options = {};
-      }
-
-      this.data.component = this;
-
-      this.loaderService.load().then(() => {
-        if(this.wrapper === undefined || this.wrapper.getChartType() !== this.data.chartType) {
-          this.convertOptions();
-          if(this.data.opt_firstRowIsData && Array.isArray(this.data.dataTable)) {
-            this.data.dataTable = google.visualization.arrayToDataTable(this.data.dataTable, true);
-          }
-          this.wrapper = new google.visualization.ChartWrapper(this.data);
-          this.registerChartWrapperEvents();
+    // console.log("GoogleChartComponent.ngOnChanges()", changes, [this.data.dataTable]);
+    if (!this.wrapper) {
+      const key = 'data';
+      if(changes[key]) {
+  
+        if(!this.data) {
+          return;
         } else {
-          // this.unregisterEvents();
-
+          this.innerdata = {
+            dataTable:this.data.dataTable,
+            chartType: this.data.chartType,
+            opt_firstRowIsData: this.data.opt_firstRowIsData,
+            options: this.data.options,
+            formatters: this.data.formatters
+          }
+        }        
+  
+        this.options = this.innerdata.options;
+        if (!this.options) {
+          this.options = {};
         }
-        this.draw();
-      });
-    }
+  
+        this.innerdata.component = this;
+  
+        this.loaderService.load().then(() => {
+          if(this.wrapper === undefined || this.wrapper.getChartType() !== this.data.chartType) {
+            this.convertOptions();
+            if(this.innerdata.opt_firstRowIsData && Array.isArray(this.innerdata.dataTable)) {
+              this.innerdata.dataTable = google.visualization.arrayToDataTable(this.innerdata.dataTable, true);
+            }
+            this.wrapper = new google.visualization.ChartWrapper(this.innerdata);
+            this.registerChartWrapperEvents();
+          } else {
+            // this.unregisterEvents();
+  
+          }
+          this.draw();
+        });
+      }
+    } else {
+      this.redraw(this.data.dataTable);
+    }    
   }
 
   public redraw(dataTable:any[] = null, options = null): void {
-    console.log("GoogleChartComponent.redraw()", dataTable);
-    this.data.options = options || this.data.options;
-    this.data.dataTable = dataTable || this.data.dataTable;
-    if (this.data.opt_firstRowIsData && Array.isArray(this.data.dataTable)) {
-      this.data.dataTable = google.visualization.arrayToDataTable(this.data.dataTable, true);
+    // console.log("GoogleChartComponent.redraw()", dataTable);
+    this.innerdata.options = options || this.innerdata.options;
+    this.innerdata.dataTable = dataTable || this.innerdata.dataTable;
+    if (this.innerdata.opt_firstRowIsData && Array.isArray(this.innerdata.dataTable)) {
+      this.innerdata.dataTable = google.visualization.arrayToDataTable(this.innerdata.dataTable, true);
     }
     this.draw();
   }
 
   public draw(): void {
-    console.log("GoogleChartComponent.draw()");
-    this.wrapper.setDataTable(this.data.dataTable);
+    // console.log("GoogleChartComponent.draw()");
+    this.wrapper.setDataTable(this.innerdata.dataTable);
     this.convertOptions();
     this.wrapper.setOptions(this.options);
     this.reformat();
@@ -134,12 +147,12 @@ export class GoogleChartComponent implements OnChanges, GoogleChartComponentInte
    * Applies formatters to data columns, if defined
    */
   private reformat() {
-    if(!this.data) {
+    if(!this.innerdata) {
         return;
     }
 
-    if (this.data.formatters !== undefined) {
-      for (const formatterConfig of this.data.formatters) {
+    if (this.innerdata.formatters !== undefined) {
+      for (const formatterConfig of this.innerdata.formatters) {
         const formatterConstructor = google.visualization[formatterConfig.type];
         const formatterOptions = formatterConfig.options;
         const formatter = new formatterConstructor(formatterOptions);
@@ -280,10 +293,10 @@ export class GoogleChartComponent implements OnChanges, GoogleChartComponentInte
 
   private registerChartEvents(): void {
     const chart = this.wrapper.getChart();
-    console.log("*******************************************************");
-    console.log(google);
-    console.log(chart);
-    console.log("*******************************************************");
+    // console.log("*******************************************************");
+    // console.log(google);
+    // console.log(chart);
+    // console.log("*******************************************************");
     
     // https://stackoverflow.com/a/26067800/2274525
     var self = this;
@@ -291,7 +304,20 @@ export class GoogleChartComponent implements OnChanges, GoogleChartComponentInte
         // cross-browser wheel delta
         var e = window.event || e; // old IE support
         var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-        self.mouseWheel.emit({delta:delta});        
+        self.mouseWheel.emit({delta:delta});
+        
+        if (typeof e.stopPropagation == "function") {
+          // console.log("calling e.stopPropagation()")
+          e.stopPropagation();
+        }
+        if (typeof e.stopImmediatePropagation == "function") {
+          // console.log("calling e.stopImmediatePropagation()")
+          e.stopImmediatePropagation();
+        }
+        if (typeof e.preventDefault == "function") {
+          // console.log("calling e.preventDefault()")
+          e.preventDefault();
+        }
         return false;
     }    
     if(this.mouseWheel.observers.length > 0) {
@@ -305,6 +331,20 @@ export class GoogleChartComponent implements OnChanges, GoogleChartComponentInte
             // IE 6/7/8
             myitem.attachEvent("onmousewheel", MouseWheelHandler);
         }     
+    }
+
+    // resize event
+    if(window["attachEvent"]) {
+        window["attachEvent"]('onresize', (e) => {
+          console.log("RESIZE");
+          this.redraw(this.data.dataTable);
+        });
+    }
+    else if(window["addEventListener"]) {
+        window["addEventListener"]('resize', (e) => {
+          console.log("RESIZE");
+          this.redraw(this.data.dataTable);
+        });
     }
     
     
@@ -341,11 +381,11 @@ export class GoogleChartComponent implements OnChanges, GoogleChartComponentInte
 
   private registerChartWrapperEvents(): void {
     google.visualization.events.addListener(this.wrapper, 'ready', () => {
-      this.chartReady.emit({message: 'Chart ready'});
+      this.chartReady.emit({message: 'Chart ready', component:this});
     });
 
     google.visualization.events.addOneTimeListener(this.wrapper, 'ready', () => {
-      this.chartReadyOneTime.emit({message: 'Chart ready (one time)'});
+      this.chartReadyOneTime.emit({message: 'Chart ready (one time)', component:this});
       this.registerChartEvents();
     });
 
@@ -427,7 +467,7 @@ export class GoogleChartComponent implements OnChanges, GoogleChartComponentInte
 
   private convertOptions() {
     try {
-      this.options = google.charts[this.data.chartType].convertOptions(this.options);
+      this.options = google.charts[this.innerdata.chartType].convertOptions(this.options);
     } catch (error) {
       return;
     }

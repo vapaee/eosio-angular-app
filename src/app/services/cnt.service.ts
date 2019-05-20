@@ -161,11 +161,11 @@ export class CntService {
     
 
     private updateLogState() {
-        console.log("CntService.updateLogState()", [this]);
+        console.log("CntService.updateLogState()");
         this.loginState = "no-scatter";
         this.scatter.waitConnected.then(() => {
             this.loginState = "no-logged";
-            console.log("this.scatter", [this.scatter]);
+            // console.log("this.scatter", [this.scatter]);
             if (this.scatter.logged) {
                 this.loginState = "no-profiles";
                 if (this.profiles.length == 0) {
@@ -197,7 +197,6 @@ export class CntService {
                             if (this.logged) this.loginState = "profile-ok";
                         });
                     }
-
                 }
             }
         })
