@@ -36,6 +36,18 @@ telosmain push action vapaeetokens updatetoken '["OLIVE", "Olive", "http://democ
 
 
 
+Finally, Vapaée DEX is live !!!
+Please take a moment to check it out.
+https://vapaee.io
+
+Sorry that I couldn't create a tutorial video. Maybe this week.
+For now, here are some screen captures
+https://steemit.com/telos/@viterbo/vapaee-dex-basic-version-released
+
+I created a dedicated group to discuss any related topic
+https://t.me/vapaee
+
+
 
 
 
@@ -101,6 +113,12 @@ cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p use
   - cuando no estás logueado se ven los paneles de resources en /exchange/account cuando estás en baja resolución y no deberían mostrarse
   - el loading del botón de vender (en trade page) no para de girar nunca a pesar de que la transacción se haga con éxito.
   - en el order editor cuando tenés el precio en cero no te deja apretar el botón de vender pero no te avisa que está mal
+
+
+- lista de erores que devuelve la blockchain:
+ERROR: { "code": 500, "message": "Internal Service Error", "error": { "code": 3050003, "name": "eosio_assert_message_exception", "what": "eosio_assert_message assertion failure", "details": [ { "message": "assertion failure with message: comparison of assets with different symbols is not allowed", "file": "wasm_interface.cpp", "line_number": 964, "method": "eosio_assert" } ] } }
+
+
 
 
 -- descripción --
