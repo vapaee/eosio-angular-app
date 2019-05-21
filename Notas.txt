@@ -113,7 +113,8 @@ cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p use
   - cuando no estás logueado se ven los paneles de resources en /exchange/account cuando estás en baja resolución y no deberían mostrarse
   - el loading del botón de vender (en trade page) no para de girar nunca a pesar de que la transacción se haga con éxito.
   - en el order editor cuando tenés el precio en cero no te deja apretar el botón de vender pero no te avisa que está mal
-
+  - Estando logueado y mirando un market donde tengo órdenes, si estas son vendidas, desaparecen de la lista de órdenes pero la lista peronal de mis órdenes sigue sin actualizarse.
+  - página trade. si obtenés un error y cambiás de token, el mensaje de error persiste. Habría que limpiar de errores si se cambia el token/market.
 
 - lista de erores que devuelve la blockchain:
 ERROR: { "code": 500, "message": "Internal Service Error", "error": { "code": 3050003, "name": "eosio_assert_message_exception", "what": "eosio_assert_message assertion failure", "details": [ { "message": "assertion failure with message: comparison of assets with different symbols is not allowed", "file": "wasm_interface.cpp", "line_number": 964, "method": "eosio_assert" } ] } }
@@ -262,6 +263,8 @@ telosmain push action vapaeetokens order '["viterbotelos", "sell", "10.00000000 
     - si el primero no está vencido, se fija si está agendado comparando timer con next.
       Si timer < next => reagendar y actualizar timer
 
+cleos push action vapaeetokens order '["bob", "buy", "1.00000000 EDNA", "0.42000000 TLOS"]' -p bob
+telosmain push action vapaeetokens order '["viterbotelos", "buy", "5.00000000 EDNA", "0.00047800 TLOS"]' -p viterbotelos
 
 ---------------------------------------------------------------------
 ---------------------------------------------------------------------

@@ -11,6 +11,7 @@ namespace vapaee {
     };
 };
 
+#include "vapaeetokens.errors.hpp"
 #include "vapaeetokens.dispatcher.hpp"
 #include "vapaeetokens.core.hpp"
 #include "vapaeetokens.airdrop.hpp"

@@ -93,6 +93,9 @@ namespace vapaee {
             deposits depositstable(get_self(), owner.value);
             auto itr = depositstable.find(amount.symbol.code().raw());
             eosio_assert(itr != depositstable.end(), "user has no deposits for this token to subtract from");
+
+            eosio_assert(itr->amount.symbol == amount.symbol,
+                create_error_asset2(ERROR_ASD_1, itr->amount, amount).c_str());
             if (itr->amount == amount) {
                 PRINT("  itr->amount == amount: ",  amount.to_string(), "\n");
                 depositstable.erase(itr);
@@ -133,6 +136,8 @@ namespace vapaee {
                 });
             } else {
                 depositstable.modify(*itr, aux_get_modify_payer(ram_payer), [&](auto& a){
+                    eosio_assert(a.amount.symbol == amount.symbol,
+                        create_error_asset2(ERROR_AAD_1, a.amount, amount).c_str());                    
                     a.amount += amount;
                 });
             }
@@ -400,28 +405,21 @@ namespace vapaee {
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history()\n");
             PRINT(" buyer: ", buyer.to_string(), "\n");
             PRINT(" seller: ", seller.to_string(), "\n");
-            PRINT(" amount: ", amount.to_string(), "\n");
-            PRINT(" price: ", price.to_string(), "\n");
-            PRINT(" payment: ", payment.to_string(), "\n");
-            PRINT(" buyfee: ", buyfee.to_string(), "\n");
-            PRINT(" sellfee: ", sellfee.to_string(), "\n");
-            
+            PRINT(" amount: ", amount.to_string(), "\n");   // 0.00047800 TLOS
+            PRINT(" price: ", price.to_string(), "\n");     // 2092.05020920 EDNA
+            PRINT(" payment: ", payment.to_string(), "\n"); // 1.00000000 EDNA
+            PRINT(" buyfee: ", buyfee.to_string(), "\n");   // 0.00000047 TLOS
+            PRINT(" sellfee: ", sellfee.to_string(), "\n"); // 0.00200000 EDNA
+    
             time_point_sec date = time_point_sec(now());
             name tmp_name;
             asset tmp_asset;
             asset tmp_pay;
-            asset last_price = price;
+            
             symbol_code A = amount.symbol.code();
             symbol_code B = payment.symbol.code();
             name scope = aux_get_history_scope_for_symbols(A, B);
             
-            // find out last price
-            tablesummary summary(get_self(), scope.value);
-            auto ptr = summary.find(name("lastone").value);
-            if (ptr != summary.end()) {
-                last_price = ptr->price;
-            }
-
             bool is_buy = false;
             PRINT(" -> scope: ", scope.to_string(), "\n");
             if (scope == aux_get_scope_for_tokens(B, A)) {
@@ -435,6 +433,11 @@ namespace vapaee {
                 tmp_asset = amount;
                 tmp_pay = price;
                 tmp_pay.amount = amount.amount * ((double)price.amount / (double) pow(10.0, price.symbol.precision()));
+
+                // DEBUGGING --> pasa por acá sin problemas
+                // amount: 0.00047800 TLOS
+                // payment: 1.00000000 EDNA
+                // tmp_asset: 0.00047800 TLOS
                 amount = payment;
                 payment = tmp_asset;
                 
@@ -488,6 +491,28 @@ namespace vapaee {
                     a.total = asset(a.total.amount, amount.symbol);
                 });
             }
+            /*
+            // DEBUGGING CODE (ini) -------------------------------------------------
+            if (payment.symbol.code().to_string() == string("EDNA") || amount.symbol.code().to_string() == string("EDNA")) {
+                eosio_assert(false,
+                    create_error_asset4("MESSAGE FROM VITER to debug EDNA token trading. line 448",
+                    amount, payment, price, last_price).c_str());
+            }
+            // DEBUGGING CODE (end) -------------------------------------------------
+            */
+            // DEBUGGING CODE ---> PASA
+            // amount: 1.00000000 EDNA
+            // payment: 0.00047800 TLOS
+            // price: 0.00047800 TLOS
+            // last_price: 2092.05020920 EDNA
+
+            // find out last price
+            asset last_price = price;
+            tablesummary summary(get_self(), scope.value);
+            auto ptr = summary.find(name("lastone").value);
+            if (ptr != summary.end()) {
+                last_price = ptr->price;
+            }
 
             // calculate hour and label
             uint64_t ahora = current_time();
@@ -495,8 +520,7 @@ namespace vapaee {
             uint64_t hour = sec / 3600;
             int  hora = hour % 24;
             name label = aux_create_label_for_hour(hora);
-
-
+            
             // save table summary (price & volume/h)
             ptr = summary.find(label.value);
             if (ptr == summary.end()) {
@@ -536,6 +560,8 @@ namespace vapaee {
                     });
                 }
             }
+
+            // DEBUGGING CODE ---> NO PASA POR ACA
 
             ptr = summary.find(label.value);
             asset volume = ptr->volume;
@@ -596,10 +622,10 @@ namespace vapaee {
                     a.volume += payment;
                     a.date = date;
                     if (price > a.max) a.max = price;
-                    if (price < a.min) a.min = price;                    
+                    if (price < a.min) a.min = price;
                 });
             }
-            
+
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history() ...\n");
         }
 
@@ -630,6 +656,26 @@ namespace vapaee {
             }
             
             PRINT("vapaee::token::exchange::aux_generate_order() ...\n");
+        }
+
+        string create_error_asset2(const char * text, const asset & token1, const asset & token2) {
+            string result = string(text) + " [" + token1.to_string() + "], [" + token2.to_string()+"]";
+            return result;
+        }
+
+        string create_error_asset3(const char * text, const asset & token1, const asset & token2, const asset & token3) {
+            string result = string(text) + " [" + token1.to_string() + "], [" + token2.to_string()+"], [" + token3.to_string()+"]";
+            return result;
+        }
+
+        string create_error_asset4(const char * text, const asset & token1, const asset & token2, const asset & token3, const asset & token4) {
+            string result = string(text) + " [" + token1.to_string() + "], [" + token2.to_string()+"], [" + token3.to_string()+"], [" + token4.to_string()+"]";
+            return result;
+        }
+
+        string create_error_asset5(const char * text, const asset & token1, const asset & token2, const asset & token3, const asset & token4, const asset & token5) {
+            string result = string(text) + " [" + token1.to_string() + "], [" + token2.to_string()+"], [" + token3.to_string()+"], [" + token4.to_string()+"], [" + token5.to_string()+"]";
+            return result;
         }
 
         void aux_generate_sell_order(name owner, name scope_buy, name scope_sell, asset total, asset payment, asset price, asset inverse, name ram_payer) {
@@ -685,7 +731,8 @@ namespace vapaee {
 
             // iterate over a list or buy order from the maximun price down
             for (auto b_ptr = buy_index.begin(); b_ptr != buy_index.end(); b_ptr = buy_index.begin()) {
-                eosio_assert(b_ptr->price.symbol == inverse.symbol, "buy order price symbol and inverse symbol are different");
+                eosio_assert(b_ptr->price.symbol == inverse.symbol,
+                    create_error_asset2(ERROR_AGSO_1, b_ptr->price, inverse).c_str());
                 PRINT(" compare: (price<=inverse) ??  - (", b_ptr->price.to_string(), " <= ", inverse.to_string(), ") ??? \n");
                 if (b_ptr->price.amount <= inverse.amount) {
                     // transaction !!!
@@ -695,12 +742,20 @@ namespace vapaee {
                     PRINT("              buyer: ", buyer.to_string() ,"\n");
                     PRINT("      current_price: ", current_price.to_string() ,"\n");
                     PRINT("       b_ptr->total: ", b_ptr->total.to_string(), " > remaining: ", remaining.to_string()," ?\n");
+
+                    eosio_assert(b_ptr->total.symbol == remaining.symbol,
+                        create_error_asset2(ERROR_AGSO_2, b_ptr->total, remaining).c_str());
+
                     if (b_ptr->total > remaining) { // CNT
                         // buyer wants more that the user is selling -> reduces buyer order amount
                         current_total = remaining;  // CNT
                         current_payment.amount = (int64_t)( (double)(remaining.amount * b_ptr->selling.amount) / (double)b_ptr->total.amount);
                         buytable.modify(*b_ptr, aux_get_modify_payer(ram_payer), [&](auto& a){
                             double percent = (double)remaining.amount / (double)a.total.amount;
+                            eosio_assert(a.total.symbol == remaining.symbol,
+                                create_error_asset2(ERROR_AGSO_3, a.total, remaining).c_str());
+                            eosio_assert(a.selling.symbol == current_payment.symbol,
+                                create_error_asset2(ERROR_AGSO_4, a.selling, current_payment).c_str());
                             a.total -= remaining;   // CNT
                             a.selling -= current_payment;    // TLOS
                         });
@@ -711,8 +766,10 @@ namespace vapaee {
                         orderstables.modify(*buy_itr, ram_payer, [&](auto & a){
                             PRINT("        a.total:  ", a.total.to_string(),"\n");
                             PRINT("        payment:  ", current_payment.to_string(),"\n");
+                            eosio_assert(a.total.symbol == current_payment.symbol,
+                                create_error_asset2(ERROR_AGSO_5, a.total, current_payment).c_str());
                             a.total -= current_payment;
-                        });                        
+                        });
                     } else {
                         // buyer gets all amount wanted -> destroy order
                         uint64_t buy_id = b_ptr->id;
@@ -741,6 +798,8 @@ namespace vapaee {
                             });
                             orderstables.modify(*buy_itr, ram_payer, [&](auto & a){
                                 a.orders--;
+                                eosio_assert(a.total.symbol == current_payment.symbol,
+                                    create_error_asset2(ERROR_AGSO_6, a.total, current_payment).c_str());
                                 a.total -= current_payment;
                                 PRINT("     orderstables.modify() a.orders--; a.total: ", a.total.to_string(),"\n");
                             });
@@ -755,8 +814,12 @@ namespace vapaee {
                             buyerorders.erase(*buyer_itr);
                         }
                     }
-                    
-                    
+
+                    eosio_assert(remaining.symbol == current_total.symbol,
+                        create_error_asset2(ERROR_AGSO_7, remaining, current_total).c_str());
+                    eosio_assert(remaining_payment.symbol == current_payment.symbol,
+                        create_error_asset2(ERROR_AGSO_8, remaining_payment, current_payment).c_str());
+
                     remaining -= current_total;
                     remaining_payment -= current_payment;
                     asset seller_fee, buyer_fee, seller_gains, buyer_gains;
@@ -766,6 +829,9 @@ namespace vapaee {
                     seller_gains = current_total - buyer_fee;
                     seller_fee = current_payment;
                     seller_fee.amount = current_payment.amount * seller_fee_percentage;
+
+                    eosio_assert(seller_fee.symbol == current_payment.symbol,
+                        create_error_asset2(ERROR_AGSO_9, seller_fee, current_payment).c_str());
                     buyer_gains = current_payment - seller_fee;
 
                     // transfer to buyer CNT
@@ -825,9 +891,9 @@ namespace vapaee {
 
                     // saving the transaction in history
                     current_inverse = vapaee::utils::inverse(current_price, current_payment.symbol);
-                    // PRINT("   - current_payment: ", current_payment.to_string(), "\n");
+                    // PRINT("   - current_payment: ", current_payment.to_string(), "\n");  // 1.00000000 EDNA
                     // PRINT("   - inverse:         ", inverse.to_string(), "\n");
-                    // PRINT("   - current_price:   ", current_price.to_string(), "\n");
+                    // PRINT("   - current_price:   ", current_price.to_string(), "\n");    // 0.00047800 TLOS
                     // PRINT("   - current_inverse: ", current_inverse.to_string(), "\n");
                     aux_register_transaction_in_history(buyer, seller, current_total, current_inverse, current_payment, buyer_fee, seller_fee);
                     
@@ -1160,7 +1226,7 @@ namespace vapaee {
                         std::vector<uint64_t> newlist;
                         std::copy_if (a.ids.begin(), a.ids.end(), std::back_inserter(newlist), [&](uint64_t i){return i!=order_id;} );
                         a.ids = newlist;
-                    });                       
+                    });
                     orderstables.modify(*order_itr, same_payer, [&](auto & a){
                         a.orders--;
                         a.total -= return_amount;

@@ -10,6 +10,8 @@ using namespace eosio;
 #include <locale>
 #include <cmath>
 
+#define PRINT(...)
+
 namespace vapaee {
     namespace utils {
         static uint128_t combine( uint64_t key1, uint64_t key2 ) {
@@ -26,35 +28,35 @@ namespace vapaee {
         }
         
         static asset inverse(const asset &A, const symbol &B ) {
-            // print("vapaee::utils::inverse()\n");
-            // print(" A: ", A.to_string(), "\n");
-            // print(" B: ", B.code().to_string(), "\n");
+            // PRINT("vapaee::utils::inverse()\n");
+            // PRINT(" A: ", A.to_string(), "\n");
+            // PRINT(" B: ", B.code().to_string(), "\n");
             double A_amount = (double)A.amount;
             double unit = (double)pow(10.0, A.symbol.precision());
             double result = unit / A_amount;
             int64_t amount = (int64_t) (result * unit);
             asset inv = asset(amount, B);
-            // print("  A_amount: ", std::to_string(A_amount), "\n");
-            // print("  unit: ", std::to_string(unit), "\n");     
-            // print("  result: ", std::to_string(result), "\n");     
-            // print("  amount: ", std::to_string((long long)amount), "\n");     
-            // print("  inv: ", inv.to_string(), "\n");
-            // print("vapaee::utils::inverse()\n");
+            // PRINT("  A_amount: ", std::to_string(A_amount), "\n");
+            // PRINT("  unit: ", std::to_string(unit), "\n");     
+            // PRINT("  result: ", std::to_string(result), "\n");     
+            // PRINT("  amount: ", std::to_string((long long)amount), "\n");     
+            // PRINT("  inv: ", inv.to_string(), "\n");
+            // PRINT("vapaee::utils::inverse()\n");
             return inv;
         }
 
         static asset payment(const asset &total, const asset &price ) {
-            print("vapaee::utils::payment()\n");
-            print(" total: ", total.to_string(), "\n");
-            print(" price: ", price.to_string(), "\n");
+            PRINT("vapaee::utils::payment()\n");
+            PRINT(" total: ", total.to_string(), "\n");
+            PRINT(" price: ", price.to_string(), "\n");
             double T_amount = (double)total.amount;
             double unit = (double)pow(10.0, total.symbol.precision());
             double T_real = T_amount / unit;
             int64_t amount = (int64_t) (T_real * price.amount);
             asset pay = asset(amount, price.symbol);
             
-            print("  pay: ", pay.to_string(), "\n");
-            print("vapaee::utils::payment() ...\n");
+            PRINT("  pay: ", pay.to_string(), "\n");
+            PRINT("vapaee::utils::payment() ...\n");
             return pay;
         }        
         
@@ -81,8 +83,8 @@ namespace vapaee {
         }
         
         static asset string_to_asset(const std::string& str) {
-            // print("vapaee::utils::string_to_asset()\n");
-            // print(" str: ", str.c_str(), "\n");
+            // PRINT("vapaee::utils::string_to_asset()\n");
+            // PRINT(" str: ", str.c_str(), "\n");
         
             string s = str;
             s = vapaee::utils::trim(s);
@@ -113,15 +115,15 @@ namespace vapaee {
             // Parse amount
             int64_t int_part, fract_part, amount;
             if (dot_pos != string::npos) {
-                // print(" amount_str.substr(0, dot_pos): ", amount_str.substr(0, dot_pos).c_str(), "\n");
-                // print(" amount_str.substr(dot_pos + 1): ", amount_str.substr(dot_pos + 1).c_str(), "\n");
+                // PRINT(" amount_str.substr(0, dot_pos): ", amount_str.substr(0, dot_pos).c_str(), "\n");
+                // PRINT(" amount_str.substr(dot_pos + 1): ", amount_str.substr(dot_pos + 1).c_str(), "\n");
                 int_part = vapaee::utils::str_to_int64(amount_str.substr(0, dot_pos));
                 fract_part = vapaee::utils::str_to_int64(amount_str.substr(dot_pos + 1));
                 if (amount_str[0] == '-') {
                     fract_part *= -1;
                 }
-                // print(" int_part: ", std::to_string((long long) int_part), "\n");
-                // print(" fract_part: ", std::to_string((long long) fract_part), "\n");
+                // PRINT(" int_part: ", std::to_string((long long) int_part), "\n");
+                // PRINT(" fract_part: ", std::to_string((long long) fract_part), "\n");
             } else {
                 int_part = vapaee::utils::str_to_int64(amount_str);
             }
@@ -129,8 +131,8 @@ namespace vapaee {
             int_part = int_part * pow(10, sym.precision());
             
             amount = int_part + fract_part;
-            // print(" amount: ", std::to_string((long long) amount), "\n");
-            // print("vapaee::utils::string_to_asset() ....\n");
+            // PRINT(" amount: ", std::to_string((long long) amount), "\n");
+            // PRINT("vapaee::utils::string_to_asset() ....\n");
             return asset(amount, sym);
         }        
     }; // namespace utils
