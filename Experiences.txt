@@ -87,4 +87,4 @@ Resulta que no puedo cargar con RAM al usuario, si registro ese evento lo tengo 
   https://eosio.stackexchange.com/a/1711/2452
   telosmain set account permission vapaeetokens active '{"threshold": 1,"keys": [{"key": "EOS8MPwGHuGSHSfBp3HAWsrHDotAqp9ZPShBvNcGDpcmNNa5h8y1Q","weight": 1}],"accounts": [{"permission":{"actor":"vapaeetokens","permission":"eosio.code"},"weight":1}]}' owner -p vapaeetokens
 - es mejor llenar de asserts por todos lados cosa de que si falla, que falle por un error que vos controlás y por tanto sabés dónde y porqué falló.
-
+- TIP (for devs): to find out this error on production I had to change the asset.hpp and modify the error message to include the data that was causing the error. This gave me more info to start looking for the original causes.
