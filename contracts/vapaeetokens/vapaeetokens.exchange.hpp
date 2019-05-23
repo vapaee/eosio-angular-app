@@ -318,7 +318,7 @@ namespace vapaee {
             PRINT(" now: ", std::to_string((unsigned long long) now), "\n");
 
             locks lockstable(get_self(), get_self().value);
-            auto index = lockstable.template get_index<"expire"_n>();
+            auto index = lockstable.template get_index<name("expire")>();
             auto itr = index.lower_bound(now);
 
             for (int count = max; itr != index.end() && count > 0; count--, itr = index.lower_bound(now)) {
@@ -371,34 +371,34 @@ namespace vapaee {
 
         name aux_create_label_for_hour (int hh) {
             switch(hh) {
-                case  0: return "h.zero"_n;
-                case  1: return "h.one"_n;
-                case  2: return "h.two"_n;
-                case  3: return "h.three"_n;
-                case  4: return "h.four"_n;
-                case  5: return "h.five"_n;
-                case  6: return "h.six"_n;
-                case  7: return "h.seven"_n;
-                case  8: return "h.eight"_n;
-                case  9: return "h.nine"_n;
-                case 10: return "h.ten"_n;
-                case 11: return "h.eleven"_n;
-                case 12: return "h.twelve"_n;
-                case 13: return "h.thirteen"_n;
-                case 14: return "h.fourteen"_n;
-                case 15: return "h.fifteen"_n;
-                case 16: return "h.sixteen"_n;
-                case 17: return "h.seventeen"_n;
-                case 18: return "h.eighteen"_n;
-                case 19: return "h.nineteen"_n;
-                case 20: return "h.twenty"_n;
-                case 21: return "h.twentyone"_n;
-                case 22: return "h.twentytwo"_n;
-                case 23: return "h.twentythree"_n;
+                case  0: return name("h.zero");
+                case  1: return name("h.one");
+                case  2: return name("h.two");
+                case  3: return name("h.three");
+                case  4: return name("h.four");
+                case  5: return name("h.five");
+                case  6: return name("h.six");
+                case  7: return name("h.seven");
+                case  8: return name("h.eight");
+                case  9: return name("h.nine");
+                case 10: return name("h.ten");
+                case 11: return name("h.eleven");
+                case 12: return name("h.twelve");
+                case 13: return name("h.thirteen");
+                case 14: return name("h.fourteen");
+                case 15: return name("h.fifteen");
+                case 16: return name("h.sixteen");
+                case 17: return name("h.seventeen");
+                case 18: return name("h.eighteen");
+                case 19: return name("h.nineteen");
+                case 20: return name("h.twenty");
+                case 21: return name("h.twentyone");
+                case 22: return name("h.twentytwo");
+                case 23: return name("h.twentythree");
             }
             PRINT("    aux_create_label_for_hour(hh): ERROR:", std::to_string(hh), "\n");
             eosio_assert(false, "ERROR: bad hour: ");
-            return "error"_n;
+            return name("error");
         }
 
         void aux_register_transaction_in_history(name buyer, name seller, asset amount, asset price, asset payment, asset buyfee, asset sellfee) {
@@ -473,6 +473,7 @@ namespace vapaee {
             // update deals count for scope table
             ordertables orderstables(get_self(), get_self().value);
             auto orders_itr = orderstables.find(scope.value);
+
             if (orders_itr == orderstables.end()) {
                 orderstables.emplace( get_self(), [&]( auto& a ) {
                     a.table = scope;
@@ -483,6 +484,7 @@ namespace vapaee {
                     a.blocks = 1;
                     a.total = asset(0, amount.symbol);
                 });
+                orders_itr = orderstables.find(scope.value);           
             } else {
                 orderstables.modify(*orders_itr, same_payer, [&](auto & a){
                     a.deals += 1;
@@ -561,7 +563,6 @@ namespace vapaee {
                 }
             }
 
-            // DEBUGGING CODE ---> NO PASA POR ACA
 
             ptr = summary.find(label.value);
             asset volume = ptr->volume;
@@ -597,7 +598,7 @@ namespace vapaee {
             // save table summary (price & volume/h)
             blockhistory blocktable(get_self(), scope.value);
             uint64_t id = blocktable.available_primary_key();
-            auto index = blocktable.template get_index<"hour"_n>();
+            auto index = blocktable.template get_index<name("hour")>();
             auto bptr = index.find(hour);
             if (bptr == index.end()) {
                 blocktable.emplace(get_self(), [&](auto & a) {
@@ -612,6 +613,7 @@ namespace vapaee {
                     if (last_price > a.max) a.max = last_price;
                     if (last_price < a.min) a.min = last_price;
                 });
+         
                 // update how many blocks do we have
                 orderstables.modify(*orders_itr, same_payer, [&](auto & a){
                     a.blocks += 1;
@@ -625,7 +627,7 @@ namespace vapaee {
                     if (price < a.min) a.min = price;
                 });
             }
-
+      
             PRINT("vapaee::token::exchange::aux_register_transaction_in_history() ...\n");
         }
 
@@ -647,9 +649,9 @@ namespace vapaee {
             
             asset inverse = vapaee::utils::inverse(price, total.symbol);
             asset payment = vapaee::utils::payment(total, price);
-            if (type == "sell"_n) {
+            if (type == name("sell")) {
                 aux_generate_sell_order(owner, scope_sell, scope_buy, total, payment, price, inverse, ram_payer);
-            } else if (type == "buy"_n) {
+            } else if (type == name("buy")) {
                 aux_generate_sell_order(owner, scope_buy, scope_sell, payment, total, inverse, price, ram_payer);
             } else {
                 eosio_assert(false, (string("type must be 'sell' or 'buy' in lower case, got: ") + type.to_string()).c_str());
@@ -698,9 +700,9 @@ namespace vapaee {
             auto buy_itr = orderstables.find(scope_buy.value);
 
             // sellorders selltable(get_self(), scope.value);
-            auto buy_index = buytable.template get_index<"price"_n>();
+            auto buy_index = buytable.template get_index<name("price")>();
             // auto sell_index = selltable.template get_index<"price"_n>();
-            auto sell_index = selltable.template get_index<"price"_n>();
+            auto sell_index = selltable.template get_index<name("price")>();
             asset remaining = total;
             asset remaining_payment = payment;
             asset current_price;
@@ -836,27 +838,27 @@ namespace vapaee {
 
                     // transfer to buyer CNT
                     action(
-                        permission_level{owner,"active"_n},
+                        permission_level{owner,name("active")},
                         get_self(),
-                        "swapdeposit"_n,
+                        name("swapdeposit"),
                         std::make_tuple(owner, buyer, seller_gains, string("exchange made for ") + buyer_gains.to_string())
                     ).send();
                     PRINT("     -- transfer ", seller_gains.to_string(), " to ", buyer.to_string(),"\n");
                         
                     // transfer to contractg fees on CNT
                     action(
-                        permission_level{owner,"active"_n},
+                        permission_level{owner,name("active")},
                         get_self(),
-                        "swapdeposit"_n,
+                        name("swapdeposit"),
                         std::make_tuple(owner, get_self(), buyer_fee, string("exchange made for ") + buyer_gains.to_string())
                     ).send();
                     PRINT("     -- charge fees ", buyer_fee.to_string(), " to ", buyer.to_string(),"\n");
                         
                     // transfer to seller TLOS
                     action(
-                        permission_level{get_self(),"active"_n},
+                        permission_level{get_self(),name("active")},
                         get_self(),
-                        "swapdeposit"_n,
+                        name("swapdeposit"),
                         std::make_tuple(get_self(), owner, buyer_gains, string("exchange made for ") + seller_gains.to_string())
                     ).send();
                     PRINT("     -- transfer ", buyer_gains.to_string(), " to ", owner.to_string(),"\n");
@@ -864,9 +866,9 @@ namespace vapaee {
                     // charge fee to buyer
                     /*
                     action(
-                        permission_level{owner,"active"_n},
+                        permission_level{owner,name("active")},
                         get_self(),
-                        "swapdeposit"_n,
+                        name("swapdeposit"),
                         std::make_tuple(owner, get_self(), seller_fee, string("charging order fee for ") + tlos.to_string())
                     ).send();
                     PRINT("     -- charging fee ", seller_fee.to_string(), " to ", owner.to_string(),"\n");
@@ -874,17 +876,17 @@ namespace vapaee {
 
                     // convert deposits to earnings
                     action(
-                        permission_level{get_self(),"active"_n},
+                        permission_level{get_self(),name("active")},
                         get_self(),
-                        "deps2earn"_n,
+                        name("deps2earn"),
                         std::make_tuple(buyer_fee)
                     ).send();
                     PRINT("     -- converting fee ", buyer_fee.to_string(), " to earnings\n");
 
                     action(
-                        permission_level{get_self(),"active"_n},
+                        permission_level{get_self(),name("active")},
                         get_self(),
-                        "deps2earn"_n,
+                        name("deps2earn"),
                         std::make_tuple(seller_fee)
                     ).send();
                     PRINT("     -- converting fee ", seller_fee.to_string(), " to earnings\n");
@@ -917,9 +919,9 @@ namespace vapaee {
 
                 // transfer payment deposits to contract
                 action(
-                    permission_level{owner,"active"_n},
+                    permission_level{owner,name("active")},
                     get_self(),
-                    "swapdeposit"_n,
+                    name("swapdeposit"),
                     std::make_tuple(owner, get_self(), remaining, string("future payment for order"))
                 ).send();
 
@@ -1014,9 +1016,9 @@ namespace vapaee {
             eosio_assert(ptk_itr != tokenstable.end(), (string("Token ") + quantity.symbol.code().to_string() + " not registered registered").c_str());
 
             action(
-                permission_level{get_self(),"active"_n},
+                permission_level{get_self(),name("active")},
                 ptk_itr->contract,
-                "transfer"_n,
+                name("transfer"),
                 std::make_tuple(get_self(), owner, quantity, string("withdraw deposits: ") + quantity.to_string())
             ).send();
             PRINT("   transfer ", quantity.to_string(), " to ", owner.to_string(),"\n");
@@ -1179,11 +1181,11 @@ namespace vapaee {
             name scope_buy = aux_get_scope_for_tokens(token_a, token_p);
             name scope_sell = aux_get_scope_for_tokens(token_p, token_a);
 
-            if (type == "sell"_n) {
+            if (type == name("sell")) {
                 aux_cancel_sell_order(owner, scope_buy, orders);
             }
 
-            if (type == "buy"_n) {
+            if (type == name("buy")) {
                 aux_cancel_sell_order(owner, scope_sell, orders);
             }
 
@@ -1237,9 +1239,9 @@ namespace vapaee {
                 }               
 
                 action(
-                    permission_level{get_self(),"active"_n},
+                    permission_level{get_self(),name("active")},
                     get_self(),
-                    "swapdeposit"_n,
+                    name("swapdeposit"),
                     std::make_tuple(get_self(), owner, return_amount, string("order canceled, payment returned"))
                 ).send();
             }
@@ -1316,9 +1318,9 @@ namespace vapaee {
                     eosio_assert(ptk_itr != tokenstable.end(), (string("Token ") + quantity.symbol.code().to_string() + " not registered registered").c_str());
 
                     action(
-                        permission_level{get_self(),"active"_n},
+                        permission_level{get_self(),name("active")},
                         ptk_itr->contract,
-                        "transfer"_n,
+                        name("transfer"),
                         std::make_tuple(get_self(), user, quantity, string("withdraw deposits: ") + quantity.to_string())
                     ).send();
                     PRINT("   transfer ", quantity.to_string(), " to ", user.to_string(),"\n");
@@ -1349,72 +1351,80 @@ namespace vapaee {
             require_auth(get_self());
             int count = 0;
 
+            // Borrar ordertables
+            // tokens table0(get_self(), get_self().value);
+            // for (auto ptr = table0.begin(); ptr != table0.end(); ptr = table0.begin()) {
+            //     table0.erase(*ptr);
+            //     if (count++ > num) break;
+            // }
 
             // Borrar ordertables
-            tokens table0(get_self(), get_self().value);
-            for (auto ptr = table0.begin(); ptr != table0.end(); ptr = table0.begin()) {
-                table0.erase(*ptr);
-                if (count++ > num) break;
-            }
+            // ordertables table(get_self(), get_self().value);
+            // for (auto ptr = table.begin(); ptr != table.end(); ptr = table.begin()) {
+            //     table.erase(*ptr);
+            //     if (count++ > num) break;
+            // }
 
-            // Borrar ordertables
-            ordertables table(get_self(), get_self().value);
-            for (auto ptr = table.begin(); ptr != table.end(); ptr = table.begin()) {
-                table.erase(*ptr);
-                if (count++ > num) break;
-            }
+            // Update ordertables
+            ordertables table1(get_self(), get_self().value);
+            auto ptr = table1.find(name("olive.tlos").value);
+            table1.modify(*ptr, same_payer, [&](auto & a){
+                a.blocks = 2;
+                a.deals = 5;
+            });
+
 
             // Borrar earnings
-            earnings table1(get_self(), get_self().value);
-            auto eptr_1 = table1.find(symbol_code("AAA").raw());
-            auto eptr_2 = table1.find(symbol_code("BBB").raw());
-            auto eptr_3 = table1.find(symbol_code("CCC").raw());
-            auto eptr_4 = table1.find(symbol_code("DDD").raw());
-            auto eptr_5 = table1.find(symbol_code("EEE").raw());
-            auto eptr_6 = table1.find(symbol_code("FFF").raw());
-            if (eptr_1 != table1.end()) table1.erase(*eptr_1);
-            if (eptr_2 != table1.end()) table1.erase(*eptr_2);
-            if (eptr_3 != table1.end()) table1.erase(*eptr_3);
-            if (eptr_4 != table1.end()) table1.erase(*eptr_4);
-            if (eptr_5 != table1.end()) table1.erase(*eptr_5);
-            if (eptr_6 != table1.end()) table1.erase(*eptr_6);            
+            // earnings table1(get_self(), get_self().value);
+            // auto eptr_1 = table1.find(symbol_code("AAA").raw());
+            // auto eptr_2 = table1.find(symbol_code("BBB").raw());
+            // auto eptr_3 = table1.find(symbol_code("CCC").raw());
+            // auto eptr_4 = table1.find(symbol_code("DDD").raw());
+            // auto eptr_5 = table1.find(symbol_code("EEE").raw());
+            // auto eptr_6 = table1.find(symbol_code("FFF").raw());
+            // if (eptr_1 != table1.end()) table1.erase(*eptr_1);
+            // if (eptr_2 != table1.end()) table1.erase(*eptr_2);
+            // if (eptr_3 != table1.end()) table1.erase(*eptr_3);
+            // if (eptr_4 != table1.end()) table1.erase(*eptr_4);
+            // if (eptr_5 != table1.end()) table1.erase(*eptr_5);
+            // if (eptr_6 != table1.end()) table1.erase(*eptr_6);            
 
             
  
             // Borrar history
-            history table2(get_self(), account.value);
-            for (auto ptr = table2.begin(); ptr != table2.end(); ptr = table2.begin()) {
-                table2.erase(*ptr);
-                if (count++ > num) break;
-            }
+            // history table2(get_self(), account.value);
+            // for (auto ptr = table2.begin(); ptr != table2.end(); ptr = table2.begin()) {
+            //     table2.erase(*ptr);
+            //     if (count++ > num) break;
+            // }
              
             // Borrar blocks
-            blockhistory table3(get_self(), account.value);
-            for (auto ptr = table3.begin(); ptr != table3.end(); ptr = table3.begin()) {
-                table3.erase(*ptr);
-                if (count++ > num) break;
-            }
+            // blockhistory table3(get_self(), account.value);
+            // for (auto ptr = table3.begin(); ptr != table3.end(); ptr = table3.begin()) {
+            //     table3.erase(*ptr);
+            //     if (count++ > num) break;
+            // }
             
             // Borrar blocks
-            tablesummary table4(get_self(), account.value);
-            for (auto ptr = table4.begin(); ptr != table4.end(); ptr = table4.begin()) {
-                table4.erase(*ptr);
-                if (count++ > num) break;
-            }
+            // tablesummary table4(get_self(), account.value);
+            // for (auto ptr = table4.begin(); ptr != table4.end(); ptr = table4.begin()) {
+            //     table4.erase(*ptr);
+            //     if (count++ > num) break;
+            // }
 
             // Borrar deposits
-            deposits table5(get_self(), account.value);
-            for (auto ptr = table5.begin(); ptr != table5.end(); ptr = table5.begin()) {
-                table5.erase(*ptr);
-                if (count++ > num) break;
-            }
+            // deposits table5(get_self(), account.value);
+            // for (auto ptr = table5.begin(); ptr != table5.end(); ptr = table5.begin()) {
+            //     table5.erase(*ptr);
+            //     if (count++ > num) break;
+            // }
 
             // Borrar earnings
-            earnings table6(get_self(), get_self().value);
-            for (auto ptr = table6.begin(); ptr != table6.end(); ptr = table6.begin()) {
-                table6.erase(*ptr);
-                if (count++ > num) break;
-            }
+            // earnings table6(get_self(), get_self().value);
+            // for (auto ptr = table6.begin(); ptr != table6.end(); ptr = table6.begin()) {
+            //     table6.erase(*ptr);
+            //     if (count++ > num) break;
+            // }
 
             
             PRINT("vapaee::token::exchange::action_poblate_user_orders_table() ...\n");
@@ -1507,9 +1517,9 @@ namespace vapaee {
             asset payment = sell_order.deposit;
 
             action(
-                permission_level{owner,"active"_n},
+                permission_level{owner,name("active")},
                 get_self(),
-                "swapdeposit"_n,
+                name("swapdeposit"),
                 std::make_tuple(owner, get_self(), payment, string("deposits for ") + concept.to_string())
             ).send();
             PRINT("   transfer ", current_amount.to_string(), " to ", b_ptr->owner.to_string(),"\n");
@@ -1538,9 +1548,9 @@ namespace vapaee {
             aux_calculate_total_fee(owner, sell_order.amount, sell_order.deposit, total_fee, deposits);
 
             action(
-                permission_level{owner,"active"_n},
+                permission_level{owner,name("active")},
                 get_self(),
-                "swapdeposit"_n,
+                name("swapdeposit"),
                 std::make_tuple(owner, get_self(), remaining, string("deposits for ") + concept.to_string())
             ).send();
 

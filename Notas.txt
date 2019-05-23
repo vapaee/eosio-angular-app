@@ -20,6 +20,17 @@ telosmain push action vapaeetokens updatetoken '["DDD", "D Token", "https://vapa
 - poder hacer click en la cantidad de TLOS que tengo y que se llenen los campos para generar una orden de compra la mas grande que pueda pagar.
 
 
+
+
+
+
+
+
+
+
+
+
+
 - confirmar los tokens:
 telosmain push action vapaeetokens updatetoken '["QBE", "Qubicles", "https://fenero.io/qubicles", "/assets/logos/qbe.png", "/assets/logos/qbe-lg.png",true]' -p vapaeetokens@active
 telosmain push action vapaeetokens updatetoken '["TLOSDAC", "TelosDAC", "https://telosdac.io/", "/assets/logos/telosdac.png", "/assets/logos/telosdac-lg.png",true]' -p vapaeetokens@active
@@ -271,7 +282,7 @@ telosmain push action vapaeetokens order '["viterbotelos", "buy", "5.00000000 ED
 -- Mainnet ----------------------------------------------------------
 ---------------------------------------------------------------------
 cd /var/www/eosio-angular-app/contracts/vapaeetokens
-telosmain set contract vapaeetokens $PWD -p vapaeetokens@active
+deploy_contracts; telosmain set contract vapaeetokens $PWD -p vapaeetokens@active
 telosmain set account permission vapaeetokens active '{"threshold": 1,"keys": [{"key": "EOS8MPwGHuGSHSfBp3HAWsrHDotAqp9ZPShBvNcGDpcmNNa5h8y1Q","weight": 1}],"accounts": [{"permission":{"actor":"vapaeetokens","permission":"eosio.code"},"weight":1}]}' owner -p vapaeetokens
 telosmain push action vapaeetokens addtoken '["eosio.token","TLOS",4,"vapaeetokens"]' -p vapaeetokens@active
 telosmain push action vapaeetokens create '["vapaeetokens","500000000.0000 CNT"]' -p vapaeetokens@active

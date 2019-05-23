@@ -10,7 +10,7 @@ using namespace eosio;
 #include <locale>
 #include <cmath>
 
-#define PRINT(...)
+
 
 namespace vapaee {
     namespace utils {
@@ -46,17 +46,17 @@ namespace vapaee {
         }
 
         static asset payment(const asset &total, const asset &price ) {
-            PRINT("vapaee::utils::payment()\n");
-            PRINT(" total: ", total.to_string(), "\n");
-            PRINT(" price: ", price.to_string(), "\n");
+            // PRINT("vapaee::utils::payment()\n");
+            // PRINT(" total: ", total.to_string(), "\n");
+            // PRINT(" price: ", price.to_string(), "\n");
             double T_amount = (double)total.amount;
             double unit = (double)pow(10.0, total.symbol.precision());
             double T_real = T_amount / unit;
             int64_t amount = (int64_t) (T_real * price.amount);
             asset pay = asset(amount, price.symbol);
             
-            PRINT("  pay: ", pay.to_string(), "\n");
-            PRINT("vapaee::utils::payment() ...\n");
+            // PRINT("  pay: ", pay.to_string(), "\n");
+            // PRINT("vapaee::utils::payment() ...\n");
             return pay;
         }        
         

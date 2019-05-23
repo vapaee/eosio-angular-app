@@ -545,6 +545,7 @@ export class VapaeeService {
     }
 
     async getBlockHistory(comodity:Token, currency:Token, page:number = -1, pagesize:number = -1, force:boolean = false): Promise<any> {
+        console.log("VapaeeService.getBlockHistory()", comodity.symbol);
         var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
         if (comodity == this.telos) {
             scope = currency.symbol.toLowerCase() + "." + comodity.symbol.toLowerCase();
@@ -558,7 +559,7 @@ export class VapaeeService {
                 pagesize = 10;
             }
             if (page == -1) {
-                var pages = this.getHistoryTotalPagesFor(scope, pagesize);
+                var pages = this.getBlockHistoryTotalPagesFor(scope, pagesize); /// aaaaaaaaaaaaaaa
                 page = pages-3;
                 if (page < 0) page = 0;
             }
@@ -574,7 +575,7 @@ export class VapaeeService {
                 var now = new Date();
                 var hora = 1000 * 60 * 60;
                 var hour = Math.floor(now.getTime()/hora);
-                // console.log("->", hour);
+                console.log("->", hour);
                 var last_block = null;
                 var last_hour = null;
                 for (var i in this.scopes[scope].block) {
@@ -1085,7 +1086,7 @@ export class VapaeeService {
     private fetchBlockHistory(scope:string, page:number = 0, pagesize:number = 25): Promise<TableResult> {
         var pages = this.getBlockHistoryTotalPagesFor(scope, pagesize);
         var id = page*pagesize;
-        // console.log("VapaeeService.fetchBlockHistory(", scope, ",",page,",",pagesize,"): id:", id, "pages:", pages);
+        console.log("VapaeeService.fetchBlockHistory(", scope, ",",page,",",pagesize,"): id:", id, "pages:", pages);
         if (page < pages) {
             if (this.scopes[scope].block["id-" + id]) {
                 var result:TableResult = {more:false,rows:[]};
@@ -1100,15 +1101,15 @@ export class VapaeeService {
                 }
                 if (result.rows.length == pagesize) {
                     // we have the complete page in memory
-                    // console.log("VapaeeService.fetchHistory(", scope, ",",page,",",pagesize,"): result:", result.rows.map(({ id }) => id));
+                    console.log("VapaeeService.fetchHistory(", scope, ",",page,",",pagesize,"): result:", result.rows.map(({ id }) => id));
                     return Promise.resolve(result);
                 }                
             }
         }
 
         return this.utils.getTable("blockhistory", {scope:scope, limit:pagesize, lower_bound:""+(page*pagesize)}).then(result => {
-            // console.log("**************");
-            // console.log("block History crudo:", result);
+            console.log("**************");
+            console.log("block History crudo:", result);
             this.scopes[scope] = this.auxAssertScope(scope);
             this.scopes[scope].block = this.scopes[scope].block || {}; 
             // console.log("this.scopes[scope].block:", this.scopes[scope].block);
@@ -1125,8 +1126,8 @@ export class VapaeeService {
                 }
                 this.scopes[scope].block["id-" + block.id] = block;
             }   
-            // console.log("block History final:", this.scopes[scope].block);
-            // console.log("-------------");
+            console.log("block History final:", this.scopes[scope].block);
+            console.log("-------------");
             return result;
         });
     }    

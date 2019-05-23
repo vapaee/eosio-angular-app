@@ -9,6 +9,7 @@ import { Token } from 'src/app/services/utils.service';
 import { VapaeeService, Asset, OrderRow, TokenOrders } from 'src/app/services/vapaee.service';
 import { Subscriber } from 'rxjs';
 import { VpePanelOrderEditorComponent } from 'src/app/components/vpe-panel-order-editor/vpe-panel-order-editor.component';
+import { Feedback } from 'src/app/services/feedback.service';
 
 
 @Component({
@@ -27,6 +28,9 @@ export class TradePage implements OnInit, OnDestroy {
     private onStateSubscriber: Subscriber<string>;
     private onBlocklistSubscriber: Subscriber<any[][]>;
 
+    public loading: boolean;
+    public error: string;
+
     @ViewChild(VpePanelOrderEditorComponent) orderform: VpePanelOrderEditorComponent;
    
     constructor(
@@ -39,6 +43,8 @@ export class TradePage implements OnInit, OnDestroy {
         public route: ActivatedRoute
 
     ) {
+        this.loading = false;
+        this.error = "";
         this._orders = {sell:[],buy:[]};
         this.onStateSubscriber = new Subscriber<string>(this.onStateChange.bind(this));
         this.onBlocklistSubscriber = new Subscriber<any[][]>(this.onBlocklistChange.bind(this));
@@ -170,5 +176,45 @@ export class TradePage implements OnInit, OnDestroy {
     onBlocklistChange(blocks:any[][]) {
         // console.log("TradePage.onBlocklistChange()",blocks);
         this.regenerateChartData();
-    } 
+    }
+
+    // wallet actions 
+
+    onWalletConfirmDeposit(amount: Asset) {
+        console.log("------------------>", amount.toString());
+        this.loading = true;
+        this.error = null;
+        this.vapaee.deposit(amount).then(_ => {
+            console.log("------------------>", amount.toString());
+            this.loading = false;
+        }).catch(e => {
+            console.error(typeof e, e);
+            // this.error = "ERROR: " + JSON.stringify(typeof e == "string" ? JSON.parse(e) : e, null, 4);
+            if (typeof e == "string") {
+                this.error = "ERROR: " + JSON.stringify(JSON.parse(e), null, 4);
+            } else {
+                this.error = null;
+            }
+            this.loading = false;
+        });
+    }
+
+    onWalletConfirmWithdraw(amount: Asset) {
+        console.log("------------------>", amount.toString());
+        this.loading = true;
+        this.error = null;
+        this.vapaee.withdraw(amount).then(_ => {
+            console.log("------------------>", amount.toString());
+            this.loading = false;
+        }).catch(e => {
+            console.error(typeof e, e);
+            // this.error = "ERROR: " + JSON.stringify(typeof e == "string" ? JSON.parse(e) : e, null, 4);
+            if (typeof e == "string") {
+                this.error = "ERROR: " + JSON.stringify(JSON.parse(e), null, 4);
+            } else {
+                this.error = null;
+            }
+            this.loading = false;
+        });        
+    }    
 }
