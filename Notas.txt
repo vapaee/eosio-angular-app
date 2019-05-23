@@ -79,16 +79,15 @@ cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p use
 
 ----------------------- VERSIONES DE VAPAÉE DEX --------------------
 
-- Basic
-  - trading history chart
-  - Sqrl suport: https://github.com/Telos-Foundation/Sqrl-JS-Example-Project.git
-
 - Premium
-  - Responsive
-  - Agregar max y min de las últimas 24h
-  - Precios en USD - En realidad en cualquier moneda (x regla de tres) - combo box
-  - Activity feedback: how many users, transactions per day, deposits, withdraws, earnings
-  - Review Video: 
+  - Crítico
+    - Responsive PWA
+  - Choto
+    - Precios en USD - En realidad en cualquier moneda (x regla de tres) - combo box
+    - Agregar max y min de las últimas 24h
+    - Activity feedback: how many users, transactions per day, deposits, withdraws, earnings
+  - detalles:
+    - recordar la elección del idioma (coockie)
 
 - Deluxe
   - Página del Token X (title, description, link, contacts, transaction history, top N holders)
