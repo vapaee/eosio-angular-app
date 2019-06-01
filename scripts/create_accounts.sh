@@ -5,6 +5,7 @@
 # eosio: 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
 # cleos wallet import
 # dev: 5J1astpVJcAJVGX8PGWN9KCcHU5DMszi4gJgCEpWc5DxmpTsKqp
+HOME=/var/www/eosio-angular-app
 
 cleos create account eosio eosio.token EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio eosio.trail EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
@@ -43,16 +44,25 @@ cleos set account permission vapaeetokens active '{"threshold": 1,"keys": [{"key
 cleos set account permission boardgamebox active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"boardgamebox","permission":"eosio.code"},"weight":1}]}' owner -p boardgamebox
 cleos set account permission appserver active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"appserver","permission":"eosio.code"},"weight":1}]}' owner -p appserver
 
+
+if [ ! -d $HOME/contracts/_examples/eosio.contracts ]; then
+    cd $HOME/contracts/_examples/
+    echo "Cloning eosio.contracts (eosio.trail & eosio.token)"
+    git clone https://github.com/Telos-Foundation/eosio.contracts.git
+else
+    echo "$HOME/contracts/_examples/eosio.contracts OK!"
+fi
+
 # eosio.token
 echo "-------- eosio.trail (Voting system) ---------"
-cd /var/www/eosio-angular-app/contracts/_examples/eosio.contracts/eosio.trail
+cd $HOME/contracts/_examples/eosio.contracts/eosio.trail
 if [[ src/eosio.trail.cpp -nt eosio.trail.wasm ]]; then
     ## if [ ! -f /tmp/foo.txt ]; then
     eosio-cpp -o eosio.trail.wasm src/eosio.trail.cpp --abigen -I include
 fi
 cleos set contract eosio.trail $PWD -p eosio.trail@active
 echo "-------- eosio.token (TLOS) ---------"
-cd /var/www/eosio-angular-app/contracts/_examples/eosio.contracts/eosio.token
+cd $HOME/contracts/_examples/eosio.contracts/eosio.token
 if [[ src/eosio.token.cpp -nt eosio.token.wasm ]]; then
     ## if [ ! -f /tmp/foo.txt ]; then
     eosio-cpp -o eosio.token.wasm src/eosio.token.cpp --abigen -I include

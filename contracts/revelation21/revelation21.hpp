@@ -48,6 +48,9 @@ namespace eosio {
             [[eosio::action]]
             void close( name owner, const symbol& symbol );
     
+            [[eosio::action]]
+            void claim( name owner );
+    
             static asset get_supply( name token_contract_account, symbol_code sym_code ) {
                 stats statstable( token_contract_account, sym_code.raw() );
                 const auto& st = statstable.get( sym_code.raw() );
@@ -112,6 +115,8 @@ namespace eosio {
             static string days_to_string( int64_t days );
         
             static time_type get_today() { return (time_type)(current_time() / 86400000000); }
+            static time_type get_today_in_hours() { return (time_type)(current_time() / 3600000000); }
+            uint64_t remaining_hours( name from );
 
             // Before deploying this contract to your blockchain, make sure this function is doing what you want.
             // If you don't have KYC or any sort of ID check or de-duplication mechanism, this just returns true.

@@ -194,12 +194,54 @@ void token::close( name owner, const symbol& symbol ) {
     acnts.erase( it );
 }
 
+uint64_t token::remaining_hours( name from ) { 
+    extras from_xtrs( _self, from.value );
+    const auto& from_extra = from_xtrs.get( symbol_code("HEART").raw(), "No balance object found. Please call action 'open' and try again." );
+
+    const uint64_t today_hh = get_today_in_hours();
+    const uint64_t last_hh = from_extra.last_claim_day * 24;
+    const uint64_t diff = today_hh - last_hh;
+    const uint64_t remaining = 24 - diff;    
+    return remaining;
+}
+
+void token::claim( name from ) {
+    require_auth( from );
+    
+    eosio_assert(can_claim_UBI( from ), "This account is not allowed to claim Beatitude tokens [HEART-UBI]");
+
+    // The token contract account is NOT eligible for an UBI.
+    eosio_assert(from != _self, "The token contract account is NOT eligible for an UBI.");
+  
+    extras from_xtrs( _self, from.value );
+    const auto& from_extra = from_xtrs.get( symbol_code("HEART").raw(), "No balance object found. Please call action 'open' and try again." );
+    
+    const time_type today = get_today();
+  
+    if (from_extra.last_claim_day < today) {
+        symbol heart = symbol(symbol_code("HEART"),4);
+
+        SEND_INLINE_ACTION( *this, open, { {from, "active"_n} },
+                            { from, heart, from }
+        );        
+
+    } else {
+
+        const time_type remaining = remaining_hours( from );
+        
+        string str = string("You can claim your next token in ") + 
+            std::to_string((unsigned long) remaining) +
+            "hs aprox.";
+        eosio_assert(false, str.c_str());
+    }
+}
+
 void token::create_extra_record( name owner, name ram_payer, uint64_t sym_code_raw ) {
     if (!can_claim_UBI(owner)) return;
     extras xtrs( _self, owner.value );
     xtrs.emplace( ram_payer, [&]( auto& a ){
         a.symbol_code_raw = sym_code_raw;
-        a.last_claim_day = 18016; // 30 de mayo
+        a.last_claim_day = 18046; // 30 de mayo
         // 18016 - 29 de abril
         // 18017 - 30 de abril
         // 18018 - 1 de mayo
@@ -227,16 +269,23 @@ void token::try_ubi_claim( name from, const symbol& sym, name payer, stats& stat
     extras from_xtrs( _self, from.value );
     const auto& from_extra = from_xtrs.get( sym.code().raw(), "no balance object found" );
     
+    
     const time_type today = get_today();
+
+    // Bugfix - 
+    uint64_t last_claim_day = from_extra.last_claim_day;
+    if (last_claim_day == 18047) {
+        last_claim_day = 18046;
+    }
   
-    if (from_extra.last_claim_day < today) {
+    if (last_claim_day < today) {
         
         // The UBI grants 1 token per day per account. 
         // Users will automatically issue their own money as a side-effect of giving money to others.
         
         // Compute the claim amount relative to days elapsed since the last claim, excluding today's pay.
         // If you claimed yesterday, this is zero.
-        int64_t claim_amount = today - from_extra.last_claim_day - 1;
+        int64_t claim_amount = today - last_claim_day - 1;
         // The limit for claiming accumulated past income is 360 days/coins. Unclaimed tokens past that
         //   one year maximum of accumulation are lost.
         time_type lost_days = 0;
@@ -261,7 +310,7 @@ void token::try_ubi_claim( name from, const symbol& sym, name payer, stats& stat
         if (claim_quantity.amount > 0) {
             
             // Log this basic income payment with a fake inline transfer action to self.
-            log_claim( from, claim_quantity, from_extra.last_claim_day + last_claim_day_delta, lost_days );
+            log_claim( from, claim_quantity, last_claim_day + last_claim_day_delta, lost_days );
             
             // Update the token total supply.
             statstable.modify( st, same_payer, [&]( auto& s ) {
@@ -292,6 +341,17 @@ void token::log_claim( name claimant, asset claim_quantity, time_type next_last_
         claim_memo.append( std::to_string(lost_days) );
         claim_memo.append(" days of income)");
     }
+
+    // ----------------------------------------
+    claim_memo = string("It is done. I am the Alpha and the Omega, the Beginning and the End. To the thirsty I will give water without cost from the spring of the water of life.");
+    
+    claim_memo = string("The blessed drink daily of the HEART spring. [ +");
+
+    // X hours
+    claim_memo.append( claim_quantity.to_string() );
+    claim_memo.append("] Next HEART - " );
+    claim_memo.append( std::to_string( (unsigned long) remaining_hours(claimant) ));
+    claim_memo.append( " hours." );
 
     SEND_INLINE_ACTION( *this, transfer, { {claimant, "active"_n} },
 		      { claimant, claimant, claim_quantity, claim_memo }
@@ -327,4 +387,4 @@ string token::days_to_string( int64_t days ) {
 
 } /// namespace eosio
 
-EOSIO_DISPATCH( eosio::token, (create)(issue)(transfer)(open)(close)(retire) )
+EOSIO_DISPATCH( eosio::token, (create)(issue)(transfer)(open)(close)(retire)(claim) )
