@@ -51,6 +51,9 @@ namespace eosio {
             [[eosio::action]]
             void claim( name owner );
     
+            [[eosio::action]]
+            void hotfix(name owner );
+
             static asset get_supply( name token_contract_account, symbol_code sym_code ) {
                 stats statstable( token_contract_account, sym_code.raw() );
                 const auto& st = statstable.get( sym_code.raw() );

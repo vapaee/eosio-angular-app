@@ -200,8 +200,21 @@ uint64_t token::remaining_hours( name from ) {
 
     const uint64_t today_hh = get_today_in_hours();
     const uint64_t last_hh = from_extra.last_claim_day * 24;
+
     const uint64_t diff = today_hh - last_hh;
-    const uint64_t remaining = 24 - diff;    
+    const uint64_t remaining = 24 - diff;
+    
+    string str = string("today_hh: ") + std::to_string((unsigned long) today_hh) + 
+    " last_hh: " + std::to_string((unsigned long) last_hh) + 
+    " diff: " + std::to_string((int) diff) + 
+    " remaining: " + std::to_string((int) remaining);
+
+const time_type rem = remaining;
+
+        print( (str + string("|remaining: ") + std::to_string((unsigned long) rem)).c_str() );    
+
+    // print(str.c_str());
+// eosio_assert(today_hh > last_hh, (string("NO ES MAYOR !!! ") + str).c_str());    
     return remaining;
 }
 
@@ -228,6 +241,8 @@ void token::claim( name from ) {
     } else {
 
         const time_type remaining = remaining_hours( from );
+
+        // print( (string("|remaining: ") + std::to_string((unsigned long) remaining)).c_str() );
         
         string str = string("You can claim your next token in ") + 
             std::to_string((unsigned long) remaining) +
@@ -329,6 +344,15 @@ void token::try_ubi_claim( name from, const symbol& sym, name payer, stats& stat
     }
 }
 
+void token::hotfix(name from) {
+    extras from_xtrs( _self, from.value );
+    auto from_extra = from_xtrs.find( symbol_code("HEART").raw());
+    eosio_assert(from_extra != from_xtrs.end(), "No balance object found. Please call action 'open' and try again.");
+    from_xtrs.modify(*from_extra, get_self(), [&](auto & a){
+        a.last_claim_day = 18050;
+    });
+}
+
 // This calls a transfer-to-self just to log a memo that explains what the UBI payment was.
 void token::log_claim( name claimant, asset claim_quantity, time_type next_last_claim_day, time_type lost_days ) {
     string claim_memo = "[HEART-UBI] +";
@@ -347,11 +371,37 @@ void token::log_claim( name claimant, asset claim_quantity, time_type next_last_
     
     claim_memo = string("The blessed drink daily of the HEART spring. [ +");
 
+
+    // const time_type remaining = remaining_hours(claimant);
+
+    // --------------------------
+    /*
+    extras from_xtrs( _self, claimant.value );
+    const auto& from_extra = from_xtrs.get( symbol_code("HEART").raw(), "No balance object found. Please call action 'open' and try again." );
+
+    const uint64_t today_hh = get_today_in_hours();
+    const uint64_t last_hh = next_last_claim_day * 24;
+    const uint64_t diff = today_hh - last_hh;
+    const uint64_t remaining = 24 - diff;    
+
     // X hours
     claim_memo.append( claim_quantity.to_string() );
-    claim_memo.append("] Next HEART - " );
-    claim_memo.append( std::to_string( (unsigned long) remaining_hours(claimant) ));
+    claim_memo.append(" ] Next HEART - " );
+    claim_memo.append( std::to_string((unsigned long) remaining) );
     claim_memo.append( " hours." );
+
+    string str = string("today_hh: ") + std::to_string((unsigned long) today_hh) + 
+    " last_hh: " + std::to_string((unsigned long) last_hh) + 
+    " diff: " + std::to_string((int) diff) + 
+    " remaining: " + std::to_string((int) remaining);
+
+    print(str.c_str());
+*/
+        const time_type remaining = remaining_hours( claimant );
+
+        // print( (string("|remaining: ") + std::to_string((unsigned long) remaining)).c_str() );    
+    // --------------------------------
+    
 
     SEND_INLINE_ACTION( *this, transfer, { {claimant, "active"_n} },
 		      { claimant, claimant, claim_quantity, claim_memo }
@@ -387,4 +437,4 @@ string token::days_to_string( int64_t days ) {
 
 } /// namespace eosio
 
-EOSIO_DISPATCH( eosio::token, (create)(issue)(transfer)(open)(close)(retire)(claim) )
+EOSIO_DISPATCH( eosio::token, (create)(issue)(transfer)(open)(close)(retire)(claim)(hotfix) )
