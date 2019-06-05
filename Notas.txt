@@ -39,6 +39,8 @@ telosmain push action vapaeetokens updatetoken '["OLIVE", "Olive", "http://democ
 
 
 ------- HEART ------
+cd /var/www/eosio-angular-app/contracts/revelation21
+deploy_contracts; telosmain set contract revelation21 $PWD -p revelation21@active
 cleos push action revelation21 open '["kate", "4,HEART", "kate"]' -p kate@active
 cleos push action revelation21 open '["user1.jc", "4,HEART", "user1.jc"]' -p user1.jc@active
 

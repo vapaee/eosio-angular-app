@@ -176,6 +176,6 @@ echo "-- personal --"
 cleos --url https://telos.eos.barcelona push action acornaccount open '["viterbotelos", "4,ACORN", "viterbotelos"]' -p viterbotelos@active
 cleos --url https://telos.eos.barcelona push action acornaccount open '["squirrelboss", "4,ACORN", "squirrelboss"]' -p squirrelboss@active
 
-cleos --url https://telos.eos.barcelona push action revelation21 open '["viter.jc", "4,HEART", "viter.jc"]' -p viter.jc@active
-cleos --url https://telos.eos.barcelona push action revelation21 open '["yobi.jc", "4,HEART", "yobi.jc"]' -p yobi.jc@active
-cleos --url https://telos.eos.barcelona push action revelation21 open '["toto.jc", "4,HEART", "toto.jc"]' -p toto.jc@active
+cleos --url https://telos.eos.barcelona push action revelation21 claim '["viter.jc"]' -p viter.jc@active
+cleos --url https://telos.eos.barcelona push action revelation21 claim '["yobi.jc"]' -p yobi.jc@active
+cleos --url https://telos.eos.barcelona push action revelation21 claim '["toto.jc"]' -p toto.jc@active
