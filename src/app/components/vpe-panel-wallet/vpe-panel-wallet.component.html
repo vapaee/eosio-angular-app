@@ -145,7 +145,7 @@
                         <td>
                             <div (click)="depositForm(balance)" [ngClass]="{'cursor-pointer': actions}">
                                 <div class="pull-right">
-                                    <span class="btn btn-sm btn-primary" [hidden]="deposit.token.symbol != 'SYS'">{{local.string.deposit | titlecase}}</span>
+                                    <span class="btn btn-sm btn-primary" [hidden]="deposit.token.symbol != 'AUX'">{{local.string.deposit | titlecase}}</span>
                                 </div>                                
                                 <img [src]="balance.token.logo" style="width: 20px; height: 20px; margin-top:-1px">
                                 {{balance.toString()}}

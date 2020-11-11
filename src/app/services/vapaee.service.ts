@@ -220,17 +220,17 @@ export class VapaeeService {
         });
     }
 
-    cancelOrder(type:string, comodity:Token, currency:Token, orders:number[]) {
+    cancelOrder(type:string, commodity:Token, currency:Token, orders:number[]) {
         // '["alice", "buy", "CNT", "TLOS", [1,0]]'
         // name owner, name type, const asset & total, const asset & price
         return this.utils.excecute("cancel", {
             owner:  this.scatter.account.name,
             type: type,
-            comodity: comodity.symbol,
+            commodity: commodity.symbol,
             currency: currency.symbol,
             orders: orders
         }).then(async result => {
-            this.updateTrade(comodity, currency);
+            this.updateTrade(commodity, currency);
             return result;
         });
     }
@@ -438,14 +438,14 @@ export class VapaeeService {
                 
     }
 
-    async updateTrade(comodity:Token, currency:Token, updateUser:boolean = true): Promise<any> {
+    async updateTrade(commodity:Token, currency:Token, updateUser:boolean = true): Promise<any> {
         console.log("VapaeeService.updateTrade()");
         return Promise.all([
-            this.getTransactionHistory(comodity, currency, -1, -1, true),
-            this.getBlockHistory(comodity, currency, -1, -1, true),
-            this.getSellOrders(comodity, currency, true),
-            this.getBuyOrders(comodity, currency, true),
-            this.getTableSummary(comodity, currency, true),
+            this.getTransactionHistory(commodity, currency, -1, -1, true),
+            this.getBlockHistory(commodity, currency, -1, -1, true),
+            this.getSellOrders(commodity, currency, true),
+            this.getBuyOrders(commodity, currency, true),
+            this.getTableSummary(commodity, currency, true),
             this.getOrderTables(),
             updateUser ? this.updateCurrentUser(): null
         ]).then(r => {
@@ -494,10 +494,10 @@ export class VapaeeService {
         return pages;
     }
 
-    async getTransactionHistory(comodity:Token, currency:Token, page:number = -1, pagesize:number = -1, force:boolean = false): Promise<any> {
-        var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
-        if (comodity == this.telos) {
-            scope = currency.symbol.toLowerCase() + "." + comodity.symbol.toLowerCase();
+    async getTransactionHistory(commodity:Token, currency:Token, page:number = -1, pagesize:number = -1, force:boolean = false): Promise<any> {
+        var scope:string = commodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
+        if (commodity == this.telos) {
+            scope = currency.symbol.toLowerCase() + "." + commodity.symbol.toLowerCase();
         }        
         var aux = null;
         var result = null;
@@ -544,11 +544,11 @@ export class VapaeeService {
         return label;
     }
 
-    async getBlockHistory(comodity:Token, currency:Token, page:number = -1, pagesize:number = -1, force:boolean = false): Promise<any> {
-        console.log("VapaeeService.getBlockHistory()", comodity.symbol);
-        var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
-        if (comodity == this.telos) {
-            scope = currency.symbol.toLowerCase() + "." + comodity.symbol.toLowerCase();
+    async getBlockHistory(commodity:Token, currency:Token, page:number = -1, pagesize:number = -1, force:boolean = false): Promise<any> {
+        console.log("VapaeeService.getBlockHistory()", commodity.symbol);
+        var scope:string = commodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
+        if (commodity == this.telos) {
+            scope = currency.symbol.toLowerCase() + "." + commodity.symbol.toLowerCase();
         }
         var aux = null;
         var result = null;
@@ -631,8 +631,8 @@ export class VapaeeService {
         return result;
     }
 
-    async getSellOrders(comodity:Token, currency:Token, force:boolean = false): Promise<any> {
-        var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
+    async getSellOrders(commodity:Token, currency:Token, force:boolean = false): Promise<any> {
+        var scope:string = commodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
         var aux = null;
         var result = null;
         this.feed.setLoading("sellorders", true);
@@ -708,9 +708,9 @@ export class VapaeeService {
         return result;
     }
     
-    async getBuyOrders(comodity:Token, currency:Token, force:boolean = false): Promise<any> {
-        var invere_scope:string = currency.symbol.toLowerCase() + "." + comodity.symbol.toLowerCase();
-        var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
+    async getBuyOrders(commodity:Token, currency:Token, force:boolean = false): Promise<any> {
+        var invere_scope:string = currency.symbol.toLowerCase() + "." + commodity.symbol.toLowerCase();
+        var scope:string = commodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
         var aux = null;
         var result = null;
         this.feed.setLoading("buyorders", true);
@@ -793,14 +793,14 @@ export class VapaeeService {
 
         for (var i in tables.rows) {
             var scope:string = tables.rows[i].table;
-            var comodity = scope.split(".")[0].toUpperCase();
+            var commodity = scope.split(".")[0].toUpperCase();
             var currency = scope.split(".")[1].toUpperCase();
             this.scopes[scope] = this.auxAssertScope(scope);
-            if (tables.rows[i].pay == comodity && tables.rows[i].sell == currency) {
+            if (tables.rows[i].pay == commodity && tables.rows[i].sell == currency) {
                 this.scopes[scope].header.buy.total = new Asset(tables.rows[i].total, this);
                 this.scopes[scope].header.buy.orders = tables.rows[i].orders;
             }
-            if (tables.rows[i].pay == currency && tables.rows[i].sell == comodity) {
+            if (tables.rows[i].pay == currency && tables.rows[i].sell == commodity) {
                 this.scopes[scope].header.sell.total = new Asset(tables.rows[i].total, this);
                 this.scopes[scope].header.sell.orders = tables.rows[i].orders;
                 this.scopes[scope].deals = tables.rows[i].deals;
@@ -816,10 +816,10 @@ export class VapaeeService {
         // }
     }
 
-    async getTableSummary(comodity:Token, currency:Token, force:boolean = false): Promise<any> {
-        var scope:string = comodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
-        if (comodity == this.telos) {
-            scope = currency.symbol.toLowerCase() + "." + comodity.symbol.toLowerCase();
+    async getTableSummary(commodity:Token, currency:Token, force:boolean = false): Promise<any> {
+        var scope:string = commodity.symbol.toLowerCase() + "." + currency.symbol.toLowerCase();
+        if (commodity == this.telos) {
+            scope = currency.symbol.toLowerCase() + "." + commodity.symbol.toLowerCase();
         }
         this.feed.setLoading("summary."+scope, true);
         var aux = null;
@@ -1022,7 +1022,7 @@ export class VapaeeService {
     }
 
     private auxAssertScope(scope:string): Table {
-        var comodity_sym = scope.split(".")[0].toUpperCase();
+        var commodity_sym = scope.split(".")[0].toUpperCase();
         var currency_sym = scope.split(".")[1].toUpperCase();
         return this.scopes[scope] || {
             scope: scope,
@@ -1035,7 +1035,7 @@ export class VapaeeService {
             blocklist: [],
             summary: {},
             header: { 
-                sell: {total:new Asset("0.0 " + comodity_sym, this), orders:0}, 
+                sell: {total:new Asset("0.0 " + commodity_sym, this), orders:0}, 
                 buy: {total:new Asset("0.0 " + currency_sym, this), orders:0}
             },
         };        
@@ -1282,7 +1282,7 @@ export class Asset {
     constructor(a: any = null, b: any = null) {
         if (a == null && b == null) {
             this.amount = new BigNumber(0);
-            this.token = {symbol:"SYS"};
+            this.token = {symbol:"AUX"};
             return;
         }
 

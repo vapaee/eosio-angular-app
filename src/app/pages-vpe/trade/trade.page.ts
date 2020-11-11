@@ -20,7 +20,7 @@ import { Feedback } from 'src/app/services/feedback.service';
 export class TradePage implements OnInit, OnDestroy {
 
     scope:string;
-    comodity:Token;
+    commodity:Token;
     currency:Token;
     _orders:TokenOrders;
     timer:number;
@@ -54,15 +54,15 @@ export class TradePage implements OnInit, OnDestroy {
         this.scope = this.route.snapshot.paramMap.get('scope');
         var com:string = this.scope.split(".")[0];
         var cur:string = this.scope.split(".")[1];
-        this.comodity = await this.vapaee.getToken(com);
+        this.commodity = await this.vapaee.getToken(com);
         this.currency = await this.vapaee.getToken(cur);
-        this.vapaee.updateTrade(this.comodity, this.currency, updateUser);
+        this.vapaee.updateTrade(this.commodity, this.currency, updateUser);
     }
 
     async init() {
         // console.log("TradePage.init() <-- ");
         this.orderform ? this.orderform.reset() : null;
-        this.comodity = null;
+        this.commodity = null;
         this.currency = null;
         this._chartData = [];
         

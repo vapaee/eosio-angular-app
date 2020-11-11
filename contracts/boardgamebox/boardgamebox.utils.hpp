@@ -64,7 +64,7 @@ namespace vapaee {
 
             containers cont_table(get_self(), profile);
             item_units units_table(get_self(), spec.app);
-            auto unit_itr = units_table.begin();
+            auto unit_itr = units_table.begin(); // esto es sólo para inicializar el tipo auto 
 
             uint64_t slot_id;
             // si tiene slots vacios en lista

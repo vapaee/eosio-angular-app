@@ -815,7 +815,7 @@ export class ScatterService {
                 
                 const transactionOptions = { authorization:[`${account.name}@${account.authority}`] };
                 console.log("Scatter.transfer() authority:", transactionOptions);
-                this.eos.transfer(account.name, "bob", "0.0000 SYS", "memo", transactionOptions).then(trx => {
+                this.eos.transfer(account.name, "bob", "0.0000 AUX", "memo", transactionOptions).then(trx => {
                     // That's it!
                     console.log(`Transaction ID: ${trx.transaction_id}`, trx);
                     // en Notas está el json que describe el objeto trx

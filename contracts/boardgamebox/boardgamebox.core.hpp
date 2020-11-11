@@ -236,7 +236,7 @@ namespace vapaee {
             print(" memo: ", memo, "\n");
 
             // tiene que haber coherencia entre las listas
-            eosio_assert( items.size() == quantities.size(), "items list and quantities list mus match sizes" );
+            eosio_assert( items.size() == quantities.size(), "items list and quantities list must match sizes" );
             
             // tiene que exigir la firma de "from", que no sea autopago y que exista el destinatario
             name from_owner = vapaee::bgbox::get_author_owner(from);
@@ -315,6 +315,16 @@ namespace vapaee {
             print(" profile: ", std::to_string((int) profile), "\n");
             print(" app: ", std::to_string((int) app), "\n");
             print(" ram_payer: ", ram_payer.to_string(), "\n");
+
+            /*
+            El usuario acaba de llegar a la app y lo mandaron para acá a inicializarse. Lo que la app necesitea es que el usuario
+            tenga un contededor correspondiente a cada uno de los container_assets
+            que están definidos para la app (previamente por la propia app)
+
+            Ahora que lo pienso esto es muy agresivo porque la app podría tener muchos contenedores definidos
+            */
+
+
             // El objetivo es crearle al usuario todas las instancias de containers y masteries registrados por esa app
             require_auth(owner);
 
@@ -378,7 +388,7 @@ namespace vapaee {
             // assert positive quantity
             eosio_assert(quantity > 0, "can't transfer 0 units");
 
-            // SWAP: un usuario ueve de lugar uno de sus items
+            // SWAP: un usuario mueve de lugar uno de sus items
             // no se crean ni se destruyen rows, sólo se modifican
             // hay que ver si existe algo en el target_slot
             item_units units_table(get_self(), app);

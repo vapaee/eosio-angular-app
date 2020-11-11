@@ -1,5 +1,6 @@
 #!/bin/bash
 mkdir -p /var/www/blockchain/eosio
+rm /var/www/blockchain/eosio/data/ -fr
 echo "-------------------------------------------------------------------------" >> /var/www/blockchain/eosio/nodeos.log
 
 #making sure koesd is running will 'infinity' autolock timeout;
@@ -23,7 +24,7 @@ nodeos -e -p eosio \
 --access-control-allow-origin=* \
 --contracts-console \
 --http-validate-host=false \
-—filter-on=‘*’ >> /var/www/blockchain/eosio/nodeos.log 2>&1 &
+>> /var/www/blockchain/eosio/nodeos.log 2>&1 &
 
 
 tail -f /var/www/blockchain/eosio/nodeos.log

@@ -34,6 +34,8 @@ CONTRACT boardgamebox : public eosio::contract {
             auth.action_register_app(owner, contract, app, invespace, title);
         }        
 
+        // crea un nuevo profile con el nombre name, registrando el slug (debe ser único)
+        // internamente llama a registerslug y registerprof
         ACTION newprofile(name owner, string slugid, string name) {
             print("\nACTION boardgamebox.newprofile()\n");
             bgbox::author auth;
@@ -52,6 +54,9 @@ CONTRACT boardgamebox : public eosio::contract {
             auth.action_register_slug(owner, slugstr);            
         }
 
+        // esto sirve para cambiar de owner. Es muy salado este concepto porque
+        // todo lo que quede registrado en nuestro sistema será a nombre del profile
+        // por tanto se transfiere toda autoría sobre los items creados.
         ACTION transferslug(name owner, name newowner, slug slugid) {
             print("\nACTION boardgamebox.transferslug()\n");
             bgbox::author auth;
@@ -83,7 +88,8 @@ CONTRACT boardgamebox : public eosio::contract {
         ACTION newasset(name author_owner, uint64_t author_issuer, slug_asset maximum_supply, uint64_t spec) {
             print("\nACTION boardgamebox.newasset()\n");
             bgbox::core box;
-            box.action_new_item_asset(author_owner, author_issuer, maximum_supply, spec);
+            box.action_new_
+            (author_owner, author_issuer, maximum_supply, spec);
         };
 
         ACTION newinventory(name author_owner, uint64_t author_publisher, slug container_slug, int space, uint64_t spec) {
@@ -117,6 +123,9 @@ CONTRACT boardgamebox : public eosio::contract {
             box.action_new_container_instance(owner, publisher, container, ram_payer);            
         }
 
+        // esta función tiene como objetivo inicializar a un nuevo usuario para poder operar en cierta app. esta app asume la existencia de
+        // algunos contenedores que de no existir, fallarían la mayoría de las acciones.
+        // Sin embargo la implementación no es la más feliz.
         ACTION profile4app (name owner, uint64_t profile, uint64_t app, name ram_payer) {
             print("\nACTION boardgamebox.profile4app()\n");
             bgbox::core box;

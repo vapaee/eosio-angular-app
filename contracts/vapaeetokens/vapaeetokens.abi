@@ -1,5 +1,5 @@
 {
-    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Sat May 25 20:24:12 2019",
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Thu Oct 24 01:26:29 2019",
     "version": "eosio::abi/1.1",
     "structs": [
         {
@@ -117,7 +117,7 @@
                     "type": "name"
                 },
                 {
-                    "name": "comodity",
+                    "name": "commodity",
                     "type": "symbol_code"
                 },
                 {
